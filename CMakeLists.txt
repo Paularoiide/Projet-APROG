@@ -10,7 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(Jeu main.cpp
     physics.h
-    physics.cpp)
+    physics.cpp
+    vector.h
+    vector.cpp)
 
 target_link_libraries(Jeu Imagine::Graphics)
 
