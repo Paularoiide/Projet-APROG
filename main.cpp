@@ -1,4 +1,5 @@
 #include <iostream>
+#include <Imagine/Graphics.h>
 
 using namespace std;
 
