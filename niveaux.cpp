@@ -13,7 +13,7 @@ Niveau ouvrir_niveau(string nom_fichier) {
     }
 
     int nbLignes;
-    nbLignes = count(istreambuf_iterator<char>(inFile),
+    nbLignes = count(istreambuf_iterator<char>(f),
                      istreambuf_iterator<char>(), '\n');
 
     Niveau niveauActuel(nbLignes);
@@ -25,12 +25,16 @@ Niveau ouvrir_niveau(string nom_fichier) {
     // standard output stream till the whole file is
     // completely read
     for(int i=0;i<nbLignes;i++) {
-        Niveau.lignes[i] ="";
-        getline(f, Niveau.lignes[i]);
+        niveauActuel.lignes[i] ="";
+        getline(f, niveauActuel.lignes[i]);
     }
 
     cout << "niveau chargé" << endl;
 
     f.close();
     return niveauActuel;
+}
+
+void Niveau::detruire(){
+    delete[] lignes;
 }
