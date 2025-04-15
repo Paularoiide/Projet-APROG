@@ -1,20 +1,25 @@
 #include "niveaux.h"
 
-Niveau::Niveau(int nbElem1) {
+Mur::Mur(Vector PointA, Vector PointB) {
+    Point1 = PointA;
+    Point2 = PointB;
+}
+
+NiveauTextuel::NiveauTextuel(int nbElem1) {
     nbElem = nbElem1;
     lignes = new string[nbElem1];
 }
 
-Niveau::~Niveau() {
+NiveauTextuel::~NiveauTextuel() {
     delete[] lignes;
 }
 
-Niveau ouvrir_niveau(string nom_fichier) {
+NiveauTextuel ouvrir_niveau(string nom_fichier) {
     ifstream f(nom_fichier);
 
     if (!f.is_open()) {
         cerr << "Erreur à l'ouverture du fichier !" << endl;
-        return Niveau(0); // On retourne un objet vide
+        return NiveauTextuel(0); // On retourne un objet vide
     }
 
     // Compter les lignes
@@ -25,7 +30,7 @@ Niveau ouvrir_niveau(string nom_fichier) {
     f.clear();
     f.seekg(0);
 
-    Niveau niveauActuel(nbLignes);
+    NiveauTextuel niveauActuel(nbLignes);
 
     for (int i = 0; i < nbLignes; i++) {
         getline(f, niveauActuel.lignes[i]);
@@ -37,7 +42,23 @@ Niveau ouvrir_niveau(string nom_fichier) {
     return niveauActuel;
 }
 
-void Niveau::detruire() {
+void NiveauTextuel::detruire() {
     delete[] lignes;
     lignes = nullptr;
+}
+
+Niveau::~Niveau() {
+    for (ObjetJeu* obj : objets) {
+        delete obj;
+    }
+}
+
+void Niveau::ajouterObjet(Objet* obj) {
+    objets.push_back(obj);
+}
+
+void Niveau::afficher() {
+    for (Objet* obj : objets) {
+        obj->afficher();
+    }
 }
