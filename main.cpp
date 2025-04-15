@@ -10,6 +10,7 @@ using namespace Imagine;
 #include "physics.h"
 #include "vector.h"
 #include "affichage.h"
+#include "niveaux.h"
 
 enum class role_Slime {
     JOUEUR, SLIME_ENEMY, PNJ
