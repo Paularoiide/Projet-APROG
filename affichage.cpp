@@ -14,5 +14,15 @@ void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas) {
 
     }
 }
-Imagine::Image<Color> spritesheet;
-load(slimebuddy, "slimebuddy.png");
+
+Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height) {
+    Imagine::Image<Color> sprite(width, height);
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            sprite(i, j) = spriteSheet(x + i, y + j);
+        }
+    }
+    return sprite;
+}
+
+
