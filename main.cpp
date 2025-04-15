@@ -4,7 +4,9 @@
 #include <iostream>
 #include <cassert>
 using namespace std;
+
 #include <Imagine/Graphics.h>
+#include <Imagine/Images.h>
 using namespace Imagine;
 
 #include "physics.h"
@@ -13,7 +15,7 @@ using namespace Imagine;
 #include "player.h"
 #include "niveaux.h"
 
-
+Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
 
 
@@ -40,9 +42,27 @@ void menu(const int WIDTH,const int HEIGHT) {
 
 int main()
 {
+    Imagine::Image<RGBA<unsigned char>> slimebuddy;
+    Imagine::Image<RGBA<unsigned char>> slimeSheet;
+    load(slimebuddy, srcPath("slimebuddy.png"));
+    RGBA<unsigned char> background_color = slimebuddy(1,1);
+    cout << "Pixel (0,0) = ("
+         << int(background_color.r()) << ", "
+         << int(background_color.g()) << ", "
+         << int(background_color.b()) << ", "
+         << int(background_color.a()) << ")" << endl;
+
+    createMaskFromColor(slimebuddy,background_color);
     openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
+
+    // Découper un sprite
+    Imagine::Image<RGBA<unsigned char>> slime = getSlimeSprite(slimebuddy, 0, 0, 32, 32);
     cout << "Slime !" << endl;
+
+    display(slime, 100, 100); // Affiche le sprite découpé à l'écran
     menu(WIDTH,HEIGHT);
     endGraphics();
     return 0;
 }
+
+
