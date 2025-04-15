@@ -12,7 +12,11 @@ add_executable(Jeu main.cpp
     physics.h
     physics.cpp
     vector.h
-    vector.cpp)
+    vector.cpp
+    affichage.h
+    affichage.cpp
+    player.h
+    player.cpp)
 
 target_link_libraries(Jeu Imagine::Graphics)
 

@@ -10,24 +10,10 @@ using namespace Imagine;
 #include "physics.h"
 #include "vector.h"
 #include "affichage.h"
+#include "player.h"
 
-enum class role_Slime {
-    JOUEUR, SLIME_ENEMY, PNJ
-};
 
-class Slime{
 
-public:
-    Color color;
-    int rayon = 10;
-    void lancer(Vector cible);
-    Slime(Color givenColor, role_Slime givenRole);
-
-};
-Slime::Slime(Color givenColor, role_Slime givenRole) {// constructeur
-    color = givenColor;
-    role_Slime role = givenRole;
-}
 
 void menu(const int WIDTH,const int HEIGHT) {
     const int BUTTON_WIDTH = 100;
