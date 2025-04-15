@@ -26,6 +26,8 @@ public:
 
 class Boite : public Element {
 public:
+    Vector Point1;// coin inférieur Gauche
+    Vector Point2;// coins supérieur droit
     void afficher() override {
         cout << "Boite" << endl;
     }
@@ -33,6 +35,10 @@ public:
 
 class Pique : public Element {
 public:
+    Vector Base;
+    Vector Sommet;
+    int largeur;
+    Pique(Vector Base1, Vector Sommet1, int largeur1);
     void afficher() override {
         cout << "Pique" << endl;
     }

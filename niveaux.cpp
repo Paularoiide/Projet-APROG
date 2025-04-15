@@ -5,6 +5,12 @@ Mur::Mur(Vector PointA, Vector PointB) {
     Point2 = PointB;
 }
 
+Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
+    Base = Base1;
+    Sommet=Sommet1;
+    largeur=largeur1;
+}
+
 NiveauTextuel::NiveauTextuel(int nbElem1) {
     nbElem = nbElem1;
     lignes = new string[nbElem1];
