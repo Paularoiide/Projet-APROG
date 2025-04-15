@@ -11,6 +11,7 @@ using namespace Imagine;
 #include "vector.h"
 #include "affichage.h"
 #include "player.h"
+#include "niveaux.h"
 
 
 

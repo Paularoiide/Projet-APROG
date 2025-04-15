@@ -14,3 +14,5 @@ void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas) {
 
     }
 }
+Imagine::Image<Color> spritesheet;
+load(slimebuddy, "slimebuddy.png");
