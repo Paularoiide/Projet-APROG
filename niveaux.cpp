@@ -1,40 +1,43 @@
 #include "niveaux.h"
 
-Niveau ouvrir_niveau(string nom_fichier) {
+Niveau::Niveau(int nbElem1) {
+    nbElem = nbElem1;
+    lignes = new string[nbElem1];
+}
 
-    // Open the text file named "input.txt"
+Niveau::~Niveau() {
+    delete[] lignes;
+}
+
+Niveau ouvrir_niveau(string nom_fichier) {
     ifstream f(nom_fichier);
 
-
-    // Check if the file is successfully opened
     if (!f.is_open()) {
-        cerr << "Error opening the file!";
-        return 1;
+        cerr << "Erreur à l'ouverture du fichier !" << endl;
+        return Niveau(0); // On retourne un objet vide
     }
 
-    int nbLignes;
-    nbLignes = count(istreambuf_iterator<char>(f),
-                     istreambuf_iterator<char>(), '\n');
+    // Compter les lignes
+    int nbLignes = count(istreambuf_iterator<char>(f),
+                         istreambuf_iterator<char>(), '\n');
+
+    // Remettre le curseur au début du fichier
+    f.clear();
+    f.seekg(0);
 
     Niveau niveauActuel(nbLignes);
 
-    // String variable to store the read data
-    string s;
-
-    // Read each line of the file and print it to the
-    // standard output stream till the whole file is
-    // completely read
-    for(int i=0;i<nbLignes;i++) {
-        niveauActuel.lignes[i] ="";
+    for (int i = 0; i < nbLignes; i++) {
         getline(f, niveauActuel.lignes[i]);
     }
 
-    cout << "niveau chargé" << endl;
+    cout << "Niveau chargé" << endl;
 
     f.close();
     return niveauActuel;
 }
 
-void Niveau::detruire(){
+void Niveau::detruire() {
     delete[] lignes;
+    lignes = nullptr;
 }
