@@ -15,6 +15,8 @@ using namespace Imagine;
 
 
 
+
+
 void menu(const int WIDTH,const int HEIGHT) {
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
@@ -37,8 +39,6 @@ void menu(const int WIDTH,const int HEIGHT) {
 
 int main()
 {
-    const int WIDTH=512;
-    const int HEIGHT=512;
     openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
     cout << "Slime !" << endl;
     menu(WIDTH,HEIGHT);

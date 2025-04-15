@@ -29,3 +29,10 @@ Vector operator*(Vector a, double lambda){
 Vector operator*(double lambda, Vector a){
     return a * lambda;
 }
+
+Vector operator/(Vector a, double lambda){
+    Vector result;
+    result.x = a.x / lambda;
+    result.y = a.y / lambda;
+    return result;
+}

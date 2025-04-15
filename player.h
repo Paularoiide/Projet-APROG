@@ -21,7 +21,8 @@ public:
     void Lancer(Vector cible);
     void Move();
     void Accelerate(Vector a);
-    void Afficher(); // Affiche le sprite en cours
+    void Display(); // Affiche le sprite en cours
+    Vector Launch();
     Slime(Color givenColor, role_Slime givenRole, Vector givenPosition);
 };
 
