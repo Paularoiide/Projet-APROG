@@ -29,6 +29,8 @@ Slime::Slime(Color givenColor, role_Slime givenRole) {// constructeur
     role_Slime role = givenRole;
 }
 
+
+
 void menu(const int WIDTH,const int HEIGHT) {
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
