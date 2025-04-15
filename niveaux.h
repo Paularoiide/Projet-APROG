@@ -8,13 +8,13 @@
 #include "vector.h"
 using namespace std;
 
-class Objet {// polymorphisme pour les différents objets
+class Element {// polymorphisme pour les différents objets
 public:
     virtual void afficher() = 0; // méthode virtuelle pure
-    virtual ~Objet() {}       // destructeur virtuel pour éviter les fuites
+    virtual ~Element() {}       // destructeur virtuel pour éviter les fuites
 };
 
-class Mur : public ObjetJeu {
+class Mur : public Element {
 public:
     Vector Point1;
     Vector Point2;
@@ -24,14 +24,14 @@ public:
     }
 };
 
-class Boite : public ObjetJeu {
+class Boite : public Element {
 public:
     void afficher() override {
         cout << "Boite" << endl;
     }
 };
 
-class Pique : public ObjetJeu {
+class Pique : public Element {
 public:
     void afficher() override {
         cout << "Pique" << endl;
@@ -52,19 +52,13 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 
 class Niveau{
 public:
-    vector<Objet*> objets;
+    vector<Element*> elements;
     int nbElem;
 
     ~Niveau(); // Pour supprimer les pointeurs
 
-    void ajouterObjet(ObjetJeu* obj) {
-        objets.push_back(obj);
-    }
+    void ajouterElement(Element* obj);
 
-    void afficher() {
-        for (ObjetJeu* obj : objets) {
-            obj->afficher();
-        }
-    }
+    void afficher();
 
 };

@@ -48,17 +48,17 @@ void NiveauTextuel::detruire() {
 }
 
 Niveau::~Niveau() {
-    for (ObjetJeu* obj : objets) {
+    for (Element* obj : elements) {
         delete obj;
     }
 }
 
-void Niveau::ajouterObjet(Objet* obj) {
-    objets.push_back(obj);
+void Niveau::ajouterElement(Element* obj) {
+    elements.push_back(obj);
 }
 
 void Niveau::afficher() {
-    for (Objet* obj : objets) {
+    for (Element* obj : elements) {
         obj->afficher();
     }
 }
