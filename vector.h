@@ -8,3 +8,5 @@ double norm2(Vector a);               // Euclidean norm
 Vector operator*(Vector a, double lambda); // Mult. scalar
 Vector operator/(Vector a, double lambda); // Div. scalar
 Vector operator*(double lambda, Vector a); // Mult. scalar
+
+struct Idx{int i; int j;};

@@ -9,6 +9,8 @@ using namespace std;
 #include <Imagine/Images.h>
 using namespace Imagine;
 
+
+
 #include "physics.h"
 #include "vector.h"
 #include "affichage.h"
@@ -42,25 +44,28 @@ void menu(const int WIDTH,const int HEIGHT) {
 
 int main()
 {
-    Imagine::Image<RGBA<unsigned char>> slimebuddy;
-    Imagine::Image<RGBA<unsigned char>> slimeSheet;
-    load(slimebuddy, srcPath("slimebuddy.png"));
-    RGBA<unsigned char> background_color = slimebuddy(1,1);
-    cout << "Pixel (0,0) = ("
-         << int(background_color.r()) << ", "
-         << int(background_color.g()) << ", "
-         << int(background_color.b()) << ", "
-         << int(background_color.a()) << ")" << endl;
-
-    createMaskFromColor(slimebuddy,background_color);
     openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
+    //Affichage du menu
+    //menu(WIDTH,HEIGHT);
+    //Afichage Test sprite
+    int j = 0;
+    while (false){
+        clearWindow();
+        putSprite(100,50,j,1);
+        milliSleep(100);
+        j+=1;
+        j = j%6;
+    }
+    // Test du Slime
+    Vector pos_init = {200,200};
+    Slime slime = Slime(role_Slime::JOUEUR, pos_init);
+    slime.Display();
+    while (true){
+      slime.Lancer();
+    }
 
-    // Découper un sprite
-    Imagine::Image<RGBA<unsigned char>> slime = getSlimeSprite(slimebuddy, 0, 0, 32, 32);
+
     cout << "Slime !" << endl;
-
-    display(slime, 100, 100); // Affiche le sprite découpé à l'écran
-    menu(WIDTH,HEIGHT);
     endGraphics();
     return 0;
 }

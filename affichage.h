@@ -15,3 +15,7 @@ const int freqDisplay = 10 * (1/dt);
 
 void drawButton(int x, int y, int width, int height, Color rectColor, const string& label);
 void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas);
+
+
+AlphaColor* getSprite(int i, int j, int w1 = 32, int h1 = 32);
+void putSprite(double x, double y,int i, int j, int w1 = 32, int h1 = 32);
