@@ -70,7 +70,6 @@ void Slime::Lancer(){
         Vector acc = Acceleration(speed);
         Accelerate(acc);
         if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
-            cout << "Ends" << endl;
                 break;
             }
     }
