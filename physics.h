@@ -5,5 +5,5 @@
 
 using namespace Imagine;
 
-Vector Acceleration(Vector v, double friction_coeff = 0.5);
+Vector Acceleration(Vector v, double friction_coeff = 0.005);
 
