@@ -5,8 +5,8 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include "vector.h"
 using namespace std;
+#include "vector.h"
 
 class Element {// polymorphisme pour les différents objets
 public:
@@ -18,10 +18,19 @@ class Mur : public Element {
 public:
     Vector Point1;
     Vector Point2;
-    Mur(Vector PointA, Vector PointB);
-    void afficher() override {
-        cout << "Mur" << endl;
-    }
+    int epaisseur;
+    Mur(Vector PointA, Vector PointB, int epais);
+    void afficher() override;
+};
+
+// mur, tel que la partie derrière le mur (sens trigo depuis le point 1 vers le point 2)
+// est inaccessible et noircie
+class Bordure : public Element {
+public:
+    Vector Point1;
+    Vector Point2;
+    Bordure(Vector PointA, Vector PointB);
+    void afficher(int WIDTH, int HEIGHT);
 };
 
 class Boite : public Element {
