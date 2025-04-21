@@ -1,0 +1,1 @@
+Bordure,Point1:(0,10) Point2:(W,10)
