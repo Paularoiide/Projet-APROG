@@ -13,16 +13,14 @@ enum class role_Slime {
 class Slime{
 
 public:
-    Color color;
     Vector pos;
     Vector speed = Vector{0.,0.};
-    int sprite_pos = 0;
-    int rayon = 10;
-    void Lancer(Vector cible);
+    Idx sprite = {0,0};
+    void Lancer();
     void Move();
     void Accelerate(Vector a);
     void Display(); // Affiche le sprite en cours
     Vector Launch();
-    Slime(Color givenColor, role_Slime givenRole, Vector givenPosition);
+    Slime( role_Slime givenRole, Vector givenPosition);
 };
 

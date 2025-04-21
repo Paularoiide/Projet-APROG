@@ -1,4 +1,9 @@
 #include "affichage.h"
+using namespace std;
+
+#include <Imagine/Graphics.h>
+#include <Imagine/Images.h>
+using namespace Imagine;
 
 void drawButton(int x, int y, int width, int height, Color rectColor, const string& label) {
     fillRect(x,y, width, height, rectColor);
@@ -15,14 +20,25 @@ void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas) {
     }
 }
 
-Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height) {
-    Imagine::Image<Color> sprite(width, height);
-    for (int i = 0; i < width; i++) {
-        for (int j = 0; j < height; j++) {
-            sprite(i, j) = spriteSheet(x + i, y + j);
+AlphaColor* getSprite(int i, int j, int w1, int h1) {
+    AlphaColor* C; // Image complète
+    int w, h;      // Largeur et hauteur de l'image
+    loadAlphaColorImage(srcPath("slimebuddy.png"), C, w, h);
+
+    AlphaColor* D = new AlphaColor[w1 * h1]; // Allocation pour le sprite extrait
+
+    for (int y = 0; y < h1; y++) {
+        for (int x = 0; x < w1; x++) {
+            int srcX = i * w1 + x;
+            int srcY = j * h1 + y;
+            D[y * w1 + x] = C[srcY * w + srcX]; // Copie du pixel
         }
     }
-    return sprite;
+
+    return D; // Pointeur vers la zone extraite (sprite)
 }
 
-
+void putSprite(double x, double y,int i, int j, int w1, int h1){
+    AlphaColor* D = getSprite(i,j,w1,h1);
+    putAlphaColorImage(x,y,D,w1,h1);
+}
