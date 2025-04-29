@@ -53,6 +53,32 @@ Vector Slime::Launch(){
     return launch_vector;
 }
 
+Vector Slime::Launch2(){
+    Vector center = {50.,50.}; // Centre de l'interface de direction
+    Vector arrow = {50.,40.}; // Position initiale de la flèche
+
+    do {drawArrow(center.x,center.y,arrow.x,arrow.y,BLUE);
+        arrow = rotate(arrow - center,1) + center;
+    } while (getKey() != KEY_PAUSE);
+    Vector dir = arrow - center / norm2(arrow - center); // We now have the launch direction
+    Vector top_left = {50.,50.};
+    arrow.x = 50.;
+    arrow.y = 50.; // Position initiale de la flèche
+    int w = 50,
+        h = 5,
+        alpha = 1;
+    fillRect(top_left.x,top_left.y,w,h,BLACK); // Rectangle
+    do {drawArrow(arrow.x,arrow.y,arrow.x,arrow.y+5,BLUE);
+        arrow.x+= alpha;
+        if ((arrow.x == top_left.x + w) || (arrow.x == top_left.x)){
+            alpha *= -1;
+        }
+
+    } while (getKey() != KEY_PAUSE);
+    return {0,0};
+
+}
+
 void Slime::Lancer(){
     speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
@@ -70,8 +96,8 @@ void Slime::Lancer(){
         Vector acc = Acceleration(speed);
         Accelerate(acc);
         if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
-                break;
-            }
+            break;
+        }
     }
     cout << "End" << endl;
 }
