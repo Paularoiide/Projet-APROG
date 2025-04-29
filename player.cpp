@@ -52,10 +52,16 @@ Vector Slime::Launch(){
     Vector launch_vector = pulse * dir;
     return launch_vector;
 }
-void Collisions(Element Obstacle) {
-    if(typeid(Obstacle)==Mur) {
 
-    }
+void Slime::Collision(Collisionable &obstacle) {
+        Vector origin = projection(pos, obstacle.Point1, obstacle.Point2);
+        Vector normal = (pos - origin)/norm2(pos - origin);
+        Vector dv = speed * dt;
+        if (ps(dv, normal) > 0){
+            speed = -1* speed;
+            double angle_normal = angle(speed, normal); // Angle entre la normale et la vitesse
+            speed = rotate(speed, -2 * angle_normal);
+        }
 }
 
 Vector Slime::Launch2(){

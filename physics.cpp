@@ -7,4 +7,3 @@ Vector Acceleration(Vector v, double friction_coeff){
     acc =acc + friction;
     return acc;
 }
-

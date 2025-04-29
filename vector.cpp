@@ -85,3 +85,7 @@ double distance(Vector a, Vector PointA, Vector PointB) {
 double distance(Vector a, Vector b) {
     return norm2(a-b);
 }
+
+double angle(Vector a, Vector b){ // Angle entre a et b dans le sens horaire
+    return -asin(a.x*b.y-a.y*b.x)/(norm2(a)*norm2(b))*180/M_PI;
+}
