@@ -14,5 +14,6 @@ Vector rotate(Vector a, double angle);
 double distance(Vector a, Vector PointA, Vector PointB);
 Vector projection(Vector a, Vector PointA, Vector PointB);
 double distance(Vector a, Vector b);
+double angle(Vector a,Vector b);
 
 struct Idx{int i; int j;};

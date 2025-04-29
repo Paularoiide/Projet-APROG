@@ -17,10 +17,14 @@ public:
     virtual ~Element() {}       // destructeur virtuel pour éviter les fuites
 };
 
-class Mur : public Element {
-public:
+class Collisionable : public Element{
+public :
     Vector Point1;
     Vector Point2;
+};
+
+class Mur : public Collisionable {
+public:
     int epaisseur;
     Mur(Vector PointA, Vector PointB, int epais);
     void afficher() override;
@@ -28,10 +32,8 @@ public:
 
 // mur, tel que la partie derrière le mur (sens trigo depuis le point 1 vers le point 2)
 // est inaccessible et noircie
-class Bordure : public Element {
+class Bordure : public Collisionable {
 public:
-    Vector Point1;
-    Vector Point2;
     Bordure(Vector PointA, Vector PointB);
     void afficher();
 };
