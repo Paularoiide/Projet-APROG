@@ -52,6 +52,11 @@ Vector Slime::Launch(){
     Vector launch_vector = pulse * dir;
     return launch_vector;
 }
+void Collisions(Element Obstacle) {
+    if(typeid(Obstacle)==Mur) {
+
+    }
+}
 
 void Slime::Lancer(){
     speed = Launch();

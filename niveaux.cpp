@@ -19,7 +19,6 @@ Bordure::Bordure(Vector PointA, Vector PointB) {
     Point1 = PointA;
     Point2 = PointB;
 }
-
 void Bordure::afficher(const int WIDTH, const int HEIGHT){
     cout << "affichage Bordure" << endl;
     Vector coins[4] = {{0.,0.},{WIDTH,0.},{WIDTH,HEIGHT},{0.,HEIGHT}};
