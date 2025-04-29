@@ -23,6 +23,7 @@ Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, i
 
 int WIDTH = 512;
 int HEIGHT = 512;
+double dt=0.01;
 
 void generer_niveau(string chemin_niveau) {
     NiveauTextuel texte;
