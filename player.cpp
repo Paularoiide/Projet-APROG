@@ -53,15 +53,31 @@ Vector Slime::Launch(){
     return launch_vector;
 }
 
-void Slime::Collision(Collisionable &obstacle) {
-        Vector origin = projection(pos, obstacle.Point1, obstacle.Point2);
-        Vector normal = (pos - origin)/norm2(pos - origin);
-        Vector dv = speed * dt;
-        if (ps(dv, normal) > 0){
-            speed = -1* speed;
-            double angle_normal = angle(speed, normal); // Angle entre la normale et la vitesse
-            speed = rotate(speed, -2 * angle_normal);
-        }
+void Slime::Shock(Collisionable &obstacle) {
+    Vector origin = projection(pos, obstacle.Point1, obstacle.Point2);
+    Vector normal = (pos - origin)/norm2(pos - origin);
+    speed = -1* speed;
+    double angle_normal = angle(speed, normal); // Angle entre la normale et la vitesse
+    speed = rotate(speed, -2 * angle_normal);
+}
+
+bool Slime::Collision(Collisionable &obstacle){
+    Vector origin = projection(pos, obstacle.Point1, obstacle.Point2);
+    Vector d = pos - origin;
+    Vector normal = (d)/norm2(d);
+
+    if(norm2(speed) != 0) {
+        double t_min = -ps(speed,normal)/norm2(speed);
+        double t_true;
+        if (t_min < 0)
+            t_true = 0;
+        else if (t_min > dt)
+            t_true = dt;
+        else
+            t_true = t_min;
+        d = d + speed * t_true;
+    }
+    return (norm2(d) <= radius);
 }
 
 Vector Slime::Launch2(){
