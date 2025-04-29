@@ -26,6 +26,7 @@ public:
     void Display(); // Affiche le sprite en cours
     void Collision(Element Obstacle);
     Vector Launch();
+    Vector Launch2();
     Slime( role_Slime givenRole, Vector givenPosition);
 };
 
