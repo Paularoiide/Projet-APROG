@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <string>
 using namespace std;
 
 #include <Imagine/Graphics.h>
@@ -16,17 +17,24 @@ using namespace Imagine;
 #include "affichage.h"
 #include "player.h"
 #include "niveaux.h"
+#include "globals.h"
 
 Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
+int WIDTH = 512;
+int HEIGHT = 512;
 
+void generer_niveau(string chemin_niveau) {
+    NiveauTextuel texte;
+    texte = ouvrir_niveau(chemin_niveau);
 
+}
 
-void menu(const int WIDTH,const int HEIGHT) {
+void menu(const int width,const int height) {
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
-    int x_button = WIDTH/2-BUTTON_WIDTH/2;
-    int y_button = HEIGHT/2-BUTTON_HEIGHT/2;
+    int x_button = width/2-BUTTON_WIDTH/2;
+    int y_button = height/2-BUTTON_HEIGHT/2;
     drawButton(x_button,y_button,BUTTON_WIDTH,BUTTON_HEIGHT,BLUE, "Commencer");
     while (true) {
         int x, y;

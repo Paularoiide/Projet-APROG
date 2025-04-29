@@ -7,9 +7,9 @@ using namespace Imagine;
 #include <string>
 using namespace std;
 
-const int WIDTH=512;
-const int HEIGHT=512;
-const double dt = 0.01;
+#include "globals.h"
+
+//const double dt = 0.01;
 const int freqDisplay = 10 * (1/dt);
 
 

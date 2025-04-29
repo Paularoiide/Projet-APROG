@@ -8,7 +8,6 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
     Point2 = PointB;
     epaisseur = epais;
 }
-
 void Mur::afficher(){
     cout << "affichage Mur" << endl;
 
@@ -19,7 +18,7 @@ Bordure::Bordure(Vector PointA, Vector PointB) {
     Point1 = PointA;
     Point2 = PointB;
 }
-void Bordure::afficher(const int WIDTH, const int HEIGHT){
+void Bordure::afficher(){
     cout << "affichage Bordure" << endl;
     Vector coins[4] = {{0.,0.},{WIDTH,0.},{WIDTH,HEIGHT},{0.,HEIGHT}};
     double distances[8] = {distance(coins[0],Point1),distance(coins[0],Point2),
@@ -46,18 +45,15 @@ Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
     largeur=largeur1;
 }
 
-NiveauTextuel::NiveauTextuel(int nbElem1) {
-    nbElem = nbElem1;
-    lignes = new string[nbElem1];
-}
 
-NiveauTextuel::~NiveauTextuel() {
-    delete[] lignes;
+NiveauTextuel::NiveauTextuel(int nbElem1) {
+    lignes.resize(nbElem1);  // plus besoin de gestion manuelle de mémoire
 }
+NiveauTextuel::NiveauTextuel() =default;
+NiveauTextuel::~NiveauTextuel() =default;
 
 NiveauTextuel ouvrir_niveau(string nom_fichier) {
     ifstream f(nom_fichier);
-
     if (!f.is_open()) {
         cerr << "Erreur à l'ouverture du fichier !" << endl;
         return NiveauTextuel(0); // On retourne un objet vide
@@ -78,14 +74,13 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
     }
 
     cout << "Niveau chargé" << endl;
-
     f.close();
     return niveauActuel;
 }
 
+
 void NiveauTextuel::detruire() {
-    delete[] lignes;
-    lignes = nullptr;
+    lignes.clear();
 }
 
 Niveau::~Niveau() {
@@ -97,7 +92,38 @@ Niveau::~Niveau() {
 void Niveau::ajouterElement(Element* obj) {
     elements.push_back(obj);
 }
-
+void Niveau::remplir_niveau(NiveauTextuel texte) {
+    for (size_t i = 0; i < texte.lignes.size(); ++i) {
+        string ligne = texte.lignes[i];
+        stringstream s(ligne);
+        vector<string> row;
+        row.clear();
+        string word="";
+        while (getline(s, word, ','))
+        {
+            regex regexp(":\\d+");// On cherche le nombre après le ":"
+            smatch m;
+            if (regex_search(word, m, regexp)) {
+                row.push_back(m[0].str().substr(1)); // extrait le nombre sans le ":"
+            }
+        }
+        if(row[0]=="Bordure") {
+            Vector Point1 = {stoi(row[1]),stoi(row[2])};
+            Vector Point2 = {stoi(row[3]),stoi(row[4])};
+            Element* bord = new Bordure(Point1, Point2);
+            elements.push_back(bord);
+        } else if (row[0]=="Mur") {
+            Vector Point1 = {stoi(row[1]),stoi(row[2])};
+            Vector Point2 = {stoi(row[3]),stoi(row[4])};
+            int epaiss = stoi(row[4]);
+            Element* mur = new Mur(Point1,Point2,epaiss);
+            elements.push_back(mur);
+        } else {
+            cerr << "erreur de lecture : impossible d'identifier l'élément de type '"<<
+                row[0]<<"' à la ligne "<<ligne<< ", n° : "<<i<<endl;
+        }
+    }
+}
 void Niveau::afficher() {
     for (Element* obj : elements) {
         obj->afficher();

@@ -5,8 +5,11 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <regex>
 using namespace std;
 #include "vector.h"
+#include "globals.h"
+
 
 class Element {// polymorphisme pour les différents objets
 public:
@@ -30,7 +33,7 @@ public:
     Vector Point1;
     Vector Point2;
     Bordure(Vector PointA, Vector PointB);
-    void afficher(int WIDTH, int HEIGHT);
+    void afficher();
 };
 
 class Boite : public Element {
@@ -57,13 +60,16 @@ public:
 class NiveauTextuel {
 public:
     int numero = 0;
-    string* lignes;
+    std::vector<std::string> lignes;
     int nbElem;
     NiveauTextuel(int nbElem1);
+    NiveauTextuel();
     ~NiveauTextuel();
     void detruire();
 };
 NiveauTextuel ouvrir_niveau(string nom_fichier);
+
+
 
 class Niveau{
 public:
@@ -73,6 +79,7 @@ public:
     ~Niveau(); // Pour supprimer les pointeurs
 
     void ajouterElement(Element* obj);
+    void remplir_niveau(NiveauTextuel texte);
 
     void afficher();
 
