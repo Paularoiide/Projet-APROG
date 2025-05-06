@@ -53,16 +53,16 @@ Vector Slime::Launch(){
     return launch_vector;
 }
 
-void Slime::Shock(Collisionable &obstacle) {
-    Vector origin = projection(pos, obstacle.Point1, obstacle.Point2);
+void Slime::Shock(Collisionable *obstacle) {
+    Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector normal = (pos - origin)/norm2(pos - origin);
     speed = -1* speed;
     double angle_normal = angle(speed, normal); // Angle entre la normale et la vitesse
     speed = rotate(speed, -2 * angle_normal);
 }
 
-bool Slime::Collision(Collisionable &obstacle){
-    Vector origin = projection(pos, obstacle.Point1, obstacle.Point2);
+bool Slime::Collision(Collisionable *obstacle){
+    Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector d = pos - origin;
     Vector normal = (d)/norm2(d);
 
@@ -79,6 +79,9 @@ bool Slime::Collision(Collisionable &obstacle){
     }
     return (norm2(d) <= radius);
 }
+
+
+
 
 Vector Slime::Launch2(){
     Vector center = {50.,50.}; // Centre de l'interface de direction
@@ -106,6 +109,10 @@ Vector Slime::Launch2(){
 
 }
 
+void Slime::Die(){
+    speed = 0;
+    cout<<"Je suis mort"<< endl;
+}
 void Slime::Lancer(){
     speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
@@ -119,9 +126,13 @@ void Slime::Lancer(){
             noRefreshEnd();
             milliSleep(75);
         }
-        for (int i = 0; i < Obstacles.size(); i++){
-            if (Collision(Obstacles[i])){
-                Shock(Obstacles[i]);}}
+        for (int i = 0; i < obstacles.size(); i++) {
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+                if (Collision(d)) {
+                    Shock(d);
+                }
+            }
+        }
         Move();
         Vector acc = Acceleration(speed);
         Accelerate(acc);

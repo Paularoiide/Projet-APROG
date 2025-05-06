@@ -1,4 +1,5 @@
 #include "niveaux.h"
+#include "player.h"
 #include <Imagine/Graphics.h>
 using namespace Imagine;
 
@@ -20,10 +21,10 @@ Bordure::Bordure(Vector PointA, Vector PointB) {
 }
 void Bordure::afficher(){
     cout << "affichage Bordure" << endl;
-    Vector coins[4] = {{0.,0.},{WIDTH,0.},{WIDTH,HEIGHT},{0.,HEIGHT}};
+    Vector coins[4] = {{0.,0.},{static_cast<double>(WIDTH),0.},{static_cast<double>(WIDTH),static_cast<double>(HEIGHT)},{0.,static_cast<double>(HEIGHT)}};
     double distances[8] = {distance(coins[0],Point1),distance(coins[0],Point2),
-                         distance(coins[1],Point1),distance(coins[1],Point2),
-                         distance(coins[2],Point1),distance(coins[2],Point2),
+                           distance(coins[1],Point1),distance(coins[1],Point2),
+                           distance(coins[2],Point1),distance(coins[2],Point2),
                            distance(coins[3],Point1),distance(coins[3],Point2)};
     double max=0;
     for(int i=0;i<8;i++) {
@@ -34,8 +35,8 @@ void Bordure::afficher(){
     int epaisseurNecessaire = max;
     Vector Point3 = Point2 + rotate((Point2-Point1)*epaisseurNecessaire/distance(Point2,Point1),90);
     Vector Point4 = Point3 + Point1 - Point2;
-    int lesX[4] = {Point1.x,Point2.x,Point3.x,Point4.x};
-    int lesY[4] = {Point1.y,Point2.y,Point3.y,Point4.y};
+    int lesX[4] = {static_cast<int>(Point1.x), static_cast<int>(Point2.x), static_cast<int>(Point3.x), static_cast<int>(Point4.x)};
+    int lesY[4] = {static_cast<int>(Point1.y), static_cast<int>(Point2.y), static_cast<int>(Point3.y), static_cast<int>(Point4.y)};
     fillPoly(lesX,lesY,4,BLACK);
 }
 
@@ -43,8 +44,21 @@ Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
     Base = Base1;
     Sommet=Sommet1;
     largeur=largeur1;
+    Vector dir = rotate(Sommet1-Base1,90)/norm2(Sommet1-Base1);
+    Sommets[0] = Sommet;
+    Sommets[1] = Base - (largeur / 2) * dir;
+    Sommets[2] = Base + (largeur / 2) * dir;
 }
 
+
+bool Pique::Collision(Slime *slime){
+    for (int i =0; i < 3; i++){
+        if (norm2(slime->pos - Sommets[i]) < slime->radius){
+            return true;
+        }
+    }
+    return false;
+}
 
 NiveauTextuel::NiveauTextuel(int nbElem1) {
     lignes.resize(nbElem1);  // plus besoin de gestion manuelle de mémoire
@@ -56,7 +70,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
     ifstream f(nom_fichier);
     if (!f.is_open()) {
         cerr << "Erreur à l'ouverture du fichier !" << endl;
-        return NiveauTextuel(0); // On retourne un objet vide
+            return NiveauTextuel(0); // On retourne un objet vide
     }
 
     // Compter les lignes
@@ -74,7 +88,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
     }
 
     cout << "Niveau chargé" << endl;
-    f.close();
+                                   f.close();
     return niveauActuel;
 }
 
@@ -108,13 +122,13 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             }
         }
         if(row[0]=="Bordure") {
-            Vector Point1 = {stoi(row[1]),stoi(row[2])};
-            Vector Point2 = {stoi(row[3]),stoi(row[4])};
+            Vector Point1 = {static_cast<double>(stoi(row[1])),static_cast<double>(stoi(row[2]))};
+            Vector Point2 = {static_cast<double>(stoi(row[3])),static_cast<double>(stoi(row[4]))};
             Element* bord = new Bordure(Point1, Point2);
             elements.push_back(bord);
         } else if (row[0]=="Mur") {
-            Vector Point1 = {stoi(row[1]),stoi(row[2])};
-            Vector Point2 = {stoi(row[3]),stoi(row[4])};
+            Vector Point1 = {static_cast<double>(stoi(row[1])),static_cast<double>(stoi(row[2]))};
+            Vector Point2 = {static_cast<double>(stoi(row[3])),static_cast<double>(stoi(row[4]))};
             int epaiss = stoi(row[4]);
             Element* mur = new Mur(Point1,Point2,epaiss);
             elements.push_back(mur);

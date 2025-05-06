@@ -10,7 +10,6 @@ using namespace std;
 #include "vector.h"
 #include "globals.h"
 
-
 class Element {// polymorphisme pour les différents objets
 public:
     virtual void afficher() = 0; // méthode virtuelle pure
@@ -22,6 +21,7 @@ public :
     Vector Point1;
     Vector Point2;
 };
+
 
 class Mur : public Collisionable {
 public:
@@ -47,15 +47,21 @@ public:
     }
 };
 
+
+class Slime;
+
 class Pique : public Element {
 public:
     Vector Base;
     Vector Sommet;
     int largeur;
+    Vector Sommets[3];
     Pique(Vector Base1, Vector Sommet1, int largeur1);
     void afficher() override {
         cout << "Pique" << endl;
     }
+
+    bool Collision(Slime *slime);
 };
 
 
@@ -88,5 +94,3 @@ public:
 };
 
 
-
-std::vector<Collisionable> Obstacles = {};
