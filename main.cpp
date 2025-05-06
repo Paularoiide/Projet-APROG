@@ -30,6 +30,7 @@ Niveau generer_niveau(string chemin_niveau) {
     texte = ouvrir_niveau(chemin_niveau);
     Niveau niveauActuel;
     niveauActuel.remplir_niveau(texte);
+    cout<<"fin de la fonction generer_niveau"<<endl;
     return(niveauActuel);
 }
 
@@ -71,8 +72,9 @@ int main()
     //Niveau niveau1;
     //cout << "Répertoire de travail courant : " << std::filesystem::current_path() << endl;
     Niveau niveau1 = generer_niveau("../Projet-APROG/build/assets/Niveaux/Intro.txt");
-    niveau1.afficher();
     cout << "niveau_genere" << endl;
+    niveau1.afficher();
+    cout << "niveau_affiche" << endl;
 
     // Test du Slime
     Vector pos_init = {200,200};

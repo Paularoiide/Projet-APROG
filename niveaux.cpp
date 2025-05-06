@@ -10,7 +10,6 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
 }
 void Mur::afficher(){
     cout << "affichage Mur" << endl;
-
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
 
@@ -53,6 +52,7 @@ NiveauTextuel::NiveauTextuel() =default;
 NiveauTextuel::~NiveauTextuel() =default;
 
 NiveauTextuel ouvrir_niveau(string nom_fichier) {
+    cout << "ouverture du fichier niveau" << endl;
     ifstream f(nom_fichier);
     if (!f.is_open()) {
         cerr << "Erreur à l'ouverture du fichier !" << endl;
@@ -62,7 +62,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
     // Compter les lignes
     int nbLignes = count(istreambuf_iterator<char>(f),
                          istreambuf_iterator<char>(), '\n');
-
+    cout << "nombre de lignes :"<<nbLignes<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
     f.seekg(0);
@@ -105,6 +105,7 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             row.push_back(match[1].str());
         } else {
             cerr << "ligne mal définie : le type d'élément (avant la première virgule) n'est pas défini !"<<endl;
+            continue;
         }
         string word="";
         while (getline(s, word, ','))
@@ -115,21 +116,25 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
                 row.push_back(m[0].str().substr(1)); // extrait le nombre sans le ":"
             }
         }
+        if (row.size() < 5) {
+            cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
+            continue;
+        }
         string row_explicite = "";
         for(string mot:row) {row_explicite = row_explicite+ "|" + mot;}
         cout << "row : " << row_explicite << endl;
-        /*for(int i=0;i<row.size();i++) {
-            if(row[i] == "W") {
-                row[i] = width;
-            } else if (row[i] == "H")
-        }*/
         if(row[0]=="Bordure") {
-            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << endl;
+            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << row[3] << ", " << row[4] << endl;
             Vector Point1 = {stoi(row[1]),stoi(row[2])};
             Vector Point2 = {stoi(row[3]),stoi(row[4])};
             Element* bord = new Bordure(Point1, Point2);
             elements.push_back(bord);
         } else if (row[0]=="Mur") {
+            if (row.size() < 6) {
+                cerr << "erreur de lecture : pas assez d'arguments pour le mur à la ligne " << ligne << ", n° : " << i << endl;
+                continue;
+            }
+            cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] <<"," << row[3] << ", " << row[4] << ", " << row[5] << endl;
             Vector Point1 = {stoi(row[1]),stoi(row[2])};
             Vector Point2 = {stoi(row[3]),stoi(row[4])};
             int epaiss = stoi(row[5]);
@@ -145,6 +150,11 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
 }
 void Niveau::afficher() {
     for (Element* obj : elements) {
-        obj->afficher();
+        cout << "affichage d'un élément"<<endl;
+        if (obj) { // Vérifiez que le pointeur n'est pas nul
+            obj->afficher();
+        } else {
+            cerr << "objet non construit au moment de l'affichage"<<endl;
+        }
     }
 }

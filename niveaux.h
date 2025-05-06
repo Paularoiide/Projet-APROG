@@ -21,6 +21,8 @@ class Collisionable : public Element{
 public :
     Vector Point1;
     Vector Point2;
+    virtual void afficher() override = 0;
+
 };
 
 class Mur : public Collisionable {
@@ -35,7 +37,7 @@ public:
 class Bordure : public Collisionable {
 public:
     Bordure(Vector PointA, Vector PointB);
-    void afficher();
+    void afficher() override;
 };
 
 class Boite : public Element {
