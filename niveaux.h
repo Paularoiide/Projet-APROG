@@ -76,6 +76,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 class Niveau{
 public:
     vector<Element*> elements;
+    vector<Collisionable*> collisionables;
     int nbElem;
 
     ~Niveau(); // Pour supprimer les pointeurs

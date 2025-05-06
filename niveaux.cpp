@@ -93,11 +93,19 @@ void Niveau::ajouterElement(Element* obj) {
     elements.push_back(obj);
 }
 void Niveau::remplir_niveau(NiveauTextuel texte) {
-    for (size_t i = 0; i < texte.lignes.size(); ++i) {
+    for (size_t i = 1; i < texte.lignes.size(); ++i) {
         string ligne = texte.lignes[i];
         stringstream s(ligne);
         vector<string> row;
         row.clear();
+        regex pattern(R"(^([^,]+))");
+        smatch match;
+        if (std::regex_search(ligne, match, pattern) && match.size() > 1) {
+            // Retourne le premier groupe capturé
+            row.push_back(match[1].str());
+        } else {
+            cerr << "ligne mal définie : le type d'élément (avant la première virgule) n'est pas défini !"<<endl;
+        }
         string word="";
         while (getline(s, word, ','))
         {
@@ -107,7 +115,16 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
                 row.push_back(m[0].str().substr(1)); // extrait le nombre sans le ":"
             }
         }
+        string row_explicite = "";
+        for(string mot:row) {row_explicite = row_explicite+ "|" + mot;}
+        cout << "row : " << row_explicite << endl;
+        /*for(int i=0;i<row.size();i++) {
+            if(row[i] == "W") {
+                row[i] = width;
+            } else if (row[i] == "H")
+        }*/
         if(row[0]=="Bordure") {
+            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << endl;
             Vector Point1 = {stoi(row[1]),stoi(row[2])};
             Vector Point2 = {stoi(row[3]),stoi(row[4])};
             Element* bord = new Bordure(Point1, Point2);
@@ -115,7 +132,8 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         } else if (row[0]=="Mur") {
             Vector Point1 = {stoi(row[1]),stoi(row[2])};
             Vector Point2 = {stoi(row[3]),stoi(row[4])};
-            int epaiss = stoi(row[4]);
+            int epaiss = stoi(row[5]);
+            cout << "epaisseur du mur : "<<epaiss<<endl;
             Element* mur = new Mur(Point1,Point2,epaiss);
             elements.push_back(mur);
         } else {
@@ -123,6 +141,7 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
                 row[0]<<"' à la ligne "<<ligne<< ", n° : "<<i<<endl;
         }
     }
+    cout << "fin de construction du niveau"<<endl;
 }
 void Niveau::afficher() {
     for (Element* obj : elements) {
