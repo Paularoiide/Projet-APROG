@@ -119,6 +119,9 @@ void Slime::Lancer(){
             noRefreshEnd();
             milliSleep(75);
         }
+        for (int i = 0; i < Obstacles.size(); i++){
+            if (Collision(Obstacles[i])){
+                Shock(Obstacles[i]);}}
         Move();
         Vector acc = Acceleration(speed);
         Accelerate(acc);

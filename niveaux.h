@@ -86,3 +86,7 @@ public:
     void afficher();
 
 };
+
+
+
+std::vector<Collisionable> Obstacles = {};
