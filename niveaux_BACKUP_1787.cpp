@@ -1,4 +1,4 @@
-    #include "niveaux.h"
+#include "niveaux.h"
 #include "player.h"
 #include <Imagine/Graphics.h>
 using namespace Imagine;

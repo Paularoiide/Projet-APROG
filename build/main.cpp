@@ -25,13 +25,10 @@ int WIDTH = 512;
 int HEIGHT = 512;
 double dt=0.01;
 
-Niveau generer_niveau(string chemin_niveau) {
+void generer_niveau(string chemin_niveau) {
     NiveauTextuel texte;
     texte = ouvrir_niveau(chemin_niveau);
-    Niveau niveauActuel;
-    niveauActuel.remplir_niveau(texte);
-    cout<<"fin de la fonction generer_niveau"<<endl;
-    return(niveauActuel);
+
 }
 
 void menu(const int width,const int height) {
@@ -58,20 +55,22 @@ int main()
 {
     openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
     //Affichage du menu
-    // creation du niveau
-    //Niveau niveau1;
-    //cout << "Répertoire de travail courant : " << std::filesystem::current_path() << endl;
-    /*Niveau niveau1 = generer_niveau("../Projet-APROG/build/assets/Niveaux/Intro.txt");
-    cout << "niveau_genere" << endl;
-    niveau1.afficher();
-    cout << "niveau_affiche" << endl;*/
+    //menu(WIDTH,HEIGHT);
+    //Afichage Test sprite
+    int j = 0;
+    while (false){
+        clearWindow();
+        putSprite(100,50,j,1);
+        milliSleep(100);
+        j+=1;
+        j = j%6;
+    }
     // Test du Slime
     Vector pos_init = {200,200};
-    Slime slime = Slime(role_Slime::SLIME_ENEMY, pos_init);
-
+    Slime slime = Slime(role_Slime::JOUEUR, pos_init);
     slime.Display();
     while (true){
-      slime.Lancer(/*niveau1.elements*/);
+      slime.Lancer();
     }
 
 

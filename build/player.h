@@ -19,11 +19,10 @@ class Slime{
 
 public:
     Vector pos;
-    role_Slime role;
     Vector speed = Vector{0.,0.};
     Idx sprite = {0,0};
     int radius = 8;
-    void Lancer(/*vector<Element*>& obstacles*/);
+    void Lancer();
     void Move();
     void Accelerate(Vector a);
     void Display(); // Affiche le sprite en cours

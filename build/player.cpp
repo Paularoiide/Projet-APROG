@@ -4,53 +4,33 @@
 
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
-    role = givenRole;
+    role_Slime role = givenRole;
 }
 
 void Slime::Display(){
-    if (role == role_Slime::JOUEUR){
-        putSprite(srcPath("slimebuddy.png"),pos.x,pos.y,sprite.i,sprite.j);
-        sprite.i += 1;
-        sprite.i = sprite.i%6;
-        double angle = atan2(speed.y, speed.x); // y, x
-        double deg = angle * 180.0 / M_PI; // Conversion en degres
-        if (deg < 0)
-            deg += 360; // Pour avoir un angle entre 0 et 360
-        if (deg >= 337.5 || deg < 22.5)
-            sprite.j = 2;
-        else if (deg >= 22.5 && deg < 67.5)
-            sprite.j = 8;
-        else if (deg >= 67.5 && deg < 112.5)
-            sprite.j = 4;
-        else if (deg >= 112.5 && deg < 157.5)
-            sprite.j = 7;
-        else if (deg >= 157.5 && deg < 202.5)
-            sprite.j = 1;
-        else if (deg >= 202.5 && deg < 247.5)
-            sprite.j = 5;
-        else if (deg >= 247.5 && deg < 292.5)
-            sprite.j = 3;
-        else
-            sprite.j = 6;
-    }
-    if (role == role_Slime::SLIME_ENEMY){
-        putSprite(srcPath("Slime2_Walk_full.png"),pos.x,pos.y,sprite.i,sprite.j,64,64);
-        sprite.i += 1;
-        sprite.i = sprite.i%6;
-        double angle = atan2(speed.y, speed.x); // y, x
-        double deg = angle * 180.0 / M_PI; // Conversion en degres
-        if (deg < 0)
-            deg += 360; // Pour avoir un angle entre 0 et 360
-        if (deg >= 315 || deg < 45)
-            sprite.j = 3;
-        else if (deg >= 45 && deg < 135)
-            sprite.j = 0;
-        else if (deg >= 135 && deg < 225)
-            sprite.j = 2;
-        else
-            sprite.j = 1;
-        sprite.j = sprite.j%4;
-    }
+    putSprite(pos.x,pos.y,sprite.i,sprite.j);
+    sprite.i += 1;
+    sprite.i = sprite.i%6;
+    double angle = atan2(speed.y, speed.x); // y, x
+    double deg = angle * 180.0 / M_PI; // Conversion en degr
+    if (deg < 0)
+        deg += 360; // Pour avoir un angle entre 0 et 360
+    if (deg >= 337.5 || deg < 22.5)
+        sprite.j = 2;
+    else if (deg >= 22.5 && deg < 67.5)
+        sprite.j = 8;
+    else if (deg >= 67.5 && deg < 112.5)
+        sprite.j = 4;
+    else if (deg >= 112.5 && deg < 157.5)
+        sprite.j = 7;
+    else if (deg >= 157.5 && deg < 202.5)
+        sprite.j = 1;
+    else if (deg >= 202.5 && deg < 247.5)
+        sprite.j = 5;
+    else if (deg >= 247.5 && deg < 292.5)
+        sprite.j = 3;
+    else
+        sprite.j = 6;
 }
 void Slime::Move(){
     pos = pos +speed * dt;
@@ -130,10 +110,10 @@ Vector Slime::Launch2(){
 }
 
 void Slime::Die(){
-    speed = {0,0};
+    speed = 0;
     cout<<"Je suis mort"<< endl;
 }
-void Slime::Lancer(/*vector<Element*>& obstacles*/){
+void Slime::Lancer(){
     speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
 
@@ -146,13 +126,13 @@ void Slime::Lancer(/*vector<Element*>& obstacles*/){
             noRefreshEnd();
             milliSleep(75);
         }
-        //for (int i = 0; i < obstacles.size(); i++) {
-        //    if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
-        //        if (Collision(d)) {
-        //            Shock(d);
-        //        }
-        //    }
-        //}
+        for (int i = 0; i < obstacles.size(); i++) {
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+                if (Collision(d)) {
+                    Shock(d);
+                }
+            }
+        }
         Move();
         Vector acc = Acceleration(speed);
         Accelerate(acc);

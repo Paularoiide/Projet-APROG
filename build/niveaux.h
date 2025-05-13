@@ -20,8 +20,6 @@ class Collisionable : public Element{
 public :
     Vector Point1;
     Vector Point2;
-    virtual void afficher() override = 0;
-
 };
 
 
@@ -37,7 +35,7 @@ public:
 class Bordure : public Collisionable {
 public:
     Bordure(Vector PointA, Vector PointB);
-    void afficher() override;
+    void afficher();
 };
 
 class Boite : public Element {
@@ -84,7 +82,6 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 class Niveau{
 public:
     vector<Element*> elements;
-    vector<Collisionable*> collisionables;
     int nbElem;
 
     ~Niveau(); // Pour supprimer les pointeurs
