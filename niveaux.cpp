@@ -9,7 +9,7 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
     Point2 = PointB;
     epaisseur = epais;
 }
-void Mur::afficher(){
+void Mur::afficher() {
     cout << "affichage Mur" << endl;
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
@@ -75,7 +75,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
 
     // Compter les lignes
     int nbLignes = count(istreambuf_iterator<char>(f),
-                         istreambuf_iterator<char>(), '\n');
+                         istreambuf_iterator<char>(), '\n')+1;// convention locale : on ne met pas de ligne vide à la fin
     cout << "nombre de lignes :"<<nbLignes<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
@@ -97,78 +97,113 @@ void NiveauTextuel::detruire() {
     lignes.clear();
 }
 
-Niveau::~Niveau() {
-    for (Element* obj : elements) {
-        delete obj;
-    }
-}
 
-void Niveau::ajouterElement(Element* obj) {
-    elements.push_back(obj);
+
+void Niveau::ajouterElement(unique_ptr<Element> obj) {
+    elements.push_back(move(obj));
 }
 void Niveau::remplir_niveau(NiveauTextuel texte) {
-    for (size_t i = 1; i < texte.lignes.size(); ++i) {
+    for (size_t i = 1; i < texte.lignes.size(); i++) {
         string ligne = texte.lignes[i];
         stringstream s(ligne);
         vector<string> row;
         row.clear();
+
         regex pattern(R"(^([^,]+))");
         smatch match;
         if (std::regex_search(ligne, match, pattern) && match.size() > 1) {
-            // Retourne le premier groupe capturé
             row.push_back(match[1].str());
         } else {
-            cerr << "ligne mal définie : le type d'élément (avant la première virgule) n'est pas défini !"<<endl;
-            continue;
+            cerr << "ligne mal définie : le type d'élément (avant la première virgule) n'est pas défini !" << endl;
+                continue;
         }
-        string word="";
-        while (getline(s, word, ','))
-        {
-            regex regexp(":\\d+");// On cherche le nombre après le ":"
+
+        string word;
+        while (getline(s, word, ',')) {
+            regex regexp(":\\d+");
             smatch m;
             if (regex_search(word, m, regexp)) {
-                row.push_back(m[0].str().substr(1)); // extrait le nombre sans le ":"
+                row.push_back(m[0].str().substr(1));
             }
         }
+
         if (row.size() < 5) {
             cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
-            continue;
+                continue;
         }
+
         string row_explicite = "";
-        for(string mot:row) {row_explicite = row_explicite+ "|" + mot;}
+        for (string mot : row) {
+            row_explicite = row_explicite + "|" + mot;
+        }
         cout << "row : " << row_explicite << endl;
-        if(row[0]=="Bordure") {
-            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << row[3] << ", " << row[4] << endl;
-            Vector Point1 = {static_cast<double>(stoi(row[1])),static_cast<double>(stoi(row[2]))};
-            Vector Point2 = {static_cast<double>(stoi(row[3])),static_cast<double>(stoi(row[4]))};
-            Element* bord = new Bordure(Point1, Point2);
-            elements.push_back(bord);
-        } else if (row[0]=="Mur") {
+
+        if (row[0] == "Bordure") {
+            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
+            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
+            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
+            auto bord = std::make_unique<Bordure>(Point1, Point2);
+            elements.push_back(std::move(bord));
+        } else if (row[0] == "Mur") {
             if (row.size() < 6) {
                 cerr << "erreur de lecture : pas assez d'arguments pour le mur à la ligne " << ligne << ", n° : " << i << endl;
-                continue;
+                    continue;
             }
-            cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] <<"," << row[3] << ", " << row[4] << ", " << row[5] << endl;
-            Vector Point1 = {static_cast<double>(stoi(row[1])),static_cast<double>(stoi(row[2]))};
-            Vector Point2 = {static_cast<double>(stoi(row[3])),static_cast<double>(stoi(row[4]))};
+            cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
+            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
+            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
             int epaiss = stoi(row[5]);
-            cout << "epaisseur du mur : "<<epaiss<<endl;
-            Element* mur = new Mur(Point1, Point2,epaiss);
-            elements.push_back(mur);
+            cout << "epaisseur du mur : " << epaiss << endl;
+            auto mur = std::make_unique<Mur>(Point1, Point2, epaiss);
+            elements.push_back(std::move(mur));
         } else {
-            cerr << "erreur de lecture : impossible d'identifier l'élément de type '"<<
-                row[0]<<"' à la ligne "<<ligne<< ", n° : "<<i<<endl;
+            cerr << "erreur de lecture : impossible d'identifier l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
         }
+        cout << "element lu." << endl;
     }
-    cout << "fin de construction du niveau"<<endl;
+    cout << "fin de construction du niveau" << endl;
+    cout << "analyse du niveau :" << endl;
+    for (int i = 0; i < elements.size(); i++) {
+        cout << "Type de l'objet : " << typeid(*elements[i]).name() << endl;
+    }
 }
+
+template<typename Base, typename T>
+inline bool instanceof(const T *ptr) {
+    return dynamic_cast<const Base*>(ptr) != nullptr;
+}
+
 void Niveau::afficher() {
-    for (Element* obj : elements) {
-        cout << "affichage d'un élément"<<endl;
-        if (obj) { // Vérifiez que le pointeur n'est pas nul
-            obj->afficher();
+    for (auto& obj : elements) { // Utilisez une référence pour éviter de copier le unique_ptr
+        cout << "affichage d'un élément" << endl;
+                cout << "Test avec typeid(*obj).name(). Type de l'objet : " << typeid(*obj).name() << endl;
+
+        // Obtenez le pointeur brut pour utiliser dynamic_cast
+        Element* rawPtr = obj.get();
+
+        if (dynamic_cast<Mur*>(rawPtr)) {
+            cout << "2e test. C'est un Mur" << endl;
         } else {
-            cerr << "objet non construit au moment de l'affichage"<<endl;
+            cout << "deuxième test. Pas un Mur" << endl;
+        }
+
+        if (dynamic_cast<Bordure*>(rawPtr)) {
+            cout << "2e test. C'est une Bordure" << endl;
+        } else {
+            cout << "deuxième test. Pas une Bordure" << endl;
+        }
+
+        if (dynamic_cast<Collisionable*>(rawPtr)) {
+            cout << "element est de type Collisionable" << endl;
+        } else {
+            cout << "element n'est pas de type Collisionable" << endl;
+        }
+
+        if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
+            rawPtr->afficher();
+        } else {
+            cerr << "objet non construit au moment de l'affichage" << endl;
         }
     }
+
 }
