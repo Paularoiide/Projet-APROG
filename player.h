@@ -12,7 +12,7 @@ using namespace Imagine;
 using namespace std;
 
 enum class role_Slime {
-    JOUEUR, SLIME_ENEMY, PNJ
+    JOUEUR, SLIME_ENEMY,KILLER, PNJ
 };
 
 class Slime{
@@ -29,6 +29,8 @@ public:
     void Display(); // Affiche le sprite en cours
     void Shock(Collisionable *Obstacle);
     bool Collision(Collisionable *Obstacle);
+    void Check(Slime slime);
+    void KILL(Slime slime);
     void Die();
     Vector Launch();
     Vector Launch2();
