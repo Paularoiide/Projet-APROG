@@ -67,11 +67,12 @@ int main()
     cout << "niveau_affiche" << endl;*/
     // Test du Slime
     Vector pos_init = {200,200};
-    Slime slime = Slime(role_Slime::SLIME_ENEMY, pos_init);
+    Slime slime = Slime(role_Slime::KILLER, pos_init);
 
     slime.Display();
     while (true){
-      slime.Lancer(/*niveau1.elements*/);
+      Vector dir = slime.Launch();
+      slime.Lancer(dir/*niveau1.elements*/);
     }
 
 

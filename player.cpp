@@ -174,8 +174,8 @@ void Slime::Die(){
     speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
-void Slime::Lancer(/*vector<Element*>& obstacles*/){
-    speed = Launch();
+void Slime::Lancer(Vector pulse){
+    speed = pulse;
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
 
         //******** Display ************
@@ -228,4 +228,6 @@ void Slime::Check(Slime slime){
 
 void Slime::KILL(Slime slime){
     role = role_Slime::KILLER;
+    Vector dif = slime.pos - pos;
+    Lancer(dif*2);
 }
