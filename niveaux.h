@@ -11,20 +11,18 @@ using namespace std;
 #include "vector.h"
 #include "globals.h"
 
-class Element {// polymorphisme pour les différents objets
+class Element {
 public:
-    virtual void afficher() = 0; // méthode virtuelle pure
-    virtual ~Element() {}       // destructeur virtuel pour éviter les fuites
+    virtual void afficher() = 0;
+    virtual ~Element() {}
 };
 
-class Collisionable : public Element{
-public :
+class Collisionable : public Element {
+public:
     Vector Point1;
     Vector Point2;
     virtual void afficher() override = 0;
-
 };
-
 
 class Mur : public Collisionable {
 public:
@@ -33,8 +31,6 @@ public:
     void afficher() override;
 };
 
-// mur, tel que la partie derrière le mur (sens trigo depuis le point 1 vers le point 2)
-// est inaccessible et noircie
 class Bordure : public Collisionable {
 public:
     Bordure(Vector PointA, Vector PointB);
@@ -43,13 +39,12 @@ public:
 
 class Boite : public Element {
 public:
-    Vector Point1;// coin inférieur Gauche
-    Vector Point2;// coins supérieur droit
+    Vector Point1;
+    Vector Point2;
     void afficher() override {
         cout << "Boite" << endl;
     }
 };
-
 
 class Slime;
 
@@ -63,10 +58,8 @@ public:
     void afficher() override {
         cout << "Pique" << endl;
     }
-
     bool Collision(Slime *slime);
 };
-
 
 class NiveauTextuel {
 public:
@@ -78,23 +71,33 @@ public:
     ~NiveauTextuel();
     void detruire();
 };
+
 NiveauTextuel ouvrir_niveau(string nom_fichier);
 
-
-
-class Niveau{
+class Niveau {
 public:
-    std::vector<unique_ptr<Element>> elements;
-    std::vector<unique_ptr<Collisionable>> collisionables;
+    std::vector<std::unique_ptr<Element>> elements;
+    std::vector<std::unique_ptr<Collisionable>> collisionables;
     int nbElem;
 
-    ~Niveau(); // Pour supprimer les pointeurs
+    // Constructeur par défaut
+    Niveau() : nbElem(0) {}
 
-    void ajouterElement(unique_ptr<Element> obj);
+    // Supprimer le constructeur de copie et l'opérateur d'affectation
+    Niveau(const Niveau&) = delete;
+    Niveau& operator=(const Niveau&) = delete;
+
+    // Déplacer le constructeur et l'opérateur d'affectation
+    Niveau(Niveau&&) = default;
+    Niveau& operator=(Niveau&&) = default;
+
+    ~Niveau() = default;
+
+    void ajouterElement(std::unique_ptr<Element> obj);
     void remplir_niveau(NiveauTextuel texte);
     void afficher();
 };
 
+
 template<typename Base, typename T>
 inline bool instanceof(const T *ptr);
-
