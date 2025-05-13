@@ -8,7 +8,6 @@ Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
 }
 
 void Slime::Display(){
-    cout << "display Slime" << endl;
     putSprite(pos.x,pos.y,sprite.i,sprite.j);
     sprite.i += 1;
     sprite.i = sprite.i%6;
@@ -111,9 +110,10 @@ Vector Slime::Launch2(){
 }
 
 void Slime::Die(){
+    speed = 0;
     cout<<"Je suis mort"<< endl;
 }
-void Slime::Lancer(vector<Element*>& obstacles){
+void Slime::Lancer(){
     speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
 

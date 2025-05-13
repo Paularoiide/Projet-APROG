@@ -1,0 +1,2 @@
+Bordure,"Point1.x":0,"Point1.y":10,"Point2.x":W,"Point2.y":10
+Mur,Point1:(10,20) Point2:(20,H-10)
