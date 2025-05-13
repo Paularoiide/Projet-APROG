@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <regex>
+#include <memory>
 using namespace std;
 #include "vector.h"
 #include "globals.h"
@@ -83,17 +84,17 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 
 class Niveau{
 public:
-    vector<Element*> elements;
-    vector<Collisionable*> collisionables;
+    std::vector<unique_ptr<Element>> elements;
+    std::vector<unique_ptr<Collisionable>> collisionables;
     int nbElem;
 
     ~Niveau(); // Pour supprimer les pointeurs
 
-    void ajouterElement(Element* obj);
+    void ajouterElement(unique_ptr<Element> obj);
     void remplir_niveau(NiveauTextuel texte);
-
     void afficher();
-
 };
 
+template<typename Base, typename T>
+inline bool instanceof(const T *ptr);
 

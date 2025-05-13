@@ -25,15 +25,19 @@ int WIDTH = 512;
 int HEIGHT = 512;
 double dt=0.01;
 
-Niveau generer_niveau(string chemin_niveau) {
-    NiveauTextuel texte;
-    texte = ouvrir_niveau(chemin_niveau);
+Niveau generer_niveau(std::string chemin_niveau) {
+    NiveauTextuel texte = ouvrir_niveau(chemin_niveau);
     Niveau niveauActuel;
     niveauActuel.remplir_niveau(texte);
+    cout << "niveau rempli" << endl;
+    cout << "quelque test à l'interieur de generer_niveau" << endl;
+            cout << "analyse du niveau :"<< endl;
+    for(int i=0;i<niveauActuel.elements.size();i++) {
+        cout << "Type de l'objet : " << typeid(*niveauActuel.elements[i]).name() << endl;
+    }
     cout<<"fin de la fonction generer_niveau"<<endl;
-    return(niveauActuel);
+    return niveauActuel;
 }
-
 void menu(const int width,const int height) {
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
@@ -73,6 +77,8 @@ int main()
     //cout << "Répertoire de travail courant : " << std::filesystem::current_path() << endl;
     Niveau niveau1 = generer_niveau("../Projet-APROG/build/assets/Niveaux/Intro.txt");
     cout << "niveau_genere" << endl;
+    cout << "réalisations de tests sur le niveau." << endl;
+    cout << "Test avec typeid(*elements[i]).name(). Type de l'objet niveau1.elements[0] : " << typeid(*niveau1.elements[0]).name() << endl;
     niveau1.afficher();
     cout << "niveau_affiche" << endl;
 

@@ -9,7 +9,7 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
     Point2 = PointB;
     epaisseur = epais;
 }
-void Mur::afficher(){
+void Mur::afficher() {
     cout << "affichage Mur" << endl;
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
@@ -75,7 +75,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
 
     // Compter les lignes
     int nbLignes = count(istreambuf_iterator<char>(f),
-                         istreambuf_iterator<char>(), '\n');
+                         istreambuf_iterator<char>(), '\n')+1;// convention locale : on ne met pas de ligne vide à la fin
     cout << "nombre de lignes :"<<nbLignes<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
@@ -103,11 +103,13 @@ Niveau::~Niveau() {
     }
 }
 
-void Niveau::ajouterElement(Element* obj) {
-    elements.push_back(obj);
+
+
+void Niveau::ajouterElement(unique_ptr<Element> obj) {
+    elements.push_back(move(obj));
 }
 void Niveau::remplir_niveau(NiveauTextuel texte) {
-    for (size_t i = 1; i < texte.lignes.size(); ++i) {
+    for (size_t i = 1; i < texte.lignes.size(); i++) {// on commence à 1 pour ne pas avoir le commentaire de première ligne
         string ligne = texte.lignes[i];
         stringstream s(ligne);
         vector<string> row;
@@ -138,10 +140,10 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         for(string mot:row) {row_explicite = row_explicite+ "|" + mot;}
         cout << "row : " << row_explicite << endl;
         if(row[0]=="Bordure") {
-            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << row[3] << ", " << row[4] << endl;
+            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
             Vector Point1 = {static_cast<double>(stoi(row[1])),static_cast<double>(stoi(row[2]))};
             Vector Point2 = {static_cast<double>(stoi(row[3])),static_cast<double>(stoi(row[4]))};
-            Element* bord = new Bordure(Point1, Point2);
+            Bordure* bord = new Bordure(Point1, Point2);
             elements.push_back(bord);
         } else if (row[0]=="Mur") {
             if (row.size() < 6) {
@@ -153,18 +155,47 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             Vector Point2 = {static_cast<double>(stoi(row[3])),static_cast<double>(stoi(row[4]))};
             int epaiss = stoi(row[5]);
             cout << "epaisseur du mur : "<<epaiss<<endl;
-            Element* mur = new Mur(Point1, Point2,epaiss);
+            Mur* mur = new Mur(Point1, Point2,epaiss);
             elements.push_back(mur);
         } else {
             cerr << "erreur de lecture : impossible d'identifier l'élément de type '"<<
                 row[0]<<"' à la ligne "<<ligne<< ", n° : "<<i<<endl;
         }
+        cout << "element lu."<<endl;
     }
     cout << "fin de construction du niveau"<<endl;
+    cout << "analyse du niveau :"<< endl;
+    for(int i=0;i<elements.size();i++) {
+        cout << "Type de l'objet : " << typeid(*elements[i]).name() << endl;
+    }
 }
+
+template<typename Base, typename T>
+inline bool instanceof(const T *ptr) {
+    return dynamic_cast<const Base*>(ptr) != nullptr;
+}
+
 void Niveau::afficher() {
     for (Element* obj : elements) {
         cout << "affichage d'un élément"<<endl;
+        cout << "Test avec typeid(*elements[i]).name(). Type de l'objet : " << typeid(*obj).name() << endl;
+        if(instanceof<Element>(obj)) {
+            cout << "element est de type Element" << endl;
+        } else {cout << "element n'est pas de type element" << endl;}
+        if (Mur* mur = dynamic_cast<Mur*>(obj)) {
+
+            cout <<"2e test. C'est un Mur" << endl;
+        } else { cout << "deuxième test.  Pas un Mur" << endl;}
+        if (Bordure* bord = dynamic_cast<Bordure*>(obj)) {
+
+                cout <<"2e test. C'est une Bordure" << endl;
+        } else { cout << "deuxième test.  Pas une Bordure" << endl;}
+        if(instanceof<Collisionable>(obj)) {
+            cout << "element est de type Collisionable" << endl;
+        } else {cout << "element n'est pas de type Collisionable" << endl;}
+        if(instanceof<Mur>(obj)) {
+            cout << "element est de type Mur" << endl;
+        } else {cout << "element n'est pas de type Mur" << endl;}
         if (obj) { // Vérifiez que le pointeur n'est pas nul
             obj->afficher();
         } else {
