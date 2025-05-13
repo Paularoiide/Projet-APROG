@@ -4,35 +4,95 @@
 
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
-    role_Slime role = givenRole;
+    role = givenRole;
 }
 
-void Slime::Display(){
-    cout << "display Slime" << endl;
-    putSprite(pos.x,pos.y,sprite.i,sprite.j);
-    sprite.i += 1;
-    sprite.i = sprite.i%6;
-    double angle = atan2(speed.y, speed.x); // y, x
-    double deg = angle * 180.0 / M_PI; // Conversion en degr
+struct DirectionRange {
+    double minAngle;
+    double maxAngle;
+    int spriteJ;
+};
+
+
+void Slime::Display() {
+    sprite.i = (sprite.i + 1) % 6; // Animation commune
+
+    double angle = atan2(speed.y, speed.x);
+    double deg = angle * 180.0 / M_PI;
     if (deg < 0)
-        deg += 360; // Pour avoir un angle entre 0 et 360
-    if (deg >= 337.5 || deg < 22.5)
-        sprite.j = 2;
-    else if (deg >= 22.5 && deg < 67.5)
-        sprite.j = 8;
-    else if (deg >= 67.5 && deg < 112.5)
-        sprite.j = 4;
-    else if (deg >= 112.5 && deg < 157.5)
-        sprite.j = 7;
-    else if (deg >= 157.5 && deg < 202.5)
-        sprite.j = 1;
-    else if (deg >= 202.5 && deg < 247.5)
-        sprite.j = 5;
-    else if (deg >= 247.5 && deg < 292.5)
-        sprite.j = 3;
-    else
-        sprite.j = 6;
+        deg += 360;
+
+    if (role == role_Slime::JOUEUR) {
+
+        DirectionRange directions[9] = {
+            {337.5, 360.0, 2},
+            {0.0,   22.5,  2},
+            {22.5,  67.5,  8},
+            {67.5,  112.5, 4},
+            {112.5, 157.5, 7},
+            {157.5, 202.5, 1},
+            {202.5, 247.5, 5},
+            {247.5, 292.5, 3},
+            {292.5, 337.5, 6}
+        };
+        // Mise à jour sprite.j selon direction exacte (8 directions)
+        for (const auto& dir : directions) {
+            if (deg >= dir.minAngle && deg < dir.maxAngle) {
+                sprite.j = dir.spriteJ;
+                break;
+            }
+        }
+        putSprite(srcPath("slimebuddy.png"), pos.x, pos.y, sprite.i, sprite.j);
+    }
+
+    else if (role == role_Slime::SLIME_ENEMY) {
+        // Droite, Haut, Gauche, Bas
+        DirectionRange directions[5] = {
+            {315.0, 360.0, 3}, // Droite
+            {0.0,   45.0,  3}, // Droite
+            {45.0,  135.0, 0}, // Haut
+            {135.0, 225.0, 2}, // Gauche
+            {225.0, 315.0, 1}  // Bas
+        };
+
+        for (const auto& dir : directions) {
+            if (deg >= dir.minAngle && deg < dir.maxAngle) {
+                sprite.j = dir.spriteJ;
+                break;
+            }
+        }
+        if (norm2(speed) > 0.5){
+            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
+        else {
+            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
+    }
+    else if (role == role_Slime::KILLER) {
+        // Droite, Haut, Gauche, Bas
+        DirectionRange directions[5] = {
+            {315.0, 360.0, 3}, // Droite
+            {0.0,   45.0,  3}, // Droite
+            {45.0,  135.0, 0}, // Haut
+            {135.0, 225.0, 2}, // Gauche
+            {225.0, 315.0, 1}  // Bas
+        };
+
+        for (const auto& dir : directions) {
+            if (deg >= dir.minAngle && deg < dir.maxAngle) {
+                sprite.j = dir.spriteJ;
+                break;
+            }
+        }
+        if (norm2(speed) > 0.5){
+            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
+        else {
+            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
+    }
 }
+
 void Slime::Move(){
     pos = pos +speed * dt;
 }
@@ -111,9 +171,10 @@ Vector Slime::Launch2(){
 }
 
 void Slime::Die(){
+    speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
-void Slime::Lancer(vector<Element*>& obstacles){
+void Slime::Lancer(/*vector<Element*>& obstacles*/){
     speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
 
@@ -126,13 +187,13 @@ void Slime::Lancer(vector<Element*>& obstacles){
             noRefreshEnd();
             milliSleep(75);
         }
-        for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
-                if (Collision(d)) {
-                    Shock(d);
-                }
-            }
-        }
+        //for (int i = 0; i < obstacles.size(); i++) {
+        //    if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+        //        if (Collision(d)) {
+        //            Shock(d);
+        //        }
+        //    }
+        //}
         Move();
         Vector acc = Acceleration(speed);
         Accelerate(acc);
@@ -141,4 +202,30 @@ void Slime::Lancer(vector<Element*>& obstacles){
         }
     }
     cout << "End" << endl;
+}
+
+void Slime::Check(Slime slime){
+    DirectionRange directions[4] = {
+        {315.0, 45.0, 3}, // Droite
+        {45.0,  135.0, 0}, // Haut
+        {135.0, 225.0, 2}, // Gauche
+        {225.0, 315.0, 1}  // Bas
+    };
+    for (const auto& dir : directions) {
+        if (sprite.j == dir.spriteJ) {
+            Vector dif = slime.pos - pos;
+            double angle = atan2(dif.y, dif.x);
+            double deg = angle * 180.0 / M_PI;
+            if (deg < 0)
+                deg += 360;
+            if (angle <= dir.maxAngle && angle >= dir.minAngle){
+                KILL(slime);
+            }
+            break;
+        }
+    }
+}
+
+void Slime::KILL(Slime slime){
+    role = role_Slime::KILLER;
 }
