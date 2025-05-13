@@ -8,7 +8,7 @@ Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
 }
 
 void Slime::Display(){
-    putSprite(pos.x,pos.y,sprite.i,sprite.j);
+    putSprite(srcPath("slimebuddy.png"),pos.x,pos.y,sprite.i,sprite.j);
     sprite.i += 1;
     sprite.i = sprite.i%6;
     double angle = atan2(speed.y, speed.x); // y, x
@@ -110,7 +110,7 @@ Vector Slime::Launch2(){
 }
 
 void Slime::Die(){
-    speed = 0;
+    speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
 void Slime::Lancer(){
@@ -126,13 +126,13 @@ void Slime::Lancer(){
             noRefreshEnd();
             milliSleep(75);
         }
-        for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
-                if (Collision(d)) {
-                    Shock(d);
-                }
-            }
-        }
+        //for (int i = 0; i < obstacles.size(); i++) {
+        //    if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+        //        if (Collision(d)) {
+        //            Shock(d);
+        //        }
+        //    }
+        //}
         Move();
         Vector acc = Acceleration(speed);
         Accelerate(acc);

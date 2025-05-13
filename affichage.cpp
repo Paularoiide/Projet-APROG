@@ -20,10 +20,10 @@ void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas) {
     }
 }
 
-AlphaColor* getSprite(int i, int j, int w1, int h1) {
+AlphaColor* getSprite(const std::string& path, int i, int j, int w1, int h1) {
     AlphaColor* C; // Image complète
     int w, h;      // Largeur et hauteur de l'image
-    loadAlphaColorImage(srcPath("slimebuddy.png"), C, w, h);
+    loadAlphaColorImage(path, C, w, h);
 
     AlphaColor* D = new AlphaColor[w1 * h1]; // Allocation pour le sprite extrait
 
@@ -38,7 +38,8 @@ AlphaColor* getSprite(int i, int j, int w1, int h1) {
     return D; // Pointeur vers la zone extraite (sprite)
 }
 
-void putSprite(double x, double y,int i, int j, int w1, int h1){
-    AlphaColor* D = getSprite(i,j,w1,h1);
-    putAlphaColorImage(x,y,D,w1,h1);
+void putSprite(const std::string& path, double x, double y, int i, int j, int w1, int h1){
+    AlphaColor* D = getSprite(path, i, j, w1, h1);
+    putAlphaColorImage(x, y, D, w1, h1);
 }
+

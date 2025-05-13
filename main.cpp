@@ -58,13 +58,6 @@ int main()
     //menu(WIDTH,HEIGHT);
     //Afichage Test sprite
     int j = 0;
-    while (false){
-        clearWindow();
-        putSprite(100,50,j,1);
-        milliSleep(100);
-        j+=1;
-        j = j%6;
-    }
     // Test du Slime
     Vector pos_init = {200,200};
     Slime slime = Slime(role_Slime::JOUEUR, pos_init);
