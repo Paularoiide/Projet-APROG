@@ -1,6 +1,7 @@
 #include "player.h"
 #include "physics.h"
 #include "affichage.h"
+#include "vector.h"
 
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
@@ -101,7 +102,6 @@ void Slime::Accelerate(Vector a){
     speed = speed + a * dt;
 }
 
-
 Vector Slime::Launch(){
     cout << "Proceed to launch" << endl;
     int mouse_x = 0, mouse_y = 0;
@@ -118,7 +118,7 @@ void Slime::Shock(Collisionable *obstacle) {
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector normal = (pos - origin)/norm2(pos - origin);
     speed = -1* speed;
-    double angle_normal = angle(speed, normal); // Angle entre la normale et la vitesse
+    double angle_normal = angle_entre(speed, normal); // Angle entre la normale et la vitesse
     speed = rotate(speed, -2 * angle_normal);
 }
 
@@ -140,9 +140,6 @@ bool Slime::Collision(Collisionable *obstacle){
     }
     return (norm2(d) <= radius);
 }
-
-
-
 
 Vector Slime::Launch2(){
     Vector center = {50.,50.}; // Centre de l'interface de direction
@@ -174,6 +171,7 @@ void Slime::Die(){
     speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
+
 void Slime::Lancer(/*vector<Element*>& obstacles*/){
     speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {

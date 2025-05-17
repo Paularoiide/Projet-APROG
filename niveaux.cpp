@@ -20,7 +20,7 @@ Bordure::Bordure(Vector PointA, Vector PointB) {
 }
 void Bordure::afficher(){
     cout << "affichage Bordure" << endl;
-    Vector coins[4] = {{0.,0.},{static_cast<double>(WIDTH),0.},{static_cast<double>(WIDTH),static_cast<double>(HEIGHT)},{0.,static_cast<double>(HEIGHT)}};
+    /*Vector coins[4] = {{0.,0.},{static_cast<double>(WIDTH),0.},{static_cast<double>(WIDTH),static_cast<double>(HEIGHT)},{0.,static_cast<double>(HEIGHT)}};
     double distances[8] = {distance(coins[0],Point1),distance(coins[0],Point2),
                            distance(coins[1],Point1),distance(coins[1],Point2),
                            distance(coins[2],Point1),distance(coins[2],Point2),
@@ -32,11 +32,19 @@ void Bordure::afficher(){
         }
     }
     int epaisseurNecessaire = max;
+
     Vector Point3 = Point2 + rotate((Point2-Point1)*epaisseurNecessaire/distance(Point2,Point1),90);
-    Vector Point4 = Point3 + Point1 - Point2;
+    Vector Point4 = Point3 + Point1 - Point2;*/
+
+
+    Vector Point3 = intersection_bords(Point2,fmod((angle_horiz(Point2-Point1)+90.),360.));
+    Vector Point4 = intersection_bords(Point1,fmod((angle_horiz(Point2-Point1)+90.),360.));
     int lesX[4] = {static_cast<int>(Point1.x), static_cast<int>(Point2.x), static_cast<int>(Point3.x), static_cast<int>(Point4.x)};
     int lesY[4] = {static_cast<int>(Point1.y), static_cast<int>(Point2.y), static_cast<int>(Point3.y), static_cast<int>(Point4.y)};
-    fillPoly(lesX,lesY,4,BLACK);
+    cout << "points du polygone calculé : " << Point1.x << "|" << Point1.y <<
+        "   " << Point2.x << "|" << Point2.y << "   "<< Point3.x << "|" << Point3.y
+         << "   "<< Point4.x << "|" << Point4.y << "   " << endl;
+    fillPoly(lesX,lesY,4,BLUE);
 }
 
 Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
@@ -175,13 +183,13 @@ inline bool instanceof(const T *ptr) {
 
 void Niveau::afficher() {
     for (auto& obj : elements) { // Utilisez une référence pour éviter de copier le unique_ptr
-        cout << "affichage d'un élément" << endl;
+        /*cout << "affichage d'un élément" << endl;
                 cout << "Test avec typeid(*obj).name(). Type de l'objet : " << typeid(*obj).name() << endl;
-
+*/
         // Obtenez le pointeur brut pour utiliser dynamic_cast
         Element* rawPtr = obj.get();
 
-        if (dynamic_cast<Mur*>(rawPtr)) {
+        /*if (dynamic_cast<Mur*>(rawPtr)) {
             cout << "2e test. C'est un Mur" << endl;
         } else {
             cout << "deuxième test. Pas un Mur" << endl;
@@ -197,7 +205,7 @@ void Niveau::afficher() {
             cout << "element est de type Collisionable" << endl;
         } else {
             cout << "element n'est pas de type Collisionable" << endl;
-        }
+        }*/
 
         if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
             rawPtr->afficher();
