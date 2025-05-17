@@ -174,11 +174,13 @@ void Slime::Die(){
     speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
+void Slime::Lancer(vector<unique_ptr<Element>>& obstacles) {
+    Vector pulse = Launch();
+    Lancer(pulse,obstacles);
+}
 
-void Slime::Lancer(/*vector<Element*>& obstacles*/){
-    speed = Launch();
+void Slime::Lancer(Vector speed,vector<unique_ptr<Element>>& obstacles){
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
-
         //******** Display ************
 
         if ((timeStep%freqDisplay)==0){
@@ -196,8 +198,8 @@ void Slime::Lancer(/*vector<Element*>& obstacles*/){
         //    }
         //}
         Move();
-        Vector acc = Acceleration(speed);
-        Accelerate(acc);
+        Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
+        Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
         if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
             break;
         }
@@ -205,7 +207,7 @@ void Slime::Lancer(/*vector<Element*>& obstacles*/){
     cout << "End" << endl;
 }
 
-void Slime::Check(Slime slime){
+void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
     DirectionRange directions[4] = {
         {315.0, 45.0, 3}, // Droite
         {45.0,  135.0, 0}, // Haut
@@ -220,15 +222,15 @@ void Slime::Check(Slime slime){
             if (deg < 0)
                 deg += 360;
             if (angle <= dir.maxAngle && angle >= dir.minAngle){
-                KILL(slime);
+                KILL(slime,obstacles);
             }
             break;
         }
     }
 }
 
-void Slime::KILL(Slime slime){
+void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
     role = role_Slime::KILLER;
     Vector dif = slime.pos - pos;
-    Lancer(dif*2);
+    Lancer(dif*2,obstacles);
 }

@@ -78,6 +78,7 @@ int main()
     slime.Display();
     while (true){
       Vector dir = slime.Launch();
+        // désormais inclus dans Lancer
       slime.Lancer(dir,niveau1.elements);
     }
 

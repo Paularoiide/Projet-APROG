@@ -18,7 +18,6 @@ Vector operator-(Vector a, Vector b){
 }
 double norm2(Vector a){
     return a.x*a.x + a.y*a.y;
-
 }
 Vector operator*(Vector a, double lambda){
     Vector result;
