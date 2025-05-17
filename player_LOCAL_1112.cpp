@@ -141,9 +141,6 @@ bool Slime::Collision(Collisionable *obstacle){
     return (norm2(d) <= radius);
 }
 
-
-
-
 Vector Slime::Launch2(){
     Vector center = {50.,50.}; // Centre de l'interface de direction
     Vector arrow = {50.,40.}; // Position initiale de la flèche
@@ -229,6 +226,4 @@ void Slime::Check(Slime slime){
 
 void Slime::KILL(Slime slime){
     role = role_Slime::KILLER;
-    Vector dif = slime.pos - pos;
-    Lancer(dif*2);
 }

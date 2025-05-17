@@ -141,9 +141,6 @@ bool Slime::Collision(Collisionable *obstacle){
     return (norm2(d) <= radius);
 }
 
-
-
-
 Vector Slime::Launch2(){
     Vector center = {50.,50.}; // Centre de l'interface de direction
     Vector arrow = {50.,40.}; // Position initiale de la flèche
@@ -175,8 +172,11 @@ void Slime::Die(){
     cout<<"Je suis mort"<< endl;
 }
 
-void Slime::Lancer(/*vector<Element*>& obstacles*/){
+/*void Slime::Lancer(Vector pulse){
     speed = Launch();
+}*/
+void Slime::Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles){
+    speed = pulse;
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
 
         //******** Display ************
@@ -188,13 +188,13 @@ void Slime::Lancer(/*vector<Element*>& obstacles*/){
             noRefreshEnd();
             milliSleep(75);
         }
-        //for (int i = 0; i < obstacles.size(); i++) {
-        //    if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
-        //        if (Collision(d)) {
-        //            Shock(d);
-        //        }
-        //    }
-        //}
+        for (int i = 0; i < obstacles.size(); i++) {
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
+                if (Collision(d)) {
+                    Shock(d);
+                }
+            }
+        }
         Move();
         Vector acc = Acceleration(speed);
         Accelerate(acc);
@@ -205,7 +205,7 @@ void Slime::Lancer(/*vector<Element*>& obstacles*/){
     cout << "End" << endl;
 }
 
-void Slime::Check(Slime slime){
+void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
     DirectionRange directions[4] = {
         {315.0, 45.0, 3}, // Droite
         {45.0,  135.0, 0}, // Haut
@@ -220,15 +220,16 @@ void Slime::Check(Slime slime){
             if (deg < 0)
                 deg += 360;
             if (angle <= dir.maxAngle && angle >= dir.minAngle){
-                KILL(slime);
+                KILL(slime, obstacles);
             }
             break;
         }
     }
 }
 
-void Slime::KILL(Slime slime){
+// attaque le Slime cible
+void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
     role = role_Slime::KILLER;
     Vector dif = slime.pos - pos;
-    Lancer(dif*2);
+    Lancer(dif*2, obstacles);
 }
