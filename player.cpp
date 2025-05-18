@@ -142,8 +142,6 @@ bool Slime::Collision(Collisionable *obstacle){
 }
 
 
-
-
 Vector Slime::Launch2(){
     Vector center = {50.,50.}; // Centre de l'interface de direction
     Vector arrow = {50.,40.}; // Position initiale de la flèche
@@ -174,13 +172,14 @@ void Slime::Die(){
     speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
-void Slime::Lancer(vector<unique_ptr<Element>>& obstacles) {
+int Slime::Lancer(vector<unique_ptr<Element>>& obstacles) {
     Vector pulse = Launch();
-    Lancer(pulse,obstacles);
+    return(Lancer(pulse,obstacles));
 }
 
-void Slime::Lancer(Vector speed,vector<unique_ptr<Element>>& obstacles){
+int Slime::Lancer(Vector speed,vector<unique_ptr<Element>>& obstacles){
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
+        cout << "pas de temps " << timeStep << endl;
         //******** Display ************
 
         if ((timeStep%freqDisplay)==0){
@@ -197,14 +196,16 @@ void Slime::Lancer(Vector speed,vector<unique_ptr<Element>>& obstacles){
         //        }
         //    }
         //}
+        cout << "vit avant mvt" << speed.x << "|" << speed.y << endl;
         Move();
         Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
         Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
         if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
-            break;
+            return 1;
         }
     }
-    cout << "End" << endl;
+    cout << "End - launch durated for too long" << endl;
+    return 0;
 }
 
 void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){

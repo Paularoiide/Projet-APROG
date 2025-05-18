@@ -79,7 +79,7 @@ int main()
     while (true){
       Vector dir = slime.Launch();
         // désormais inclus dans Lancer
-      slime.Lancer(dir,niveau1.elements);
+      cout << slime.Lancer(dir,niveau1.elements)<<endl;
     }
 
     cout << "Slime !" << endl;
