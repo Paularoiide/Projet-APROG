@@ -117,9 +117,7 @@ Vector Slime::Launch(){
 void Slime::Shock(Collisionable *obstacle) {
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector normal = (pos - origin)/norm2(pos - origin);
-    speed = -1* speed;
-    double angle_normal = angle_entre(speed, normal); // Angle entre la normale et la vitesse
-    speed = rotate(speed, -2 * angle_normal);
+    speed = speed - 2 * (ps(speed, normal)) * normal;   // réflexion vectorielle
 }
 
 bool Slime::Collision(Collisionable *obstacle){
@@ -192,13 +190,13 @@ void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
             noRefreshEnd();
             milliSleep(75);
         }
-/*        for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+        for (int i = 0; i < obstacles.size(); i++) {
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
                 if (Collision(d)) {
                     Shock(d);
                 }
             }
-        }*/
+        }
         Move();
         Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
         Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
@@ -224,7 +222,18 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
             if (deg < 0)
                 deg += 360;
             if (deg <= dir.maxAngle && deg >= dir.minAngle){
-                KILL(slime,obstacles);
+                bool kill = true;
+                /*Vector v;
+                for (int i =0; i<100; i++){
+                    v = pos + dif * i/100;
+                    for (int i = 0; i < obstacles.size(); i++) {
+                        if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
+                            if (v in d) {
+                                kill = false }}}
+                }*/
+                if (kill){
+                    KILL(slime,obstacles);
+                }
             }
             break;
         }

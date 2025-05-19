@@ -38,8 +38,8 @@ AlphaColor* getSprite(const std::string& path, int i, int j, int w1, int h1) {
     return D; // Pointeur vers la zone extraite (sprite)
 }
 
-void putSprite(const std::string& path, double x, double y, int i, int j, int w1, int h1){
+void putSprite(const std::string& path, double x, double y, int i, int j, int w1, int h1) {
     AlphaColor* D = getSprite(path, i, j, w1, h1);
-    putAlphaColorImage(x, y, D, w1, h1);
+    putAlphaColorImage(x - w1 / 2.0, y - h1 / 2.0, D, w1, h1);
 }
 

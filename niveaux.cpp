@@ -14,6 +14,11 @@ void Mur::afficher() {
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
 
+bool Mur::is_in(Vector v) {
+    Vector proj = projection(v, Point1, Point2);
+    return norm2(v - proj) < epaisseur;
+}
+
 Bordure::Bordure(Vector PointA, Vector PointB) {
     Point1 = PointA;
     Point2 = PointB;
@@ -45,6 +50,10 @@ void Bordure::afficher(){
         "   " << Point2.x << "|" << Point2.y << "   "<< Point3.x << "|" << Point3.y
          << "   "<< Point4.x << "|" << Point4.y << "   " << endl;
     fillPoly(lesX,lesY,4,BLUE);
+}
+
+bool Bordure::is_in(Vector v) {
+    return false;
 }
 
 Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
