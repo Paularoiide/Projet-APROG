@@ -174,12 +174,14 @@ void Slime::Die(){
     speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
-void Slime::Lancer(vector<unique_ptr<Element>>& obstacles) {
-    Vector pulse = Launch();
-    Lancer(pulse,obstacles);
-}
 
-void Slime::Lancer(Vector speed,vector<unique_ptr<Element>>& obstacles){
+//void Slime::Lancer(vector<unique_ptr<Element>>& obstacles) {
+//    Vector pulse = Launch();
+//    Lancer(pulse,obstacles);
+//}
+
+void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
+    speed = pulse;
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
         //******** Display ************
 
@@ -190,13 +192,13 @@ void Slime::Lancer(Vector speed,vector<unique_ptr<Element>>& obstacles){
             noRefreshEnd();
             milliSleep(75);
         }
-        //for (int i = 0; i < obstacles.size(); i++) {
-        //    if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
-        //        if (Collision(d)) {
-        //            Shock(d);
-        //        }
-        //    }
-        //}
+/*        for (int i = 0; i < obstacles.size(); i++) {
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+                if (Collision(d)) {
+                    Shock(d);
+                }
+            }
+        }*/
         Move();
         Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
         Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
@@ -221,7 +223,7 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
             double deg = angle * 180.0 / M_PI;
             if (deg < 0)
                 deg += 360;
-            if (angle <= dir.maxAngle && angle >= dir.minAngle){
+            if (deg <= dir.maxAngle && deg >= dir.minAngle){
                 KILL(slime,obstacles);
             }
             break;
