@@ -22,6 +22,7 @@ public:
     Vector Point1;
     Vector Point2;
     virtual void afficher() override = 0;
+    virtual bool is_in(Vector v) = 0;
 };
 
 class Mur : public Collisionable {
@@ -29,6 +30,7 @@ public:
     int epaisseur;
     Mur(Vector PointA, Vector PointB, int epais);
     void afficher() override;
+    bool is_in(Vector v) override;
 };
 
 class Porte : public Collisionable {
@@ -42,6 +44,7 @@ class Bordure : public Collisionable {
 public:
     Bordure(Vector PointA, Vector PointB);
     void afficher() override;
+    bool is_in(Vector v) override;
 };
 
 class Boite : public Element {

@@ -164,10 +164,10 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
 
 int main()
 {
-    int WIDTH,HEIGHT;
+    int width,height;
     Color *C;                                           // load color image (Color array)
-    loadColorImage(srcPath("lab1.png"),C,WIDTH,HEIGHT);
-    Background background = {C,WIDTH,HEIGHT};
+    loadColorImage(srcPath("lab1.png"),C,width,height);
+    Background background = {C,width,height};
     Window principale = openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
     //Affichage du menu
     // creation du niveau
@@ -175,19 +175,11 @@ int main()
     string repert_niv = "../Projet-APROG/build/assets/Niveaux/";
     menu(principale,WIDTH,HEIGHT,repert_niv);
     clearWindow();
-
-    //Niveau niveau1;
-    //cout << "Répertoire de travail courant : " << std::filesystem::current_path() << endl;
-    Niveau niveau1 = generer_niveau(repert_niv + "Intro.txt");
+    Niveau niveau1 = generer_niveau(repert_niv + "Lab1.txt");
     cout << "niveau_genere" << endl;
-    //cout << "réalisations de tests sur le niveau." << endl;
-    //cout << "Test avec typeid(*elements[i]).name(). Type de l'objet niveau1.elements[0] : " << typeid(*niveau1.elements[0]).name() << endl;
-    niveau1.afficher();
     cout << "niveau_affiche" << endl;
-    // Test du Slime
-    Vector pos_init = {200,200};
+    Vector pos_init = {50,150};
     Slime slime = Slime(role_Slime::JOUEUR, pos_init);
-
     Resetscreen(niveau1.elements, background);
     slime.Display();
 

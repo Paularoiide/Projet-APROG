@@ -225,7 +225,18 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
             if (deg < 0)
                 deg += 360;
             if (deg <= dir.maxAngle && deg >= dir.minAngle){
-                KILL(slime,obstacles);
+                bool kill = true;
+                /*Vector v;
+                for (int i =0; i<100; i++){
+                    v = pos + dif * i/100;
+                    for (int i = 0; i < obstacles.size(); i++) {
+                        if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
+                            if (v in d) {
+                                kill = false }}}
+                }*/
+                if (kill){
+                    KILL(slime,obstacles);
+                }
             }
             break;
         }
