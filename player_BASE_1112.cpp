@@ -1,7 +1,6 @@
 #include "player.h"
 #include "physics.h"
 #include "affichage.h"
-#include "vector.h"
 
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
@@ -85,7 +84,12 @@ void Slime::Display() {
                 break;
             }
         }
-        putSprite(srcPath("Slime2_Attack_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        if (norm2(speed) > 0.5){
+            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
+        else {
+            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
     }
 }
 
@@ -97,32 +101,31 @@ void Slime::Accelerate(Vector a){
     speed = speed + a * dt;
 }
 
+
 Vector Slime::Launch(){
     cout << "Proceed to launch" << endl;
     int mouse_x = 0, mouse_y = 0;
     getMouse(mouse_x, mouse_y);
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
     Vector delta = mouse - pos;
-    Vector dir = delta / sqrt(norm2(delta));
-    double pulse = sqrt(norm2(delta)) * 8 / (static_cast<double>(WIDTH)); // Arbitrary formula
+    Vector dir = delta / norm2(delta);
+    double pulse = norm2(delta) * 5 / (static_cast<double>(WIDTH)); // Arbitrary formula
     Vector launch_vector = pulse * dir;
     return launch_vector;
 }
 
 void Slime::Shock(Collisionable *obstacle) {
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
-    Vector d = pos - origin;
-    Vector normal = d / sqrt(norm2(d)); // Vecteur normal unitaire
-
-    // Réflexion de la vitesse
-    speed = reflect(speed, normal);
+    Vector normal = (pos - origin)/norm2(pos - origin);
+    speed = -1* speed;
+    double angle_normal = angle(speed, normal); // Angle entre la normale et la vitesse
+    speed = rotate(speed, -2 * angle_normal);
 }
-
 
 bool Slime::Collision(Collisionable *obstacle){
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector d = pos - origin;
-    Vector normal = (d)/sqrt(norm2(d));
+    Vector normal = (d)/norm2(d);
 
     if(norm2(speed) != 0) {
         double t_min = -ps(speed,normal)/norm2(speed);
@@ -135,7 +138,7 @@ bool Slime::Collision(Collisionable *obstacle){
             t_true = t_min;
         d = d + speed * t_true;
     }
-    return (sqrt(norm2(d)) <= radius);
+    return (norm2(d) <= radius);
 }
 
 
@@ -171,37 +174,37 @@ void Slime::Die(){
     speed = {0,0};
     cout<<"Je suis mort"<< endl;
 }
-
-void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
-    speed = pulse;
+void Slime::Lancer(/*vector<Element*>& obstacles*/){
+    speed = Launch();
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
+
         //******** Display ************
 
         if ((timeStep%freqDisplay)==0){
             noRefreshBegin();
-            Resetscreen(obstacles);
+            clearWindow();
             Display();
             noRefreshEnd();
             milliSleep(75);
         }
-        for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) {
-                if (Collision(d)) {
-                    Shock(d);
-                }
-            }
-        }
+        //for (int i = 0; i < obstacles.size(); i++) {
+        //    if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i])) { // Vérification si collisionable
+        //        if (Collision(d)) {
+        //            Shock(d);
+        //        }
+        //    }
+        //}
         Move();
-        Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
-        Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
-        if (norm2(speed)<= 0.005){
+        Vector acc = Acceleration(speed);
+        Accelerate(acc);
+        if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
             break;
         }
     }
     cout << "End" << endl;
 }
 
-void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
+void Slime::Check(Slime slime){
     DirectionRange directions[4] = {
         {315.0, 45.0, 3}, // Droite
         {45.0,  135.0, 0}, // Haut
@@ -215,16 +218,14 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
             double deg = angle * 180.0 / M_PI;
             if (deg < 0)
                 deg += 360;
-            if (deg <= dir.maxAngle && deg >= dir.minAngle){
-                KILL(slime,obstacles);
+            if (angle <= dir.maxAngle && angle >= dir.minAngle){
+                KILL(slime);
             }
             break;
         }
     }
 }
 
-void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
+void Slime::KILL(Slime slime){
     role = role_Slime::KILLER;
-    Vector dif = slime.pos - pos;
-    Lancer(dif*2,obstacles);
 }

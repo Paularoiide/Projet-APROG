@@ -85,7 +85,12 @@ void Slime::Display() {
                 break;
             }
         }
-        putSprite(srcPath("Slime2_Attack_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        if (norm2(speed) > 0.5){
+            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
+        else {
+            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        }
     }
 }
 
@@ -103,26 +108,24 @@ Vector Slime::Launch(){
     getMouse(mouse_x, mouse_y);
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
     Vector delta = mouse - pos;
-    Vector dir = delta / sqrt(norm2(delta));
-    double pulse = sqrt(norm2(delta)) * 8 / (static_cast<double>(WIDTH)); // Arbitrary formula
+    Vector dir = delta / norm2(delta);
+    double pulse = norm2(delta) * 5 / (static_cast<double>(WIDTH)); // Arbitrary formula
     Vector launch_vector = pulse * dir;
     return launch_vector;
 }
 
 void Slime::Shock(Collisionable *obstacle) {
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
-    Vector d = pos - origin;
-    Vector normal = d / sqrt(norm2(d)); // Vecteur normal unitaire
-
-    // Réflexion de la vitesse
-    speed = reflect(speed, normal);
+    Vector normal = (pos - origin)/norm2(pos - origin);
+    speed = -1* speed;
+    double angle_normal = angle_entre(speed, normal); // Angle entre la normale et la vitesse
+    speed = rotate(speed, -2 * angle_normal);
 }
-
 
 bool Slime::Collision(Collisionable *obstacle){
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector d = pos - origin;
-    Vector normal = (d)/sqrt(norm2(d));
+    Vector normal = (d)/norm2(d);
 
     if(norm2(speed) != 0) {
         double t_min = -ps(speed,normal)/norm2(speed);
@@ -135,11 +138,8 @@ bool Slime::Collision(Collisionable *obstacle){
             t_true = t_min;
         d = d + speed * t_true;
     }
-    return (sqrt(norm2(d)) <= radius);
+    return (norm2(d) <= radius);
 }
-
-
-
 
 Vector Slime::Launch2(){
     Vector center = {50.,50.}; // Centre de l'interface de direction
@@ -172,29 +172,33 @@ void Slime::Die(){
     cout<<"Je suis mort"<< endl;
 }
 
-void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
+/*void Slime::Lancer(Vector pulse){
+    speed = Launch();
+}*/
+void Slime::Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles){
     speed = pulse;
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
+
         //******** Display ************
 
         if ((timeStep%freqDisplay)==0){
             noRefreshBegin();
-            Resetscreen(obstacles);
+            clearWindow();
             Display();
             noRefreshEnd();
             milliSleep(75);
         }
         for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) {
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
                 if (Collision(d)) {
                     Shock(d);
                 }
             }
         }
         Move();
-        Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
-        Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
-        if (norm2(speed)<= 0.005){
+        Vector acc = Acceleration(speed);
+        Accelerate(acc);
+        if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
             break;
         }
     }
@@ -215,16 +219,17 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
             double deg = angle * 180.0 / M_PI;
             if (deg < 0)
                 deg += 360;
-            if (deg <= dir.maxAngle && deg >= dir.minAngle){
-                KILL(slime,obstacles);
+            if (angle <= dir.maxAngle && angle >= dir.minAngle){
+                KILL(slime, obstacles);
             }
             break;
         }
     }
 }
 
+// attaque le Slime cible
 void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
     role = role_Slime::KILLER;
     Vector dif = slime.pos - pos;
-    Lancer(dif*2,obstacles);
+    Lancer(dif*2, obstacles);
 }
