@@ -182,13 +182,12 @@ int main()
     cout << "niveau_affiche" << endl;
     // Test du Slime
     Vector pos_init = {200,200};
-    Slime slime = Slime(role_Slime::KILLER, pos_init);
+    Slime slime = Slime(role_Slime::JOUEUR, pos_init);
 
     slime.Display();
     while (true){
-      Vector dir = slime.Launch();
-        // désormais inclus dans Lancer
-      cout << slime.Lancer(dir,niveau1.elements)<<endl;
+        Vector dir = slime.Launch();
+        slime.Lancer(dir,niveau1.elements);
     }
 
     cout << "Slime !" << endl;
