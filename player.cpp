@@ -85,12 +85,7 @@ void Slime::Display() {
                 break;
             }
         }
-        if (norm2(speed) > 0.5){
-            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
-        }
-        else {
-            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
-        }
+        putSprite(srcPath("Slime2_Attack_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
     }
 }
 
@@ -108,22 +103,26 @@ Vector Slime::Launch(){
     getMouse(mouse_x, mouse_y);
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
     Vector delta = mouse - pos;
-    Vector dir = delta / norm2(delta);
-    double pulse = norm2(delta) * 5 / (static_cast<double>(WIDTH)); // Arbitrary formula
+    Vector dir = delta / sqrt(norm2(delta));
+    double pulse = sqrt(norm2(delta)) * 8 / (static_cast<double>(WIDTH)); // Arbitrary formula
     Vector launch_vector = pulse * dir;
     return launch_vector;
 }
 
 void Slime::Shock(Collisionable *obstacle) {
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
-    Vector normal = (pos - origin)/norm2(pos - origin);
-    speed = speed - 2 * (ps(speed, normal)) * normal;   // réflexion vectorielle
+    Vector d = pos - origin;
+    Vector normal = d / sqrt(norm2(d)); // Vecteur normal unitaire
+
+    // Réflexion de la vitesse
+    speed = reflect(speed, normal);
 }
+
 
 bool Slime::Collision(Collisionable *obstacle){
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector d = pos - origin;
-    Vector normal = (d)/norm2(d);
+    Vector normal = (d)/sqrt(norm2(d));
 
     if(norm2(speed) != 0) {
         double t_min = -ps(speed,normal)/norm2(speed);
@@ -136,7 +135,7 @@ bool Slime::Collision(Collisionable *obstacle){
             t_true = t_min;
         d = d + speed * t_true;
     }
-    return (norm2(d) <= radius);
+    return (sqrt(norm2(d)) <= radius);
 }
 
 
@@ -173,38 +172,42 @@ void Slime::Die(){
     cout<<"Je suis mort"<< endl;
 }
 
-//void Slime::Lancer(vector<unique_ptr<Element>>& obstacles) {
-//    Vector pulse = Launch();
-//    Lancer(pulse,obstacles);
-//}
+void Slime::Win(){
+    cout<<"I won"<< endl;
+}
 
-void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
+void Slime::Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles, Background background){
     speed = pulse;
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
         //******** Display ************
 
         if ((timeStep%freqDisplay)==0){
             noRefreshBegin();
-            clearWindow();
+            Resetscreen(obstacles,background);
             Display();
             noRefreshEnd();
             milliSleep(75);
         }
         for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
+            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) {
                 if (Collision(d)) {
-                    Shock(d);
+                    if (Porte* p = dynamic_cast<Porte*>(obstacles[i].get())) {
+                        Win();
+                    }
+                    else {
+                        Shock(d);
+                    }
                 }
             }
         }
         Move();
         Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
         Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
-        if ((abs(speed.x) < 0.05) && (abs(speed.y) < 0.05)){
+        if (norm2(speed)<= 0.005){
             break;
         }
     }
-    cout << "End" << endl;
+    cout << "Waiting for a new pulse" << endl;
 }
 
 void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
@@ -243,5 +246,5 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
 void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
     role = role_Slime::KILLER;
     Vector dif = slime.pos - pos;
-    Lancer(dif*2,obstacles);
+    //Lancer(dif*2,obstacles);
 }

@@ -43,3 +43,16 @@ void putSprite(const std::string& path, double x, double y, int i, int j, int w1
     putAlphaColorImage(x - w1 / 2.0, y - h1 / 2.0, D, w1, h1);
 }
 
+
+void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background){
+    clearWindow();
+    for (auto& obj : obstacles) { // Utilisez une référence pour éviter de copier le unique_ptr
+        Element* rawPtr = obj.get();
+        if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
+            rawPtr->afficher();
+        } else {
+            cerr << "objet non construit au moment de l'affichage" << endl;
+        }
+    putColorImage(0,0,background.Texture,background.w,background.h);
+    }
+}

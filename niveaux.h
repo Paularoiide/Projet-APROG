@@ -33,6 +33,13 @@ public:
     bool is_in(Vector v) override;
 };
 
+class Porte : public Collisionable {
+public:
+    int epaisseur;
+    Porte(Vector PointA, Vector PointB, int epais);
+    void afficher() override;
+};
+
 class Bordure : public Collisionable {
 public:
     Bordure(Vector PointA, Vector PointB);
@@ -48,6 +55,7 @@ public:
         cout << "Boite" << endl;
     }
 };
+
 
 class Slime;
 
