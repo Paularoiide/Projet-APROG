@@ -42,6 +42,16 @@ void Bordure::afficher(){
     fillPoly(lesX,lesY,4,BLUE);
 }
 
+
+Porte::Porte(Vector PointA, Vector PointB, int epais) {
+    Point1 = PointA;
+    Point2 = PointB;
+    epaisseur = epais;
+}
+void Porte::afficher() {
+    cout << " Porte" << endl;
+}
+
 Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
     Base = Base1;
     Sommet=Sommet1;

@@ -44,7 +44,7 @@ void putSprite(const std::string& path, double x, double y, int i, int j, int w1
 }
 
 
-void Resetscreen(vector<unique_ptr<Element> > &obstacles){
+void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background){
     clearWindow();
     for (auto& obj : obstacles) { // Utilisez une référence pour éviter de copier le unique_ptr
         Element* rawPtr = obj.get();
@@ -53,6 +53,6 @@ void Resetscreen(vector<unique_ptr<Element> > &obstacles){
         } else {
             cerr << "objet non construit au moment de l'affichage" << endl;
         }
+    putColorImage(0,0,background.Texture,background.w,background.h);
     }
-
 }

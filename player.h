@@ -24,7 +24,7 @@ public:
     Idx sprite = {0,0};
     int radius = 4;
     //void Lancer(vector<unique_ptr<Element>>& obstacles);
-    void Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles);
+    void Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles,Background background);
     void Move();
     void Accelerate(Vector a);
     void Display(); // Affiche le sprite en cours
@@ -33,6 +33,7 @@ public:
     void Check(Slime slime, vector<unique_ptr<Element>>& obstacles);
     void KILL(Slime slime, vector<unique_ptr<Element>>& obstacles);
     void Die();
+    void Win();
     Vector Launch();
     Vector Launch2();
     Slime( role_Slime givenRole, Vector givenPosition);

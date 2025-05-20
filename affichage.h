@@ -22,12 +22,12 @@ using namespace Imagine;
 const int freqDisplay = 10 * (1/dt);
 
 
+struct Background{Color* Texture; int w,h;};
 void drawButton(int x, int y, int width, int height, Color rectColor, const string& label);
 void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas);
 
 
 AlphaColor* getSprite(const std::string& path,int i, int j, int w1 = 32, int h1 = 32);
 void putSprite(const std::string& path,double x, double y,int i, int j, int w1 = 32, int h1 = 32);
-void Resetscreen(vector<unique_ptr<Element>>& obstacles);
-
+void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background);
 

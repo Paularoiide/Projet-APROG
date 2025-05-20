@@ -21,8 +21,8 @@ using namespace Imagine;
 
 Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
-int WIDTH = 512;
-int HEIGHT = 512;
+int WIDTH = 1500;
+int HEIGHT = 1000;
 double dt=0.01;
 
 Niveau generer_niveau(std::string chemin_niveau) {
@@ -75,12 +75,16 @@ int main()
 
     Vector pos_init = {200,200};
     Slime slime = Slime(role_Slime::JOUEUR, pos_init);
-
+    int w,h;
+    Color *C;                                           // load color image (Color array)
+    loadColorImage(srcPath("lab1.png"),C,w,h);
+    Background background = {C,w,h};
     slime.Display();
+    Resetscreen(niveau1.elements, background);
 
     while (true){
       Vector dir = slime.Launch();
-      slime.Lancer(dir,niveau1.elements);
+      slime.Lancer(dir,niveau1.elements,background);
     }
 
     cout << "Slime !" << endl;

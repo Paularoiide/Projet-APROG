@@ -172,14 +172,18 @@ void Slime::Die(){
     cout<<"Je suis mort"<< endl;
 }
 
-void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
+void Slime::Win(){
+    cout<<"I won"<< endl;
+}
+
+void Slime::Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles, Background background){
     speed = pulse;
     for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
         //******** Display ************
 
         if ((timeStep%freqDisplay)==0){
             noRefreshBegin();
-            Resetscreen(obstacles);
+            Resetscreen(obstacles,background);
             Display();
             noRefreshEnd();
             milliSleep(75);
@@ -187,7 +191,12 @@ void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
         for (int i = 0; i < obstacles.size(); i++) {
             if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) {
                 if (Collision(d)) {
-                    Shock(d);
+                    if (Porte* p = dynamic_cast<Porte*>(obstacles[i].get())) {
+                        Win();
+                    }
+                    else {
+                        Shock(d);
+                    }
                 }
             }
         }
@@ -198,7 +207,7 @@ void Slime::Lancer(Vector pulse,vector<unique_ptr<Element>>& obstacles){
             break;
         }
     }
-    cout << "End" << endl;
+    cout << "Waiting for a new pulse" << endl;
 }
 
 void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
@@ -226,5 +235,5 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
 void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
     role = role_Slime::KILLER;
     Vector dif = slime.pos - pos;
-    Lancer(dif*2,obstacles);
+    //Lancer(dif*2,obstacles);
 }
