@@ -118,14 +118,21 @@ void Slime::Shock(Collisionable *obstacle) {
     speed = reflect(speed, normal);
 }
 
+bool Slime::Collision(Collisionable *obstacle) {
+    Vector AB = obstacle->Point2 - obstacle->Point1;
+    Vector AP = pos - obstacle->Point1;
+    double t = ps(AP, AB) / norm2(AB); // t ∈ R
 
-bool Slime::Collision(Collisionable *obstacle){
-    Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
+    // Si la projection tombe hors du segment, pas de collision
+    if (t< 0 || t > 1) return false;
+
+    // Point projeté sur le segment
+    Vector origin = obstacle->Point1 + t * AB;
     Vector d = pos - origin;
-    Vector normal = (d)/sqrt(norm2(d));
+    Vector normal = d / sqrt(norm2(d));
 
-    if(norm2(speed) != 0) {
-        double t_min = -ps(speed,normal)/norm2(speed);
+    if (norm2(speed) != 0) {
+        double t_min = -ps(speed, normal) / norm2(speed);
         double t_true;
         if (t_min < 0)
             t_true = 0;
@@ -135,8 +142,10 @@ bool Slime::Collision(Collisionable *obstacle){
             t_true = t_min;
         d = d + speed * t_true;
     }
+
     return (sqrt(norm2(d)) <= radius);
 }
+
 
 
 

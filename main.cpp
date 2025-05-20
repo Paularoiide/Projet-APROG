@@ -178,7 +178,7 @@ int main()
     Niveau niveau1 = generer_niveau(repert_niv + "Lab1.txt");
     cout << "niveau_genere" << endl;
     cout << "niveau_affiche" << endl;
-    Vector pos_init = {50,150};
+    Vector pos_init = {50,300};
     Slime slime = Slime(role_Slime::JOUEUR, pos_init);
     Resetscreen(niveau1.elements, background);
     slime.Display();

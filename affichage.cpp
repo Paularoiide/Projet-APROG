@@ -49,7 +49,7 @@ void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background){
     for (auto& obj : obstacles) { // Utilisez une référence pour éviter de copier le unique_ptr
         Element* rawPtr = obj.get();
         if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
-            rawPtr->afficher();
+            //rawPtr->afficher();
         } else {
             cerr << "objet non construit au moment de l'affichage" << endl;
         }

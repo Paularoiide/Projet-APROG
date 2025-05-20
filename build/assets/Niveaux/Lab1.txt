@@ -1,4 +1,3 @@
-# width: 800, height:800
 Mur,"Point1.x":30,Point1.y":100,"Point2.x":160,"Point2.y":100,"epaisseur":3
 Mur,"Point1.x":160,Point1.y":100,"Point2.x":160,"Point2.y":200,"epaisseur":3
 Mur,"Point1.x":160,Point1.y":200,"Point2.x":350,"Point2.y":200,"epaisseur":3
@@ -21,3 +20,23 @@ Mur,"Point1.x":744,"Point1.y":775,"Point2.x":450,"Point2.y":775,"epaisseur":3
 Mur,"Point1.x":450,"Point1.y":775,"Point2.x":450,"Point2.y":615,"epaisseur":3
 Mur,"Point1.x":450,"Point1.y":615,"Point2.x":30,"Point2.y":615,"epaisseur":3
 Mur,"Point1.x":30,"Point1.y":615,"Point2.x":30,"Point2.y":100,"epaisseur":3
+
+Mur,"Point1.x":230,"Point1.y":292,"Point2.x":315,"Point2.y":292,"epaisseur":3
+Mur,"Point1.x":315,"Point1.y":292,"Point2.x":315,"Point2.y":340,"epaisseur":3
+Mur,"Point1.x":315,"Point1.y":340,"Point2.x":320,"Point2.y":340,"epaisseur":3
+Mur,"Point1.x":320,"Point1.y":340,"Point2.x":320,"Point2.y":355,"epaisseur":3
+Mur,"Point1.x":320,"Point1.y":355,"Point2.x":225,"Point2.y":355,"epaisseur":3
+Mur,"Point1.x":225,"Point1.y":355,"Point2.x":225,"Point2.y":340,"epaisseur":3
+Mur,"Point1.x":225,"Point1.y":340,"Point2.x":230,"Point2.y":340,"epaisseur":3
+Mur,"Point1.x":230,"Point1.y":340,"Point2.x":230,"Point2.y":292,"epaisseur":3
+
+Mur,"Point1.x":64,"Point1.y":516,"Point2.x":64,"Point2.y":501,"epaisseur":3
+Mur,"Point1.x":64,"Point1.y":501,"Point2.x":68,"Point2.y":501,"epaisseur":3
+Mur,"Point1.x":68,"Point1.y":501,"Point2.x":68,"Point2.y":454,"epaisseur":3
+Mur,"Point1.x":68,"Point1.y":454,"Point2.x":152,"Point2.y":454,"epaisseur":3
+Mur,"Point1.x":152,"Point1.y":454,"Point2.x":152,"Point2.y":501,"epaisseur":3
+Mur,"Point1.x":152,"Point1.y":501,"Point2.x":156,"Point2.y":501,"epaisseur":3
+Mur,"Point1.x":156,"Point1.y":501,"Point2.x":156,"Point2.y":516,"epaisseur":3
+Mur,"Point1.x":156,"Point1.y":516,"Point2.x":64,"Point2.y":516,"epaisseur":3
+
+
