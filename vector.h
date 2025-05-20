@@ -19,6 +19,7 @@ double angle_entre(Vector a,Vector b);
 double angle_horiz(Vector a);
 double deg(double rad);
 double rad(double deg);
+Vector reflect(Vector v, Vector normal);
 
 Vector intersection_bords(Vector point, double angle);
 

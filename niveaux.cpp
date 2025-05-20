@@ -10,7 +10,6 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
     epaisseur = epais;
 }
 void Mur::afficher() {
-    cout << "affichage Mur" << endl;
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
 
@@ -19,7 +18,6 @@ Bordure::Bordure(Vector PointA, Vector PointB) {
     Point2 = PointB;
 }
 void Bordure::afficher(){
-    cout << "affichage Bordure" << endl;
     /*Vector coins[4] = {{0.,0.},{static_cast<double>(WIDTH),0.},{static_cast<double>(WIDTH),static_cast<double>(HEIGHT)},{0.,static_cast<double>(HEIGHT)}};
     double distances[8] = {distance(coins[0],Point1),distance(coins[0],Point2),
                            distance(coins[1],Point1),distance(coins[1],Point2),
@@ -41,9 +39,6 @@ void Bordure::afficher(){
     Vector Point4 = intersection_bords(Point1,fmod((angle_horiz(Point2-Point1)+90.),360.));
     int lesX[4] = {static_cast<int>(Point1.x), static_cast<int>(Point2.x), static_cast<int>(Point3.x), static_cast<int>(Point4.x)};
     int lesY[4] = {static_cast<int>(Point1.y), static_cast<int>(Point2.y), static_cast<int>(Point3.y), static_cast<int>(Point4.y)};
-    cout << "points du polygone calculé : " << Point1.x << "|" << Point1.y <<
-        "   " << Point2.x << "|" << Point2.y << "   "<< Point3.x << "|" << Point3.y
-         << "   "<< Point4.x << "|" << Point4.y << "   " << endl;
     fillPoly(lesX,lesY,4,BLUE);
 }
 

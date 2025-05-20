@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cassert>
 #include <string>
-//#include <filesystem>
 using namespace std;
 
 #include <Imagine/Graphics.h>

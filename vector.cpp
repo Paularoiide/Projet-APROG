@@ -54,29 +54,16 @@ Vector rotate(Vector a, double angle) {
 
 // renvoie le projete d'un point a à la droite formee en reliant
 // les points PointA et PointB
+
 Vector projection(Vector a, Vector PointA, Vector PointB) {
-    double pente=90.;
-    if (PointA.x=PointB.x) {
-        if (PointA.y>PointB.y) {
-            pente=270;
-        } else { pente=90;}
-    } else {
-        pente = (PointB.y-PointA.y)/(PointB.x-PointA.x);
-    }
-    double ordALOrigine = PointB.y-pente*PointB.x;
-    // on calcule le projete de l'origine
-    Vector POrigine;
-    POrigine.x = -pente*ordALOrigine/(2*(1+pente*pente));
-    POrigine.y = pente*POrigine.x+ordALOrigine;
-
-    // le projete P s'ecrit : P = a . e/||e|| + POrigine, où e est un vecteur directeur de la droite
-    Vector e;
-    e = PointB-PointA;
-    return(ps(a,e)/norm2(e)*e + POrigine);
-
-
-
+    Vector e = PointB - PointA;       // vecteur directeur de la droite
+    Vector ap = a - PointA;           // vecteur de PointA à a
+    double t = ps(ap, e) / norm2(e);  // projection scalaire
+    return PointA + t * e;            // projection vectorielle sur la droite
 }
+
+
+
 // idem au projete pour la distance
 double distance(Vector a, Vector PointA, Vector PointB) {
     // la projection minimisant la distance étant orthogonale en dimension finie
@@ -142,4 +129,8 @@ Vector intersection_bords(Vector point, double angle) {
     }
     if(distance(point,candidats[0])<distance(point,candidats[1])){return(candidats[0]);}
     else{return(candidats[1]);}
+}
+
+Vector reflect(Vector v, Vector normal) {
+    return v - 2 * ps(v, normal) * normal;
 }

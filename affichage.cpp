@@ -38,8 +38,21 @@ AlphaColor* getSprite(const std::string& path, int i, int j, int w1, int h1) {
     return D; // Pointeur vers la zone extraite (sprite)
 }
 
-void putSprite(const std::string& path, double x, double y, int i, int j, int w1, int h1){
+void putSprite(const std::string& path, double x, double y, int i, int j, int w1, int h1) {
     AlphaColor* D = getSprite(path, i, j, w1, h1);
-    putAlphaColorImage(x, y, D, w1, h1);
+    putAlphaColorImage(x - w1 / 2.0, y - h1 / 2.0, D, w1, h1);
 }
 
+
+void Resetscreen(vector<unique_ptr<Element> > &obstacles){
+    clearWindow();
+    for (auto& obj : obstacles) { // Utilisez une référence pour éviter de copier le unique_ptr
+        Element* rawPtr = obj.get();
+        if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
+            rawPtr->afficher();
+        } else {
+            cerr << "objet non construit au moment de l'affichage" << endl;
+        }
+    }
+
+}
