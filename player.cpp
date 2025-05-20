@@ -84,12 +84,7 @@ void Slime::Display() {
                 break;
             }
         }
-        if (norm2(speed) > 0.5){
-            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
-        }
-        else {
-            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
-        }
+        putSprite(srcPath("Slime2_Attack_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
     }
 }
 

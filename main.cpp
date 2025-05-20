@@ -61,11 +61,11 @@ void menu(const int width,const int height) {
 int main()
 {
     openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
-    //Affichage du menu
-    // creation du niveau
-    //Niveau niveau1;
+   //Affichage du menu
+   /* // creation du niveau
+    Niveau niveau1;
     //cout << "Répertoire de travail courant : " << std::filesystem::current_path() << endl;
-    /*Niveau niveau1 = generer_niveau("../Projet-APROG/build/assets/Niveaux/Intro.txt");
+     niveau1 = generer_niveau("../Projet-APROG/build/assets/Niveaux/Intro.txt");
     cout << "niveau_genere" << endl;
     cout << "réalisations de tests sur le niveau." << endl;
     cout << "Test avec typeid(*elements[i]).name(). Type de l'objet niveau1.elements[0] : " << typeid(*niveau1.elements[0]).name() << endl;
