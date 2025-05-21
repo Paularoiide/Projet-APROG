@@ -13,6 +13,11 @@ void Mur::afficher() {
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
 
+bool Mur::is_in(Vector v) {
+    Vector proj = projection(v, Point1, Point2);
+    return norm2(v - proj) < epaisseur;
+}
+
 Bordure::Bordure(Vector PointA, Vector PointB) {
     Point1 = PointA;
     Point2 = PointB;
@@ -42,6 +47,9 @@ void Bordure::afficher(){
     fillPoly(lesX,lesY,4,BLUE);
 }
 
+bool Bordure::is_in(Vector v) {
+    return false;
+}
 
 Porte::Porte(Vector PointA, Vector PointB, int epais) {
     Point1 = PointA;
@@ -50,6 +58,7 @@ Porte::Porte(Vector PointA, Vector PointB, int epais) {
 }
 void Porte::afficher() {
     cout << " Porte" << endl;
+
 }
 
 Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {

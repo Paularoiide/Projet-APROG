@@ -185,8 +185,7 @@ int main()
     //cout << "Test avec typeid(*elements[i]).name(). Type de l'objet niveau1.elements[0] : " << typeid(*niveau1.elements[0]).name() << endl;
     niveau1.afficher();
     cout << "niveau_affiche" << endl;
-    // Test du Slime
-    Vector pos_init = {200,200};
+    Vector pos_init = {50,300};
     Slime slime = Slime(role_Slime::JOUEUR, pos_init);
 
     Resetscreen(niveau1.elements, background);
