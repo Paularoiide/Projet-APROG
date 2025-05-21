@@ -165,14 +165,15 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
 int main()
 {
     int WIDTH,HEIGHT;
-    Color *C;                                           // load color image (Color array)
-    loadColorImage(srcPath("lab1.png"),C,WIDTH,HEIGHT);
+
+    string repert_niv = "../Projet-APROG/build/assets/Niveaux/";
+    Color *C;
+    // load color image (Color array)
+    loadColorImage(stringSrcPath(repert_niv+"lab1.png"),C,WIDTH,HEIGHT);
     Background background = {C,WIDTH,HEIGHT};
     Window principale = openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
     //Affichage du menu
     // creation du niveau
-
-    string repert_niv = "../Projet-APROG/build/assets/Niveaux/";
     menu(principale,WIDTH,HEIGHT,repert_niv);
     clearWindow();
 
