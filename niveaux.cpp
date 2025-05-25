@@ -151,21 +151,21 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             }
         }
 
-        if (row.size() < 5) {
-            cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
-                continue;
-        }
 
         string row_explicite = "";
         for (string mot : row) {
             row_explicite = row_explicite + "|" + mot;
         }
-        cout << "row : " << row_explicite << endl;
+        //cout << "row : " << row_explicite << endl;
 
         if (row[0] == "Bordure") {
-            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
-            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
-            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
+            if (row.size() < 5) {
+                cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
+                    continue;
+            }
+            //cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
+            Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
+            Vector Point2 = {static_cast<double>(stoi(row[3])) + decalage_x, static_cast<double>(stoi(row[4])) + decalage_y};
             auto bord = std::make_unique<Bordure>(Point1, Point2);
             elements.push_back(std::move(bord));
         } else if (row[0] == "Mur") {
@@ -173,34 +173,39 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
                 cerr << "erreur de lecture : pas assez d'arguments pour le mur à la ligne " << ligne << ", n° : " << i << endl;
                     continue;
             }
-            cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
-            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
-            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
+            //cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
+            Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
+            Vector Point2 = {static_cast<double>(stoi(row[3])) + decalage_x, static_cast<double>(stoi(row[4])) + decalage_y};
             int epaiss = stoi(row[5]);
-            cout << "epaisseur du mur : " << epaiss << endl;
+            //cout << "epaisseur du mur : " << epaiss << endl;
             auto mur = std::make_unique<Mur>(Point1, Point2, epaiss);
             elements.push_back(std::move(mur));
         } else if (row[0] == "Porte") {
             if (row.size() < 6) {
-                    cerr << "erreur de lecture : pas assez d'arguments pour la porte à la ligne " << ligne << ", n° : " << i << endl;
-                        continue;
+                cerr << "erreur de lecture : pas assez d'arguments pour la porte à la ligne " << ligne << ", n° : " << i << endl;
+                    continue;
             }
-            cout << "lecture d'une porte. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
-            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
-            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
+            //cout << "lecture d'une porte. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
+            Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
+            Vector Point2 = {static_cast<double>(stoi(row[3])) + decalage_x, static_cast<double>(stoi(row[4])) + decalage_y};
             int epaiss = stoi(row[5]);
-            cout << "epaisseur de la porte : " << epaiss << endl;
+            //cout << "epaisseur de la porte : " << epaiss << endl;
             auto porte = std::make_unique<Porte>(Point1, Point2, epaiss);
             elements.push_back(std::move(porte));
         } else if (row[0]=="Slime") {
-            role_Slime role = roleFromStr(row[1]);
-            Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
+            if (row.size() < 3) {
+                cerr << "erreur de lecture : pas assez d'arguments pour le Slime à la ligne " << ligne << ", n° : " << i << endl;
+                    continue;
+            }
+            role_Slime role = role_Slime::SLIME_ENEMY;
+            Vector pos = {static_cast<double>(stoi(row[1])) + decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
             auto slime = std::make_unique<Slime>(role,pos);
-            elements.push_back(std::move(slime));
+            ennemis.push_back(std::move(slime));
+            cout << "Slime charge" << endl;
         }else {
             cerr << "erreur de lecture : impossible d'identifier l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
         }
-        cout << "element lu." << endl;
+        //cout << "element lu." << endl;
     }
     cout << "fin de construction du niveau" << endl;
     cout << "analyse du niveau :" << endl;

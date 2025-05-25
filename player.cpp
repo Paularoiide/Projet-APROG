@@ -4,12 +4,12 @@
 #include "vector.h"
 #include "niveaux.h"
 
-role_Slime roleFromStr(string s){
+/*role_Slime roleFromStr(string s){
     if(s=="Joueur") {return role_Slime::JOUEUR;}
     if(s=="Ennemi") {return role_Slime::SLIME_ENEMY;}
     if(s=="PNJ") {return role_Slime::PNJ;}
     if(s=="Killer") {return role_Slime::KILLER;}
-}
+}*/
 
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
@@ -209,14 +209,14 @@ void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
                 deg += 360;
             if (deg <= dir.maxAngle && deg >= dir.minAngle){
                 bool kill = true;
-                /*Vector v;
+                Vector v;
                 for (int i =0; i<100; i++){
                     v = pos + dif * i/100;
                     for (int i = 0; i < obstacles.size(); i++) {
                         if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
-                            if (v in d) {
-                                kill = false }}}
-                }*/
+                            if (d->is_in(v)) {
+                                kill = false; }}}
+                }
                 if (kill){
                     KILL(slime,obstacles);
                 }

@@ -21,6 +21,8 @@ using namespace Imagine;
 
 Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
+int decalage_x = 250; // Décalage pour avoir de la place en haut et à gauche du niveau
+int decalage_y = 100;
 int WIDTH = 1500;
 int HEIGHT = 1000;
 double dt=0.005;
@@ -209,26 +211,59 @@ bool PlayLevel(Window& principale,const string& background_string, const string&
             if ((timeStep % freqDisplay) == 0) {
                 noRefreshBegin();
                 Resetscreen(niveau1.elements, background);
+
+                // Affichage des ennemis (slimes)
+                for (auto& ennemi : niveau1.ennemis) {
+                    ennemi->Display(); // plus besoin de cast
+                    cout << ennemi->pos.x;
+                }
+
                 slime.Display();
                 noRefreshEnd();
                 milliSleep(75);
             }
 
-            for (int i = 0; i < niveau1.elements.size(); i++) {
-                if (Collisionable* d = dynamic_cast<Collisionable*>(niveau1.elements[i].get())) {
-                    if (slime.Collision(d)) {
-                        if (Porte* p = dynamic_cast<Porte*>(niveau1.elements[i].get())) {
-                            porteTouchee = true;
-                            break;
-                        } else {
-                            slime.Shock(d);
-                        }
+            // === Collisions avec les éléments du niveau ===
+            for (auto& elem : niveau1.elements) {
+                Collisionable* d = dynamic_cast<Collisionable*>(elem.get());
+                if (!d) continue;
+
+                if (slime.Collision(d)) {
+                    if (dynamic_cast<Porte*>(elem.get())) {
+                        porteTouchee = true;
+                        break;
+                    } else {
+                        slime.Shock(d);
                     }
                 }
+                for (auto& ennemi : niveau1.ennemis) {
+                    if (ennemi->Collision(d)){
+                        ennemi->Shock(d);
+                    }
+                }
+
             }
 
             if (porteTouchee) break;
 
+            // === Collisions avec les ennemis ===
+            for (auto& ennemi : niveau1.ennemis) {
+                Collisionable* d = dynamic_cast<Collisionable*>(ennemi.get());
+                if (!d) continue;
+
+                if (slime.Collision(d)) {
+                    slime.Die(); // ou une logique spéciale contre les ennemis
+                }
+            }
+
+            // === Mouvement des ennemis ===
+            for (auto& ennemi : niveau1.ennemis) {
+                //ennemi->Move();
+                //Vector acc = Acceleration(ennemi->speed);
+                //ennemi->Accelerate(acc);
+            }
+
+            // === Mouvement du joueur ===
             slime.Move();
             Vector acc = Acceleration(slime.speed);
             slime.Accelerate(acc);
@@ -239,7 +274,7 @@ bool PlayLevel(Window& principale,const string& background_string, const string&
         if (porteTouchee) {
             cout << "Porte touchee ! Fin du niveau." << endl;
             closeWindow(principale);
-            return true; // ← indique qu'on a terminé le niveau
+            return true;
         }
 
         cout << "Waiting for a new pulse" << endl;
@@ -252,11 +287,11 @@ int main() {
     string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
     string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
     Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-    PlayLevel(principale,path0, "Lab0.txt", 591, 180, true);
+    PlayLevel(principale,path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
 
     // Enchaînement avec lab1 (sans redondance)
     principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-    PlayLevel(principale,path1, "Lab1.txt", 50, 150, false);
+    PlayLevel(principale,path1, "Lab1.txt", 50 + decalage_x, 180 + decalage_y, false);
 
     cout << "Fin du jeu !" << endl;
     endGraphics();
