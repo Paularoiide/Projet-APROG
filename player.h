@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Imagine/Graphics.h>
 #include "physics.h"
 #include "vector.h"
 #include "affichage.h"
-#include "niveaux.h"
+#include "element.h"
 
+#include <Imagine/Graphics.h>
 using namespace Imagine;
 
 #include <typeinfo>
@@ -16,7 +16,7 @@ enum class role_Slime {
 };
 role_Slime roleFromStr(string s);
 
-class Slime{
+class Slime : public Element{
 
 public:
     Vector pos;
@@ -38,5 +38,8 @@ public:
     Vector Launch();
     Vector Launch2();
     Slime( role_Slime givenRole, Vector givenPosition);
+    void afficher() override {
+        Display();
+    }
 };
 

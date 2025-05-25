@@ -8,22 +8,11 @@
 #include <regex>
 #include <memory>
 using namespace std;
+
 #include "vector.h"
 #include "globals.h"
-
-class Element {
-public:
-    virtual void afficher() = 0;
-    virtual ~Element() {}
-};
-
-class Collisionable : public Element {
-public:
-    Vector Point1;
-    Vector Point2;
-    virtual void afficher() override = 0;
-    virtual bool is_in(Vector v) = 0;
-};
+#include "player.h"
+#include "element.h"
 
 class Mur : public Collisionable {
 public:
@@ -57,7 +46,7 @@ public:
 };
 
 
-class Slime;
+//class Slime : public Element;
 
 class Pique : public Element {
 public:

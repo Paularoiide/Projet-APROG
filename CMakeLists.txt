@@ -19,7 +19,8 @@ add_executable(Jeu main.cpp
     player.cpp
     niveaux.h
     niveaux.cpp
-    globals.h)
+    globals.h
+    element.h)
 
 target_link_libraries(Jeu Imagine::Graphics)
 

@@ -2,6 +2,7 @@
 #include "physics.h"
 #include "affichage.h"
 #include "vector.h"
+#include "niveaux.h"
 
 role_Slime roleFromStr(string s){
     if(s=="Joueur") {return role_Slime::JOUEUR;}
@@ -14,7 +15,6 @@ Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
     role = givenRole;
 }
-NiveauTextuel::~NiveauTextuel() =default;
 
 struct DirectionRange {
     double minAngle;
