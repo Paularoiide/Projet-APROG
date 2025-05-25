@@ -78,6 +78,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 class Niveau {
 public:
     std::vector<std::unique_ptr<Element>> elements;
+    std::vector<std::unique_ptr<Slime>> ennemis;
     std::vector<std::unique_ptr<Collisionable>> collisionables;
     int nbElem;
 
