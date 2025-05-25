@@ -168,7 +168,6 @@ struct LevelData {
     std::shared_ptr<Niveau> niveau;
 };
 
-
 LevelData StartLevel(string background_string, string repert_niv, double pos_x, double pos_y) {
     int width, height;
     Color *C;
@@ -192,7 +191,6 @@ LevelData StartLevel(string background_string, string repert_niv, double pos_x, 
 
     return {slime, background, niveau1};
 }
-
 
 int main() {
     string background_string = srcPath("lab1.png");
