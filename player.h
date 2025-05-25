@@ -14,6 +14,7 @@ using namespace std;
 enum class role_Slime {
     JOUEUR, SLIME_ENEMY,KILLER, PNJ
 };
+role_Slime roleFromStr(string s);
 
 class Slime{
 

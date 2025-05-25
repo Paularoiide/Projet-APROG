@@ -3,10 +3,18 @@
 #include "affichage.h"
 #include "vector.h"
 
+role_Slime roleFromStr(string s){
+    if(s=="Joueur") {return role_Slime::JOUEUR;}
+    if(s=="Ennemi") {return role_Slime::SLIME_ENEMY;}
+    if(s=="PNJ") {return role_Slime::PNJ;}
+    if(s=="Killer") {return role_Slime::KILLER;}
+}
+
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
     role = givenRole;
 }
+NiveauTextuel::~NiveauTextuel() =default;
 
 struct DirectionRange {
     double minAngle;

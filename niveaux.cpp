@@ -12,7 +12,6 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
 void Mur::afficher() {
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
-
 bool Mur::is_in(Vector v) {
     Vector proj = projection(v, Point1, Point2);
     return norm2(v - proj) < epaisseur;
@@ -46,7 +45,6 @@ void Bordure::afficher(){
     int lesY[4] = {static_cast<int>(Point1.y), static_cast<int>(Point2.y), static_cast<int>(Point3.y), static_cast<int>(Point4.y)};
     fillPoly(lesX,lesY,4,BLUE);
 }
-
 bool Bordure::is_in(Vector v) {
     return false;
 }
@@ -70,8 +68,6 @@ Pique::Pique(Vector Base1, Vector Sommet1, int largeur1) {
     Sommets[1] = Base - (largeur / 2) * dir;
     Sommets[2] = Base + (largeur / 2) * dir;
 }
-
-
 bool Pique::Collision(Slime *slime){
     for (int i =0; i < 3; i++){
         if (norm2(slime->pos - Sommets[i]) < slime->radius){
@@ -81,12 +77,12 @@ bool Pique::Collision(Slime *slime){
     return false;
 }
 
+
 NiveauTextuel::NiveauTextuel(int nbElem1) {
     lignes.resize(nbElem1);  // plus besoin de gestion manuelle de mémoire
 }
 NiveauTextuel::NiveauTextuel() =default;
 NiveauTextuel::~NiveauTextuel() =default;
-
 NiveauTextuel ouvrir_niveau(string nom_fichier) {
     cout << "ouverture du fichier niveau" << endl;
     ifstream f(nom_fichier);
@@ -97,7 +93,8 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
 
     // Compter les lignes
     int nbLignes = count(istreambuf_iterator<char>(f),
-                         istreambuf_iterator<char>(), '\n')+1;// convention locale : on ne met pas de ligne vide à la fin
+                         istreambuf_iterator<char>(), '\n')+1;
+    // convention locale : on ne met pas de ligne vide à la fin
     cout << "nombre de lignes :"<<nbLignes<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
@@ -110,11 +107,9 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
     }
 
     cout << "Niveau chargé" << endl;
-                                   f.close();
+    f.close();
     return niveauActuel;
 }
-
-
 void NiveauTextuel::detruire() {
     lignes.clear();
 }
@@ -178,7 +173,12 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             cout << "epaisseur du mur : " << epaiss << endl;
             auto mur = std::make_unique<Mur>(Point1, Point2, epaiss);
             elements.push_back(std::move(mur));
-        } else {
+        }else if (row[0]=="Slime") {
+            role_Slime role = roleFromStr(row[1]);
+            Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
+            auto slime = std::make_unique<Slime>(role,pos);
+            elements.push_back(std::move(slime));
+        }else {
             cerr << "erreur de lecture : impossible d'identifier l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
         }
         cout << "element lu." << endl;
