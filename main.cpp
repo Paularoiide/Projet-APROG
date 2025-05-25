@@ -23,7 +23,7 @@ Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, i
 
 int WIDTH = 1500;
 int HEIGHT = 1000;
-double dt=0.01;
+double dt=0.005;
 
 bool fichierExiste(const std::string& cheminComplet) {
     std::ifstream fichier(cheminComplet.c_str());
@@ -36,7 +36,7 @@ Niveau generer_niveau(std::string chemin_niveau) {
     niveauActuel.remplir_niveau(texte);
     //cout << "niveau rempli" << endl;
     //cout << "quelque test à l'interieur de generer_niveau" << endl;
-            cout << "analyse du niveau :"<< endl;
+    cout << "analyse du niveau :"<< endl;
     for(int i=0;i<niveauActuel.elements.size();i++) {
         cout << "Type de l'objet : " << typeid(*niveauActuel.elements[i]).name() << endl;
     }
@@ -73,28 +73,28 @@ int entrer_code(const int width, const int height,const int BUTTON_WIDTH, const 
         getEvent(0, ev);
 
         switch (ev.type) {
-            case EVT_KEY_ON:
-                if (ev.key == KEY_BACK && !code.empty()) {
-                    // Supprimer le dernier caractère
-                    code.pop_back();
-                } else if (ev.key == KEY_RETURN) {
-                    // Valider avec Entrée
-                    fin = true;
-                    closeWindow(fenCode);
-                    cout << "Entree. code selectionne : " << code << endl;
-                    return stoi(code);
-                } else if (isdigit(ev.key)) {
-                    // Ajouter un chiffre
-                    code += char(ev.key);
-                }
-                break;
-            case EVT_BUT_ON:
-                // Valider avec un clic
+        case EVT_KEY_ON:
+            if (ev.key == KEY_BACK && !code.empty()) {
+                // Supprimer le dernier caractère
+                code.pop_back();
+            } else if (ev.key == KEY_RETURN) {
+                // Valider avec Entrée
+                fin = true;
                 closeWindow(fenCode);
-                cout << "code selectionne : " << code << endl;
+                cout << "Entree. code selectionne : " << code << endl;
                 return stoi(code);
-            default:
-                break;
+            } else if (isdigit(ev.key)) {
+                // Ajouter un chiffre
+                code += char(ev.key);
+            }
+            break;
+        case EVT_BUT_ON:
+            // Valider avec un clic
+            closeWindow(fenCode);
+            cout << "code selectionne : " << code << endl;
+            return stoi(code);
+        default:
+            break;
         }
         milliSleep(20);
     }
@@ -119,9 +119,9 @@ int fen_niveaux(const int width, const int height,const int BUTTON_WIDTH, const 
         if (getMouse(x, y)) {
             for(int j=0;j<i;j++) {
                 if (x >= x_button && x <= x_button + BUTTON_WIDTH &&
-                        y >= BUTTON_HEIGHT*(1.5*i+1/2) && y <= BUTTON_HEIGHT*(1.5*i+3/2)) {
-                        closeWindow(fenNiv);
-                        return j;
+                    y >= BUTTON_HEIGHT*(1.5*i+1/2) && y <= BUTTON_HEIGHT*(1.5*i+3/2)) {
+                    closeWindow(fenNiv);
+                    return j;
                 }
             }
         }
@@ -144,7 +144,7 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
                 y >= y_button_begin && y <= y_button_begin + BUTTON_HEIGHT) {
                 drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,GREEN, "Cliqué !");
                     //showMessage("Bouton cliqué !");
-                return 0;
+                    return 0;
                 break; // Quitter après clic
             }
             if (x >= x_button_admin && x <= x_button_admin + BUTTON_WIDTH &&
@@ -162,35 +162,95 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
     }
 }
 
-int main()
-{
-    int width,height;
-    Color *C;                                           // load color image (Color array)
-    loadColorImage(srcPath("lab1.png"),C,width,height);
-    Background background = {C,width,height};
-    Window principale = openWindow(WIDTH, HEIGHT,"Jeu APROJ - Slime");
-    //Affichage du menu
-    // creation du niveau
+struct LevelData {
+    Slime slime;
+    Background background;
+    std::shared_ptr<Niveau> niveau;
+};
 
-    string repert_niv = "../Projet-APROG/build/assets/Niveaux/";
-    menu(principale,WIDTH,HEIGHT,repert_niv);
+
+LevelData StartLevel(string background_string, string repert_niv, double pos_x, double pos_y) {
+    int width, height;
+    Color *C;
+    loadColorImage(background_string, C, width, height);
+    Background background = {C, width, height};
+
+    Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+    string repert_nivs = "../Projet-APROG/build/assets/Niveaux/";
+    menu(principale, WIDTH, HEIGHT, repert_nivs);
     clearWindow();
-    Niveau niveau1 = generer_niveau(repert_niv + "Lab1.txt");
+
+    std::shared_ptr<Niveau> niveau1 = std::make_shared<Niveau>(generer_niveau(repert_nivs + repert_niv));
     cout << "niveau_genere" << endl;
     cout << "niveau_affiche" << endl;
-    Vector pos_init = {50,300};
+
+    Vector pos_init = {pos_x, pos_y};
     Slime slime = Slime(role_Slime::JOUEUR, pos_init);
-    Resetscreen(niveau1.elements, background);
+
+    Resetscreen(niveau1->elements, background);
     slime.Display();
 
-    while (true){
-      Vector dir = slime.Launch();
-      slime.Lancer(dir,niveau1.elements,background);
+    return {slime, background, niveau1};
+}
+
+
+int main() {
+    string background_string = srcPath("lab1.png");
+    string repert_niv = "Lab1.txt";
+    double pos_x = 50;
+    double pos_y = 300;
+
+    // Initialisation du niveau
+    LevelData data = StartLevel(background_string, repert_niv, pos_x, pos_y);
+
+    Slime& slime = data.slime;
+    Background& background = data.background;
+    Niveau& niveau1 = *data.niveau; // déréférencement du shared_ptr
+
+    // Boucle de jeu principale
+    while (true) {
+        slime.speed = slime.Launch();
+
+        for (int timeStep = 0; timeStep <= 250 * freqDisplay; timeStep++) {
+            // Affichage
+            if ((timeStep % freqDisplay) == 0) {
+                noRefreshBegin();
+                Resetscreen(niveau1.elements, background);
+                slime.Display();
+                noRefreshEnd();
+                milliSleep(75);
+            }
+
+            // Gestion des collisions
+            for (int i = 0; i < niveau1.elements.size(); i++) {
+                if (Collisionable* d = dynamic_cast<Collisionable*>(niveau1.elements[i].get())) {
+                    if (slime.Collision(d)) {
+                        if (Porte* p = dynamic_cast<Porte*>(niveau1.elements[i].get())) {
+                            break; // Porte touchée
+                        } else {
+                            slime.Shock(d); // Autre collision
+                        }
+                    }
+                }
+            }
+
+            // Déplacement et physique
+            slime.Move();
+            Vector acc = Acceleration(slime.speed); // Calcul accélération
+            slime.Accelerate(acc);                  // Mise à jour vitesse
+
+            if (norm2(slime.speed) <= 0.005) {
+                break; // Slime arrêté
+            }
+        }
+
+        cout << "Waiting for a new pulse" << endl;
     }
 
     cout << "Slime !" << endl;
     endGraphics();
     return 0;
 }
+
 
 

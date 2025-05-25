@@ -53,6 +53,6 @@ void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background){
         } else {
             cerr << "objet non construit au moment de l'affichage" << endl;
         }
-    putColorImage(0,0,background.Texture,background.w,background.h);
     }
+    putColorImage(0,0,background.Texture,background.w,background.h);
 }

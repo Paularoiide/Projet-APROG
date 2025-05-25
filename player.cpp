@@ -185,40 +185,6 @@ void Slime::Win(){
     cout<<"I won"<< endl;
 }
 
-void Slime::Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles, Background background){
-    speed = pulse;
-    for(int timeStep=0; timeStep<=250*freqDisplay; timeStep++) {
-        //******** Display ************
-
-        if ((timeStep%freqDisplay)==0){
-            noRefreshBegin();
-            Resetscreen(obstacles,background);
-            Display();
-            noRefreshEnd();
-            milliSleep(75);
-        }
-        for (int i = 0; i < obstacles.size(); i++) {
-            if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) {
-                if (Collision(d)) {
-                    if (Porte* p = dynamic_cast<Porte*>(obstacles[i].get())) {
-                        Win();
-                    }
-                    else {
-                        Shock(d);
-                    }
-                }
-            }
-        }
-        Move();
-        Vector acc = Acceleration(speed);// variation de vitesse à l'instant t
-        Accelerate(acc);// mise à joue de la vitesse avec l'acceleration
-        if (norm2(speed)<= 0.005){
-            break;
-        }
-    }
-    cout << "Waiting for a new pulse" << endl;
-}
-
 void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
     DirectionRange directions[4] = {
         {315.0, 45.0, 3}, // Droite
