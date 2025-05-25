@@ -166,17 +166,18 @@ struct LevelData {
     Slime slime;
     Background background;
     std::shared_ptr<Niveau> niveau;
+
 };
 
-LevelData StartLevel(string background_string, string nom_niv, double pos_x, double pos_y) {
+LevelData StartLevel(Window& principale,string background_string, string nom_niv, double pos_x, double pos_y, bool first_level) {
     int width, height;
     Color *C;
     loadColorImage(background_string, C, width, height);
     Background background = {C, width, height};
-
-    Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
     string repert_nivs = "../Projet-APROG/build/assets/Niveaux/";
-    menu(principale, WIDTH, HEIGHT, repert_nivs);
+    if (first_level){ //Si c'est le premier niveau on affiche le menu
+        menu(principale, WIDTH, HEIGHT, repert_nivs);
+    }
     clearWindow();
 
     std::shared_ptr<Niveau> niveau1 = std::make_shared<Niveau>(generer_niveau(repert_nivs + nom_niv));
@@ -192,26 +193,19 @@ LevelData StartLevel(string background_string, string nom_niv, double pos_x, dou
     return {slime, background, niveau1};
 }
 
-int main() {
 
-    string background_string = stringSrcPath(strAssets+"Niveaux/lab1.png");
-    string nom_niv= "Lab1.txt";
-    double pos_x = 50;
-    double pos_y = 300;
-
-    // Initialisation du niveau
-    LevelData data = StartLevel(background_string, nom_niv, pos_x, pos_y);
+bool PlayLevel(Window& principale,const string& background_string, const string& nom_niv, double pos_x, double pos_y,bool first_level) {
+    LevelData data = StartLevel(principale,background_string, nom_niv, pos_x, pos_y,first_level );
 
     Slime& slime = data.slime;
     Background& background = data.background;
-    Niveau& niveau1 = *data.niveau; // déréférencement du shared_ptr
+    Niveau& niveau1 = *data.niveau;
 
-    // Boucle de jeu principale
     while (true) {
         slime.speed = slime.Launch();
+        bool porteTouchee = false;
 
         for (int timeStep = 0; timeStep <= 250 * freqDisplay; timeStep++) {
-            // Affichage
             if ((timeStep % freqDisplay) == 0) {
                 noRefreshBegin();
                 Resetscreen(niveau1.elements, background);
@@ -220,33 +214,51 @@ int main() {
                 milliSleep(75);
             }
 
-            // Gestion des collisions
             for (int i = 0; i < niveau1.elements.size(); i++) {
                 if (Collisionable* d = dynamic_cast<Collisionable*>(niveau1.elements[i].get())) {
                     if (slime.Collision(d)) {
                         if (Porte* p = dynamic_cast<Porte*>(niveau1.elements[i].get())) {
-                            break; // Porte touchée
+                            porteTouchee = true;
+                            break;
                         } else {
-                            slime.Shock(d); // Autre collision
+                            slime.Shock(d);
                         }
                     }
                 }
             }
 
-            // Déplacement et physique
-            slime.Move();
-            Vector acc = Acceleration(slime.speed); // Calcul accélération
-            slime.Accelerate(acc);                  // Mise à jour vitesse
+            if (porteTouchee) break;
 
-            if (norm2(slime.speed) <= 0.005) {
-                break; // Slime arrêté
-            }
+            slime.Move();
+            Vector acc = Acceleration(slime.speed);
+            slime.Accelerate(acc);
+
+            if (norm2(slime.speed) <= 0.005) break;
+        }
+
+        if (porteTouchee) {
+            cout << "Porte touchee ! Fin du niveau." << endl;
+            closeWindow(principale);
+            return true; // ← indique qu'on a terminé le niveau
         }
 
         cout << "Waiting for a new pulse" << endl;
     }
+    return false;
+}
 
-    cout << "Slime !" << endl;
+
+int main() {
+    string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
+    string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
+    Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+    PlayLevel(principale,path0, "Lab0.txt", 591, 180, true);
+
+    // Enchaînement avec lab1 (sans redondance)
+    principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+    PlayLevel(principale,path1, "Lab1.txt", 50, 150, false);
+
+    cout << "Fin du jeu !" << endl;
     endGraphics();
     return 0;
 }

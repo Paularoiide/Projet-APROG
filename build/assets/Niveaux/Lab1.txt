@@ -1,4 +1,5 @@
 Mur,"Point1.x":30,Point1.y":100,"Point2.x":160,"Point2.y":100,"epaisseur":3
+Mur,"Point1.x":30,Point1.y":100,"Point2.x":160,"Point2.y":100,"epaisseur":3
 Mur,"Point1.x":160,Point1.y":100,"Point2.x":160,"Point2.y":200,"epaisseur":3
 Mur,"Point1.x":160,Point1.y":200,"Point2.x":350,"Point2.y":200,"epaisseur":3
 Mur,"Point1.x":350,Point1.y":200,"Point2.x":350,"Point2.y":160,"epaisseur":3
@@ -7,7 +8,7 @@ Mur,"Point1.x":450,"Point1.y":160,"Point2.x":450,"Point2.y":260,"epaisseur":3
 Mur,"Point1.x":450,"Point1.y":260,"Point2.x":385,"Point2.y":260,"epaisseur":3
 Mur,"Point1.x":385,"Point1.y":260,"Point2.x":385,"Point2.y":550,"epaisseur":3
 Mur,"Point1.x":385,"Point1.y":550,"Point2.x":575,"Point2.y":550,"epaisseur":3
-Mur,"Point1.x":575,"Point1.y":550,"Point2.x":750,"Point2.y":550,"epaisseur":3
+Porte,"Point1.x":575,"Point1.y":550,"Point2.x":750,"Point2.y":550,"epaisseur":3
 Mur,"Point1.x":750,"Point1.y":550,"Point2.x":775,"Point2.y":550,"epaisseur":3
 Mur,"Point1.x":775,"Point1.y":550,"Point2.x":775,"Point2.y":560,"epaisseur":3
 Mur,"Point1.x":775,"Point1.y":560,"Point2.x":744,"Point2.y":560,"epaisseur":3

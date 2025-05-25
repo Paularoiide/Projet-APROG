@@ -45,6 +45,7 @@ void Bordure::afficher(){
     int lesY[4] = {static_cast<int>(Point1.y), static_cast<int>(Point2.y), static_cast<int>(Point3.y), static_cast<int>(Point4.y)};
     fillPoly(lesX,lesY,4,BLUE);
 }
+
 bool Bordure::is_in(Vector v) {
     return false;
 }
@@ -54,6 +55,12 @@ Porte::Porte(Vector PointA, Vector PointB, int epais) {
     Point2 = PointB;
     epaisseur = epais;
 }
+
+bool Porte::is_in(Vector v) {
+    Vector proj = projection(v, Point1, Point2);
+    return norm2(v - proj) < epaisseur;
+}
+
 void Porte::afficher() {
     cout << " Porte" << endl;
 
@@ -173,7 +180,19 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             cout << "epaisseur du mur : " << epaiss << endl;
             auto mur = std::make_unique<Mur>(Point1, Point2, epaiss);
             elements.push_back(std::move(mur));
-        }else if (row[0]=="Slime") {
+        } else if (row[0] == "Porte") {
+            if (row.size() < 6) {
+                    cerr << "erreur de lecture : pas assez d'arguments pour la porte à la ligne " << ligne << ", n° : " << i << endl;
+                        continue;
+            }
+            cout << "lecture d'une porte. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
+            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
+            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
+            int epaiss = stoi(row[5]);
+            cout << "epaisseur de la porte : " << epaiss << endl;
+            auto porte = std::make_unique<Porte>(Point1, Point2, epaiss);
+            elements.push_back(std::move(porte));
+        } else if (row[0]=="Slime") {
             role_Slime role = roleFromStr(row[1]);
             Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
             auto slime = std::make_unique<Slime>(role,pos);

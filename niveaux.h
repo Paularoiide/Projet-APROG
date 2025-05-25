@@ -27,6 +27,7 @@ public:
     int epaisseur;
     Porte(Vector PointA, Vector PointB, int epais);
     void afficher() override;
+    bool is_in(Vector v) override;
 };
 
 class Bordure : public Collisionable {
