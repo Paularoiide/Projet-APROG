@@ -24,6 +24,7 @@ Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, i
 int WIDTH = 1500;
 int HEIGHT = 1000;
 double dt=0.005;
+string strAssets = "build/assets/";
 
 bool fichierExiste(const std::string& cheminComplet) {
     std::ifstream fichier(cheminComplet.c_str());
@@ -36,14 +37,14 @@ Niveau generer_niveau(std::string chemin_niveau) {
     niveauActuel.remplir_niveau(texte);
     //cout << "niveau rempli" << endl;
     //cout << "quelque test à l'interieur de generer_niveau" << endl;
-    cout << "analyse du niveau :"<< endl;
+    /*cout << "analyse du niveau :"<< endl;
     for(int i=0;i<niveauActuel.elements.size();i++) {
         cout << "Type de l'objet : " << typeid(*niveauActuel.elements[i]).name() << endl;
-    }
+    }*/
     //cout<<"fin de la fonction generer_niveau"<<endl;
     return niveauActuel;
 }
-int entrer_code(const int width, const int height,const int BUTTON_WIDTH, const int BUTTON_HEIGHT) {
+int entrer_code(const int width, const int height, const int BUTTON_WIDTH, const int BUTTON_HEIGHT) {
 
     Window fenCode = openWindow(300,200,"code");
     showWindow(fenCode);
@@ -103,7 +104,6 @@ int entrer_code(const int width, const int height,const int BUTTON_WIDTH, const 
 }
 
 int fen_niveaux(const int width, const int height,const int BUTTON_WIDTH, const int BUTTON_HEIGHT, string repertoire) {
-
     Window fenNiv = openWindow(300,200,"code");
     showWindow(fenNiv);
     setActiveWindow(fenNiv);
@@ -168,7 +168,7 @@ struct LevelData {
     std::shared_ptr<Niveau> niveau;
 };
 
-LevelData StartLevel(string background_string, string repert_niv, double pos_x, double pos_y) {
+LevelData StartLevel(string background_string, string nom_niv, double pos_x, double pos_y) {
     int width, height;
     Color *C;
     loadColorImage(background_string, C, width, height);
@@ -179,7 +179,7 @@ LevelData StartLevel(string background_string, string repert_niv, double pos_x, 
     menu(principale, WIDTH, HEIGHT, repert_nivs);
     clearWindow();
 
-    std::shared_ptr<Niveau> niveau1 = std::make_shared<Niveau>(generer_niveau(repert_nivs + repert_niv));
+    std::shared_ptr<Niveau> niveau1 = std::make_shared<Niveau>(generer_niveau(repert_nivs + nom_niv));
     cout << "niveau_genere" << endl;
     cout << "niveau_affiche" << endl;
 
@@ -193,13 +193,14 @@ LevelData StartLevel(string background_string, string repert_niv, double pos_x, 
 }
 
 int main() {
-    string background_string = srcPath("lab1.png");
-    string repert_niv = "Lab1.txt";
+
+    string background_string = stringSrcPath(strAssets+"Niveaux/lab1.png");
+    string nom_niv= "Lab1.txt";
     double pos_x = 50;
     double pos_y = 300;
 
     // Initialisation du niveau
-    LevelData data = StartLevel(background_string, repert_niv, pos_x, pos_y);
+    LevelData data = StartLevel(background_string, nom_niv, pos_x, pos_y);
 
     Slime& slime = data.slime;
     Background& background = data.background;

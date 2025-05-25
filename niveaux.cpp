@@ -84,7 +84,7 @@ NiveauTextuel::NiveauTextuel(int nbElem1) {
 NiveauTextuel::NiveauTextuel() =default;
 NiveauTextuel::~NiveauTextuel() =default;
 NiveauTextuel ouvrir_niveau(string nom_fichier) {
-    cout << "ouverture du fichier niveau" << endl;
+    cout << "ouverture du fichier niveau : "<< nom_fichier << endl;
     ifstream f(nom_fichier);
     if (!f.is_open()) {
         cerr << "Erreur à l'ouverture du fichier !" << endl;

@@ -51,7 +51,7 @@ void Slime::Display() {
                 break;
             }
         }
-        putSprite(srcPath("slimebuddy.png"), pos.x, pos.y, sprite.i, sprite.j);
+        putSprite(stringSrcPath(strAssets+"slimebuddy.png"), pos.x, pos.y, sprite.i, sprite.j);
     }
 
     else if (role == role_Slime::SLIME_ENEMY) {
@@ -71,10 +71,10 @@ void Slime::Display() {
             }
         }
         if (norm2(speed) > 0.5){
-            putSprite(srcPath("Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+            putSprite(stringSrcPath(strAssets+"Slime2_Run_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
         }
         else {
-            putSprite(srcPath("Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+            putSprite(stringSrcPath(strAssets+"Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
         }
     }
     else if (role == role_Slime::KILLER) {
@@ -93,7 +93,7 @@ void Slime::Display() {
                 break;
             }
         }
-        putSprite(srcPath("Slime2_Attack_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
+        putSprite(stringSrcPath(strAssets+"Slime2_Attack_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
     }
 }
 
