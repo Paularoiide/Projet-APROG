@@ -170,10 +170,16 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
     }
 }
 
-void GameOver(){
+void GameOver(bool win, int nb_tir){
     // Fenêtre finale pour afficher le score
     openWindow(WIDTH, HEIGHT, "Fin du jeu");
-    string message_game_over = "Tu as été attrapé, Game Over";
+    string message_game_over;
+    if (win){
+        message_game_over = "Bravo ! Score final : " + to_string(nb_tir) + " tirs";
+    } else {
+        message_game_over = "Tu as été attrapé, Game Over";
+    }
+
 
     // Affichage du texte
     // Création de 5 Slimes à des positions aléatoires
@@ -184,7 +190,11 @@ void GameOver(){
             static_cast<double>(rand() % WIDTH),
             static_cast<double>(rand() % HEIGHT)
         };
-        slimes.push_back(Slime(role_Slime::KILLER, pos));
+        if (win){
+            slimes.push_back(Slime(role_Slime::JOUEUR, pos));
+        } else {
+            slimes.push_back(Slime(role_Slime::KILLER, pos));
+        }
     }
 
 
@@ -230,6 +240,9 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
 
     Resetscreen(niveau1->elements, background);
     slime.Display();
+    for (auto& ennemi : niveau1->ennemis) {
+        ennemi->Display();
+    }
 
     return {slime, background, niveau1};
 }
@@ -306,7 +319,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
         for (auto& ennemi : niveau1.ennemis) {
             if (slime.CollisionSlime(*ennemi)) {
                 cout << "Slime attrapé ! Game Over." << endl;
-                closeWindow(principale);
+                        closeWindow(principale);
                 return -1; // Code si échec de la fuite
             }
         }
@@ -334,7 +347,7 @@ int main() {
     score_niveau = PlayLevel(principale, path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
 
     if (score_niveau == -1){ // Dans ce cas c'est Game Over
-        GameOver();
+        GameOver(false,0);
         return 0;
     }
     nb_tir += score_niveau;
@@ -344,42 +357,12 @@ int main() {
     score_niveau = PlayLevel(principale, path1, "Lab1.txt", 50 + decalage_x, 180 + decalage_y, false);
 
     if (score_niveau == -1){ // Dans ce cas c'est Game Over
-        GameOver();
+        GameOver(false,0);
         return 0;
     }
     nb_tir += score_niveau;
 
-    // Fenêtre finale pour afficher le score
-    openWindow(WIDTH, HEIGHT, "Fin du jeu");
-
-
-    // Affichage du texte
-    string message = "Bravo ! Score final : " + to_string(nb_tir) + " tirs";
-    // Création de 5 Slimes à des positions aléatoires
-    std::vector<Slime> slimes;
-
-    for (int i = 0; i < 70; ++i) {
-        Vector pos = Vector{
-            static_cast<double>(rand() % WIDTH),
-            static_cast<double>(rand() % HEIGHT)
-        };
-        slimes.push_back(Slime(role_Slime::JOUEUR, pos));
-    }
-
-
-    // Affichage continu des Slimes jusqu'au clic
-    while (true) {
-        noRefreshBegin();
-        clearWindow();
-        for (Slime& s : slimes) {
-            s.Display();
-        }
-        drawString(WIDTH / 2 - 100, HEIGHT/2, message, BLACK, 20);
-        noRefreshEnd();
-        milliSleep(80);
-
-    }
-
+    GameOver(true,nb_tir);
     endGraphics();
     return 0;
 }
