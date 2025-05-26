@@ -21,9 +21,9 @@ class Slime : public Element{
 public:
     Vector pos;
     role_Slime role;
-    Vector speed = Vector{0.,0.};
-    Idx sprite = {0,0};
-    int radius = 4;
+    Vector speed;
+    Idx sprite;
+    int radius;
     //void Lancer(vector<unique_ptr<Element>>& obstacles);
     void Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles,Background background);
     void Move();

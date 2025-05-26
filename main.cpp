@@ -22,10 +22,10 @@ using namespace Imagine;
 Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
 int decalage_x = 250; // Décalage pour avoir de la place en haut et à gauche du niveau
-int decalage_y = 100;
-int WIDTH = 1500;
-int HEIGHT = 1000;
-double dt=0.005;
+int decalage_y = 12;
+int WIDTH = 1472;
+int HEIGHT = 832;
+double dt=1;
 string strAssets = "build/assets/";
 
 bool fichierExiste(const std::string& cheminComplet) {
@@ -131,14 +131,20 @@ int fen_niveaux(const int width, const int height,const int BUTTON_WIDTH, const 
 }
 
 int menu(Window fenMenu, const int width,const int height, const string repertoire) {
+    Color *C;
+    int w;
+    int h;
+    string Image_menu = stringSrcPath(strAssets + "Slimescape.png");
+    loadColorImage(Image_menu, C, w, h);
+    putColorImage(0,0,C,w,h,false,1.);
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
     int x_button_begin = width/2-BUTTON_WIDTH/2;
-    int y_button_begin = height/2-BUTTON_HEIGHT/2;
+    int y_button_begin = height/1.2-BUTTON_HEIGHT/2;
     int x_button_admin = width-3/2*BUTTON_WIDTH;
     int y_button_admin = height-3/2*BUTTON_HEIGHT;
-    drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,BLUE, "Commencer");
-    drawButton(x_button_admin,y_button_admin,BUTTON_WIDTH,BUTTON_HEIGHT,BLUE, "?");
+    drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "Commencer");
+    drawButton(x_button_admin,y_button_admin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "?");
     while (true) {
         int x, y;
         if (getMouse(x, y)) {
@@ -196,16 +202,16 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
 }
 
 
-bool PlayLevel(Window& principale,const string& background_string, const string& nom_niv, double pos_x, double pos_y,bool first_level) {
+int PlayLevel(Window& principale,const string& background_string, const string& nom_niv, double pos_x, double pos_y,bool first_level) {
     LevelData data = StartLevel(principale,background_string, nom_niv, pos_x, pos_y,first_level );
-
     Slime& slime = data.slime;
     Background& background = data.background;
     Niveau& niveau1 = *data.niveau;
-
+    int nb_tir = 0;
     while (true) {
         slime.speed = slime.Launch();
         bool porteTouchee = false;
+        nb_tir +=1;
 
         for (int timeStep = 0; timeStep <= 250 * freqDisplay; timeStep++) {
             if ((timeStep % freqDisplay) == 0) {
@@ -220,7 +226,7 @@ bool PlayLevel(Window& principale,const string& background_string, const string&
 
                 slime.Display();
                 noRefreshEnd();
-                milliSleep(75);
+                milliSleep(50);
             }
 
             // === Collisions avec les éléments du niveau ===
@@ -268,32 +274,67 @@ bool PlayLevel(Window& principale,const string& background_string, const string&
             Vector acc = Acceleration(slime.speed);
             slime.Accelerate(acc);
 
-            if (norm2(slime.speed) <= 0.005) break;
+            if (norm2(slime.speed) <= 0.0005) break;
         }
 
         if (porteTouchee) {
             cout << "Porte touchee ! Fin du niveau." << endl;
             closeWindow(principale);
-            return true;
+            return nb_tir;
         }
 
         cout << "Waiting for a new pulse" << endl;
     }
-    return false;
+    return nb_tir;
 }
 
 
 int main() {
+    srand(time(0)); // Initialisation de l'aléatoire
     string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
     string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
+
+    int nb_tir = 0;
+
     Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-    PlayLevel(principale,path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
 
-    // Enchaînement avec lab1 (sans redondance)
+    nb_tir += PlayLevel(principale, path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
+
     principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-    PlayLevel(principale,path1, "Lab1.txt", 50 + decalage_x, 180 + decalage_y, false);
 
-    cout << "Fin du jeu !" << endl;
+    nb_tir += PlayLevel(principale, path1, "Lab1.txt", 50 + decalage_x, 180 + decalage_y, false);
+
+    // Fenêtre finale pour afficher le score
+    openWindow(WIDTH, HEIGHT, "Fin du jeu");
+
+
+    // Affichage du texte
+    string message = "Bravo ! Score final : " + to_string(nb_tir) + " tirs";
+    // Création de 5 Slimes à des positions aléatoires
+    std::vector<Slime> slimes;
+
+    for (int i = 0; i < 70; ++i) {
+        Vector pos = Vector{
+            static_cast<double>(rand() % WIDTH),
+            static_cast<double>(rand() % HEIGHT)
+        };
+        slimes.push_back(Slime(role_Slime::JOUEUR, pos));
+    }
+
+
+    // Affichage continu des 5 Slimes jusqu'au clic
+    while (true) {
+        noRefreshBegin();
+        clearWindow();
+        drawString(WIDTH / 2 - 100, HEIGHT/2, message, BLACK, 20);
+        for (Slime& s : slimes) {
+            s.Display();
+        }
+        noRefreshEnd();
+        milliSleep(80);
+
+    }
+
     endGraphics();
     return 0;
 }

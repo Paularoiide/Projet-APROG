@@ -14,6 +14,9 @@
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
     role = givenRole;
+    speed = Vector{0.,0.};
+    sprite = {0,0};
+    radius = 6;
 }
 
 struct DirectionRange {
