@@ -70,7 +70,7 @@ Mur,"Point1.x":586,"Point1.y":541,"Point2.x":586,"Point2.y":595,"epaisseur":3
 Mur,"Point1.x":586,"Point1.y":595,"Point2.x":593,"Point2.y":595,"epaisseur":3
 Mur,"Point1.x":593,"Point1.y":595,"Point2.x":592,"Point2.y":615,"epaisseur":3
 Mur,"Point1.x":592,"Point1.y":615,"Point2.x":490,"Point2.y":611,"epaisseur":3
-Slime,"pos.x":592,"pos.y":615
+Slime,"pos.x":150,"pos.y":250
 
 
 
