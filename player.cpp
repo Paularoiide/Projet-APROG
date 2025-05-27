@@ -13,7 +13,15 @@ role_Slime roleFromStr(string s){
 
 Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
+    pos_initial = givenPos;
     role = givenRole;
+    if (role == role_Slime::SLIME_ENEMY) {
+        speed = {0.5, 0.0}; // vitesse de départ vers la droite
+    } if (role == role_Slime::JOUEUR) {
+        speed = {0.0, 0.0};
+    }
+    sprite = {0,0};
+    radius = 6;
 }
 Slime::Slime(role_Slime givenRole, Vector givenPos, Vector *movePattern, int n) {
     pos = givenPos;
@@ -106,7 +114,20 @@ void Slime::Display() {
 }
 
 void Slime::Move(){
-    pos = pos +speed * dt;
+    if (role == role_Slime::JOUEUR){
+        pos = pos +speed * dt;}
+    if (role == role_Slime::SLIME_ENEMY){
+        // Déplacement automatique autour de la position initiale sur l'axe x
+        double amplitude = 50; // Distance maximale à gauche ou à droite
+        double delta_x = pos.x - pos_initial.x;
+        // Inverser la vitesse si on dépasse l'amplitude
+        if (abs(delta_x) > amplitude) {
+            speed = -1 * speed;
+        }
+        pos.x += speed.x * dt;
+    }
+    if (role == role_Slime::KILLER){
+        pos = pos +speed * dt;}
 }
 
 void Slime::Accelerate(Vector a){
@@ -120,7 +141,7 @@ Vector Slime::Launch(){
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
     Vector delta = mouse - pos;
     Vector dir = delta / sqrt(norm2(delta));
-    double pulse = sqrt(norm2(delta)) * 8 / (static_cast<double>(WIDTH)); // Arbitrary formula
+    double pulse = sqrt(norm2(delta)) * 6 / (static_cast<double>(WIDTH)); // Arbitrary formula
     Vector launch_vector = pulse * dir;
     return launch_vector;
 }
@@ -162,80 +183,50 @@ bool Slime::Collision(Collisionable *obstacle) {
     return (sqrt(norm2(d)) <= radius);
 }
 
+bool Slime::CollisionSlime(const Slime& other) {
+    // Calcul de la distance entre les centres des deux slimes
+    Vector diff = pos - other.pos;
+    double distanceSquared = norm2(diff); // Utilise norm2 (distance au carré pour l'optimisation)
 
+    // Somme des rayons au carré
+    double radiusSum = radius + other.radius;
+    double radiusSumSquared = radiusSum * radiusSum;
 
-
-
-Vector Slime::Launch2(){
-    Vector center = {50.,50.}; // Centre de l'interface de direction
-    Vector arrow = {50.,40.}; // Position initiale de la flèche
-
-    do {drawArrow(center.x,center.y,arrow.x,arrow.y,BLUE);
-        arrow = rotate(arrow - center,1) + center;
-    } while (getKey() != KEY_PAUSE);
-    Vector dir = arrow - center / norm2(arrow - center); // We now have the launch direction
-    Vector top_left = {50.,50.};
-    arrow.x = 50.;
-    arrow.y = 50.; // Position initiale de la flèche
-    int w = 50,
-        h = 5,
-        alpha = 1;
-    fillRect(top_left.x,top_left.y,w,h,BLACK); // Rectangle
-    do {drawArrow(arrow.x,arrow.y,arrow.x,arrow.y+5,BLUE);
-        arrow.x+= alpha;
-        if ((arrow.x == top_left.x + w) || (arrow.x == top_left.x)){
-            alpha *= -1;
-        }
-
-    } while (getKey() != KEY_PAUSE);
-    return {0,0};
-
+    // Collision si distance² <= (rayon1 + rayon2)²
+    return distanceSquared <= radiusSumSquared;
 }
 
-void Slime::Die(){
-    speed = {0,0};
-    cout<<"Je suis mort"<< endl;
-}
 
-void Slime::Win(){
-    cout<<"I won"<< endl;
-}
 
-void Slime::Check(Slime slime, vector<unique_ptr<Element>>& obstacles){
-    DirectionRange directions[4] = {
-        {315.0, 45.0, 3}, // Droite
-        {45.0,  135.0, 0}, // Haut
-        {135.0, 225.0, 2}, // Gauche
-        {225.0, 315.0, 1}  // Bas
-    };
-    for (const auto& dir : directions) {
-        if (sprite.j == dir.spriteJ) {
-            Vector dif = slime.pos - pos;
-            double angle = atan2(dif.y, dif.x);
-            double deg = angle * 180.0 / M_PI;
-            if (deg < 0)
-                deg += 360;
-            if (deg <= dir.maxAngle && deg >= dir.minAngle){
-                bool kill = true;
-                /*Vector v;
-                for (int i =0; i<100; i++){
-                    v = pos + dif * i/100;
-                    for (int i = 0; i < obstacles.size(); i++) {
-                        if (Collisionable* d = dynamic_cast<Collisionable*>(obstacles[i].get())) { // Vérification si collisionable
-                            if (v in d) {
-                                kill = false }}}
-                }*/
-                if (kill){
-                    KILL(slime,obstacles);
+void Slime::Check(Slime& slime, vector<unique_ptr<Element>>& obstacles) {
+    if (role == role_Slime::SLIME_ENEMY) {
+        DirectionRange directions[4] = {
+            {350.0, 10.0, 3}, // Droite
+            {80.0, 100.0, 0}, // Haut
+            {170.0, 190.0, 2}, // Gauche
+            {260.0, 280.0, 1}  // Bas
+        };
+
+        for (const auto& dir : directions) {
+            if (sprite.j == dir.spriteJ) {
+                Vector dif = slime.pos - pos;
+                double distance = sqrt(norm2(dif));
+                double angle = atan2(dif.y, dif.x) * 180.0 / M_PI;
+                if (angle < 0) angle += 360;
+
+                bool inAngleRange =
+                    (dir.minAngle < dir.maxAngle && angle >= dir.minAngle && angle <= dir.maxAngle) ||
+                    (dir.minAngle > dir.maxAngle && (angle >= dir.minAngle || angle <= dir.maxAngle));
+
+                if (inAngleRange && distance < 200.0) {  // Vérification de distance commune
+                    cout << "[DEBUG] Joueur détecté dans l'angle de vision, déclenchement de KILL" << endl;
+                            role = role_Slime::KILLER;
                 }
+                break;
             }
-            break;
         }
     }
 }
 
-void Slime::KILL(Slime slime, vector<unique_ptr<Element>>& obstacles){
-    role = role_Slime::KILLER;
-    Vector dif = slime.pos - pos;
-    //Lancer(dif*2,obstacles);
-}
+
+

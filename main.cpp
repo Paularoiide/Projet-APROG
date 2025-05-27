@@ -21,9 +21,11 @@ using namespace Imagine;
 
 Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
-int WIDTH = 1500;
-int HEIGHT = 1000;
-double dt=0.005;
+int decalage_x = 250; // Décalage pour avoir de la place en haut et à gauche du niveau
+int decalage_y = 12;
+int WIDTH = 1472;
+int HEIGHT = 832;
+double dt=1;
 string strAssets = "build/assets/";
 
 bool fichierExiste(const std::string& cheminComplet) {
@@ -129,14 +131,20 @@ int fen_niveaux(const int width, const int height,const int BUTTON_WIDTH, const 
 }
 
 int menu(Window fenMenu, const int width,const int height, const string repertoire) {
+    Color *C;
+    int w;
+    int h;
+    string Image_menu = stringSrcPath(strAssets + "Slimescape.png");
+    loadColorImage(Image_menu, C, w, h);
+    putColorImage(0,0,C,w,h,false,1.);
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
     int x_button_begin = width/2-BUTTON_WIDTH/2;
-    int y_button_begin = height/2-BUTTON_HEIGHT/2;
+    int y_button_begin = height/1.2-BUTTON_HEIGHT/2;
     int x_button_admin = width-3/2*BUTTON_WIDTH;
     int y_button_admin = height-3/2*BUTTON_HEIGHT;
-    drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,BLUE, "Commencer");
-    drawButton(x_button_admin,y_button_admin,BUTTON_WIDTH,BUTTON_HEIGHT,BLUE, "?");
+    drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "Commencer");
+    drawButton(x_button_admin,y_button_admin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "?");
     while (true) {
         int x, y;
         if (getMouse(x, y)) {
@@ -162,21 +170,65 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
     }
 }
 
+void GameOver(bool win, int nb_tir){
+    // Fenêtre finale pour afficher le score
+    openWindow(WIDTH, HEIGHT, "Fin du jeu");
+    string message_game_over;
+    if (win){
+        message_game_over = "Bravo ! Score final : " + to_string(nb_tir) + " tirs";
+    } else {
+        message_game_over = "Tu as été attrapé, Game Over";
+    }
+
+
+    // Affichage du texte
+    // Création de 5 Slimes à des positions aléatoires
+    std::vector<Slime> slimes;
+
+    for (int i = 0; i < 70; ++i) {
+        Vector pos = Vector{
+            static_cast<double>(rand() % WIDTH),
+            static_cast<double>(rand() % HEIGHT)
+        };
+        if (win){
+            slimes.push_back(Slime(role_Slime::JOUEUR, pos));
+        } else {
+            slimes.push_back(Slime(role_Slime::KILLER, pos));
+        }
+    }
+
+
+    // Affichage continu des Slimes jusqu'au clic
+    while (true) {
+        noRefreshBegin();
+        clearWindow();
+        for (Slime& s : slimes) {
+            s.Display();
+        }
+        drawString(WIDTH / 2 - 100, HEIGHT/2, message_game_over, BLACK, 20);
+        noRefreshEnd();
+        milliSleep(80);
+
+    }
+}
+
+
 struct LevelData {
     Slime slime;
     Background background;
     std::shared_ptr<Niveau> niveau;
+
 };
 
-LevelData StartLevel(string background_string, string nom_niv, double pos_x, double pos_y) {
+LevelData StartLevel(Window& principale,string background_string, string nom_niv, double pos_x, double pos_y, bool first_level) {
     int width, height;
     Color *C;
     loadColorImage(background_string, C, width, height);
     Background background = {C, width, height};
-
-    Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
     string repert_nivs = "../Projet-APROG/build/assets/Niveaux/";
-    menu(principale, WIDTH, HEIGHT, repert_nivs);
+    if (first_level){ //Si c'est le premier niveau on affiche le menu
+        menu(principale, WIDTH, HEIGHT, repert_nivs);
+    }
     clearWindow();
 
     std::shared_ptr<Niveau> niveau1 = std::make_shared<Niveau>(generer_niveau(repert_nivs + nom_niv));
@@ -188,65 +240,129 @@ LevelData StartLevel(string background_string, string nom_niv, double pos_x, dou
 
     Resetscreen(niveau1->elements, background);
     slime.Display();
+    for (auto& ennemi : niveau1->ennemis) {
+        ennemi->Display();
+    }
 
     return {slime, background, niveau1};
 }
 
-int main() {
 
-    string background_string = stringSrcPath(strAssets+"Niveaux/lab1.png");
-    string nom_niv= "Lab1.txt";
-    double pos_x = 50;
-    double pos_y = 300;
-
-    // Initialisation du niveau
-    LevelData data = StartLevel(background_string, nom_niv, pos_x, pos_y);
-
+int PlayLevel(Window& principale,const string& background_string, const string& nom_niv, double pos_x, double pos_y,bool first_level) {
+    LevelData data = StartLevel(principale,background_string, nom_niv, pos_x, pos_y,first_level );
     Slime& slime = data.slime;
     Background& background = data.background;
-    Niveau& niveau1 = *data.niveau; // déréférencement du shared_ptr
-
-    // Boucle de jeu principale
+    Niveau& niveau1 = *data.niveau;
+    int nb_tir = 0;
     while (true) {
         slime.speed = slime.Launch();
+        bool porteTouchee = false;
+        nb_tir +=1;
 
         for (int timeStep = 0; timeStep <= 250 * freqDisplay; timeStep++) {
-            // Affichage
             if ((timeStep % freqDisplay) == 0) {
                 noRefreshBegin();
                 Resetscreen(niveau1.elements, background);
+
+                // Affichage des ennemis (slimes)
+                for (auto& ennemi : niveau1.ennemis) {
+                    ennemi->Display();
+                }
+
                 slime.Display();
                 noRefreshEnd();
-                milliSleep(75);
+                milliSleep(50);
             }
 
-            // Gestion des collisions
-            for (int i = 0; i < niveau1.elements.size(); i++) {
-                if (Collisionable* d = dynamic_cast<Collisionable*>(niveau1.elements[i].get())) {
-                    if (slime.Collision(d)) {
-                        if (Porte* p = dynamic_cast<Porte*>(niveau1.elements[i].get())) {
-                            break; // Porte touchée
-                        } else {
-                            slime.Shock(d); // Autre collision
-                        }
+            // === Collisions avec les éléments du niveau ===
+            for (auto& elem : niveau1.elements) {
+                Collisionable* d = dynamic_cast<Collisionable*>(elem.get());
+                if (!d) continue;
+
+                if (slime.Collision(d)) {
+                    if (dynamic_cast<Porte*>(elem.get())) {
+                        porteTouchee = true;
+                        break;
+                    } else {
+                        slime.Shock(d);
                     }
                 }
+                for (auto& ennemi : niveau1.ennemis) {
+                    if (ennemi->Collision(d)){
+                        ennemi->Shock(d);
+                    }
+                }
+
             }
 
-            // Déplacement et physique
+            if (porteTouchee) break;
+
+            // === Mouvement et détection des ennemis ===
+            for (auto& ennemi : niveau1.ennemis) {
+                ennemi->Check(slime,niveau1.elements);
+                if (ennemi->role ==role_Slime::KILLER){
+                    Vector dif = slime.pos - ennemi->pos;
+                    ennemi->speed = 0.5 * (dif)/sqrt(norm2(dif));
+                }
+                ennemi->Move();
+
+            }
+
+            // === Mouvement du joueur ===
             slime.Move();
-            Vector acc = Acceleration(slime.speed); // Calcul accélération
-            slime.Accelerate(acc);                  // Mise à jour vitesse
+            Vector acc = Acceleration(slime.speed);
+            slime.Accelerate(acc);
 
-            if (norm2(slime.speed) <= 0.005) {
-                break; // Slime arrêté
+            if (norm2(slime.speed) <= 0.0005) break;
+        }
+
+        for (auto& ennemi : niveau1.ennemis) {
+            if (slime.CollisionSlime(*ennemi)) {
+                cout << "Slime attrapé ! Game Over." << endl;
+                        closeWindow(principale);
+                return -1; // Code si échec de la fuite
             }
+        }
+
+        if (porteTouchee) {
+            cout << "Porte touchee ! Fin du niveau." << endl;
+            closeWindow(principale);
+            return nb_tir;
         }
 
         cout << "Waiting for a new pulse" << endl;
     }
+    return nb_tir;
+}
 
-    cout << "Slime !" << endl;
+
+int main() {
+    srand(time(0)); // Initialisation de l'aléatoire
+    string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
+    string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
+
+    int nb_tir = 0;
+    int score_niveau;
+    Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+    score_niveau = PlayLevel(principale, path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
+
+    if (score_niveau == -1){ // Dans ce cas c'est Game Over
+        GameOver(false,0);
+        return 0;
+    }
+    nb_tir += score_niveau;
+
+    principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+
+    score_niveau = PlayLevel(principale, path1, "Lab1.txt", 50 + decalage_x, 180 + decalage_y, false);
+
+    if (score_niveau == -1){ // Dans ce cas c'est Game Over
+        GameOver(false,0);
+        return 0;
+    }
+    nb_tir += score_niveau;
+
+    GameOver(true,nb_tir);
     endGraphics();
     return 0;
 }

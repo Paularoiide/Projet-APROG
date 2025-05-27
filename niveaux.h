@@ -26,6 +26,7 @@ public:
     int epaisseur;
     Porte(Vector PointA, Vector PointB, int epais);
     void afficher() override;
+    bool is_in(Vector v) override;
 };
 class Bordure : public Collisionable {
 public:
@@ -54,6 +55,8 @@ public:
     bool Collision(Slime *slime);
 };
 
+
+
 class NiveauTextuel {
 public:
     int numero = 0;
@@ -69,6 +72,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 class Niveau {
 public:
     std::vector<std::unique_ptr<Element>> elements;
+    std::vector<std::unique_ptr<Slime>> ennemis;
     std::vector<std::unique_ptr<Collisionable>> collisionables;
     int nbElem;
 

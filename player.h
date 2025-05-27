@@ -20,6 +20,7 @@ class Slime : public Element{
 
 public:
     Vector pos;
+    Vector pos_initial;
     role_Slime role;
     Vector speed = Vector{0.,0.};
     Idx sprite = {0,0};
@@ -33,10 +34,12 @@ public:
     void Display(); // Affiche le sprite en cours
     void Shock(Collisionable *Obstacle);
     bool Collision(Collisionable *Obstacle);
+    bool CollisionSlime(const Slime& other);
     void Check(Slime slime, vector<unique_ptr<Element>>& obstacles);
     void KILL(Slime slime, vector<unique_ptr<Element>>& obstacles);
     void Die();
     void Win();
+    void idleMove();
     Vector Launch();
     Vector Launch2();
     Slime( role_Slime givenRole, Vector givenPosition);

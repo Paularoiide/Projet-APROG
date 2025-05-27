@@ -54,7 +54,6 @@ Porte::Porte(Vector PointA, Vector PointB, int epais) {
     Point2 = PointB;
     epaisseur = epais;
 }
-
 bool Porte::is_in(Vector v) {
     Vector proj = projection(v, Point1, Point2);
     return norm2(v - proj) < epaisseur;
@@ -182,7 +181,7 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         for (string mot : row) {
             row_explicite = row_explicite + "|" + mot;
         }
-        //cout << "row : " << row_explicite << endl;
+        cout << "row : " << row_explicite << endl;
 
         if (row[0] == "Bordure") {
             if (row.size() < 5) {
@@ -190,14 +189,14 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
                 continue;
             }
             //cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
-            Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
-            Vector Point2 = {static_cast<double>(stoi(row[3])) + decalage_x, static_cast<double>(stoi(row[4])) + decalage_y};
+            Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
+            Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
             auto bord = std::make_unique<Bordure>(Point1, Point2);
             elements.push_back(std::move(bord));
         } else if (row[0] == "Mur") {
             if (row.size() < 6) {
                 cerr << "erreur de lecture : pas assez d'arguments pour le mur à la ligne " << ligne << ", n° : " << i << endl;
-                continue;
+                    continue;
             }
             //cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
             Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
@@ -219,31 +218,22 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             auto porte = std::make_unique<Porte>(Point1, Point2, epaiss);
             elements.push_back(std::move(porte));
         } else if (row[0]=="Slime") {
-            
-            if(row.size() == 4) {
-            role_Slime role = roleFromStr(row[1]);
-            Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
+            if (row.size() < 3) {
+                cerr << "erreur de lecture : pas assez d'arguments pour le Slime à la ligne " << ligne << ", n° : " << i << endl;
+                    continue;
+            }else if(row.size()==3) {
+                role_Slime role = roleFromStr("Ennemy");
+                        Vector pos = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
+                        auto slime = std::make_unique<Slime>(role,pos);
+                        ennemis.push_back(std::move(slime));
+                        cout << "Slime charge" << endl;
+            } else if(row.size()==4) {
 
-                auto slime = std::make_unique<Slime>(role,pos);
-                ennemis.push_back(std::move(slime));
-            } else if(row.size()>4) {
-		role_Slime role = roleFromStr(row[1]);
-                 Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
-
-                int nbOfPatterns = (row.size()-4)/2;
-                Vector *pattern = new Vector[nbOfPatterns];
-                for(int j=0;j<nbOfPatterns;j++) {
-                    pattern[j].x = static_cast<double>(stoi(row[4+2*j]));
-                    pattern[j].y = static_cast<double>(stoi(row[5+2*j]));
-                }
-                auto slime = std::make_unique<Slime>(role,pos,pattern,nbOfPatterns);
-                ennemis.push_back(std::move(slime));
-            } else if(row.size()==3) {
-            role_Slime role = role_Slime::SLIME_ENEMY;
-            Vector pos = {static_cast<double>(stoi(row[1])) + decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
-            auto slime = std::make_unique<Slime>(role,pos);
-            ennemis.push_back(std::move(slime));
-            cout << "Slime charge" << endl;
+                    role_Slime role = roleFromStr(string(row[1]));
+                    Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
+                    auto slime = std::make_unique<Slime>(role,pos);
+                    ennemis.push_back(std::move(slime));
+                    cout << "Slime charge" << endl;
             }
         }else {
             cerr << "erreur de lecture : impossible d'identifier l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
