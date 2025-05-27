@@ -91,19 +91,46 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
             return NiveauTextuel(0); // On retourne un objet vide
     }
 
-    // Compter les lignes
+    // Compter les lignes avec espaces et commentaires:
     int nbLignes = count(istreambuf_iterator<char>(f),
                          istreambuf_iterator<char>(), '\n')+1;
+    f.clear();
+    f.seekg(0);
+
+    // compter sans lignes vides ou lignes avec # (commentaire)
+    int nbLignesNonVides=0;
+    string ligne;
+    while(getline(f, ligne))
+    {
+        ligne.erase(0, ligne.find_first_not_of(" \t\r\n"));
+        // Ignore ligne vide ou ligne de commentaire
+        if (ligne.empty() || ligne[0] == '#' || (ligne.size() >= 2 && ligne[0] == '/' && ligne[1] == '/')|| (ligne.size() >= 2 && ligne[0] == '\\' && ligne[1] == 'n'))
+            continue;
+
+        nbLignesNonVides++;
+    }
     // convention locale : on ne met pas de ligne vide à la fin
     cout << "nombre de lignes :"<<nbLignes<<endl;
+    cout << "nombre de lignes non vides:"<<nbLignesNonVides<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
     f.seekg(0);
 
-    NiveauTextuel niveauActuel(nbLignes);
+    NiveauTextuel niveauActuel(nbLignesNonVides);
+    string ligneActu = "";
+    int j = 0;
 
     for (int i = 0; i < nbLignes; i++) {
-        getline(f, niveauActuel.lignes[i]);
+        getline(f, ligneActu);
+        ligne.erase(0, ligneActu.find_first_not_of(" \t\r\n"));
+        // Ignore ligne vide ou ligne de commentaire
+        if (ligneActu.empty() || ligneActu[0] == '#' || (ligneActu.size() >= 2 && ligneActu[0] == '/' && ligneActu[1] == '/')|| (ligneActu.size() >= 2 && ligneActu[0] == '\\' && ligneActu[1] == 'n'))
+        {
+            cout << "ligne n°"<< i << " vide." << endl;
+            continue;
+        } else {
+            niveauActuel.lignes[j] = ligneActu;
+            j++;}
     }
 
     cout << "Niveau chargé" << endl;
@@ -132,21 +159,17 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
             row.push_back(match[1].str());
         } else {
             cerr << "ligne mal définie : le type d'élément (avant la première virgule) n'est pas défini !" << endl;
+                cout << "ligne : " << ligne << endl;
                 continue;
         }
 
         string word;
         while (getline(s, word, ',')) {
-            regex regexp(":\\d+");
+            regex regexp(":([a-zA-Z0-9]+)");
             smatch m;
             if (regex_search(word, m, regexp)) {
                 row.push_back(m[0].str().substr(1));
             }
-        }
-
-        if (row.size() < 5) {
-            cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
-                continue;
         }
 
         string row_explicite = "";
@@ -156,7 +179,11 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         cout << "row : " << row_explicite << endl;
 
         if (row[0] == "Bordure") {
-            cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
+            if (row.size() < 5) {
+                cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
+                continue;
+            }
+            //cout << "lecture d'une bordure. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << endl;
             Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
             Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
             auto bord = std::make_unique<Bordure>(Point1, Point2);
@@ -164,20 +191,38 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         } else if (row[0] == "Mur") {
             if (row.size() < 6) {
                 cerr << "erreur de lecture : pas assez d'arguments pour le mur à la ligne " << ligne << ", n° : " << i << endl;
-                    continue;
+                continue;
             }
-            cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
+            //cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
             Vector Point1 = {static_cast<double>(stoi(row[1])), static_cast<double>(stoi(row[2]))};
             Vector Point2 = {static_cast<double>(stoi(row[3])), static_cast<double>(stoi(row[4]))};
             int epaiss = stoi(row[5]);
-            cout << "epaisseur du mur : " << epaiss << endl;
+            //cout << "epaisseur du mur : " << epaiss << endl;
             auto mur = std::make_unique<Mur>(Point1, Point2, epaiss);
             elements.push_back(std::move(mur));
         }else if (row[0]=="Slime") {
+            if (row.size() < 4) {
+                cerr << "erreur de lecture : pas assez d'arguments pour l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
+                        cout << "nb elements : " << row.size();
+                    continue;
+            }
             role_Slime role = roleFromStr(row[1]);
             Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
-            auto slime = std::make_unique<Slime>(role,pos);
-            elements.push_back(std::move(slime));
+
+            if(row.size() == 4) {
+                auto slime = std::make_unique<Slime>(role,pos);
+                elements.push_back(std::move(slime));
+            } else {
+                int nbOfPatterns = (row.size()-4)/2;
+                Vector *pattern = new Vector[nbOfPatterns];
+                for(int j=0;j<nbOfPatterns;j++) {
+                    pattern[j].x = static_cast<double>(stoi(row[4+2*j]));
+                    pattern[j].y = static_cast<double>(stoi(row[5+2*j]));
+                }
+                auto slime = std::make_unique<Slime>(role,pos,pattern,nbOfPatterns);
+                elements.push_back(std::move(slime));
+            }
+
         }else {
             cerr << "erreur de lecture : impossible d'identifier l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
         }

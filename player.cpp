@@ -15,6 +15,14 @@ Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
     pos = givenPos;
     role = givenRole;
 }
+Slime::Slime(role_Slime givenRole, Vector givenPos, Vector *movePattern, int n) {
+    pos = givenPos;
+    role = givenRole;
+    pattern = new Vector[n];
+    for(int i=0;i<n;i++) {
+        pattern[i] = movePattern[n];
+    }
+}
 
 struct DirectionRange {
     double minAngle;

@@ -21,21 +21,18 @@ public:
     void afficher() override;
     bool is_in(Vector v) override;
 };
-
 class Porte : public Collisionable {
 public:
     int epaisseur;
     Porte(Vector PointA, Vector PointB, int epais);
     void afficher() override;
 };
-
 class Bordure : public Collisionable {
 public:
     Bordure(Vector PointA, Vector PointB);
     void afficher() override;
     bool is_in(Vector v) override;
 };
-
 class Boite : public Element {
 public:
     Vector Point1;
@@ -44,10 +41,6 @@ public:
         cout << "Boite" << endl;
     }
 };
-
-
-//class Slime : public Element;
-
 class Pique : public Element {
 public:
     Vector Base;
@@ -71,7 +64,6 @@ public:
     ~NiveauTextuel();
     void detruire();
 };
-
 NiveauTextuel ouvrir_niveau(string nom_fichier);
 
 class Niveau {

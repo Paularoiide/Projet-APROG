@@ -23,6 +23,8 @@ public:
     role_Slime role;
     Vector speed = Vector{0.,0.};
     Idx sprite = {0,0};
+    int patternNumber;
+    Vector *pattern;
     int radius = 4;
     //void Lancer(vector<unique_ptr<Element>>& obstacles);
     void Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles,Background background);
@@ -38,6 +40,7 @@ public:
     Vector Launch();
     Vector Launch2();
     Slime( role_Slime givenRole, Vector givenPosition);
+    Slime(role_Slime givenRole, Vector givenPos, Vector *movePattern, int n);
     void afficher() override {
         Display();
     }

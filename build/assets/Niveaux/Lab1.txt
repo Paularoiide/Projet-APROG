@@ -39,4 +39,4 @@ Mur,"Point1.x":152,"Point1.y":501,"Point2.x":156,"Point2.y":501,"epaisseur":3
 Mur,"Point1.x":156,"Point1.y":501,"Point2.x":156,"Point2.y":516,"epaisseur":3
 Mur,"Point1.x":156,"Point1.y":516,"Point2.x":64,"Point2.y":516,"epaisseur":3
 
-
+Slime,"Role":Killer,"Pos.x":200,"Pos.y":300
