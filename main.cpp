@@ -183,7 +183,8 @@ void GameOver(bool win, int nb_tir){
 
     // Affichage du texte
     // Création de 5 Slimes à des positions aléatoires
-    std::vector<Slime> slimes;
+    std::vector<Joueur> joueurs;
+    std::vector<Ennemi> ennemis;
 
     for (int i = 0; i < 70; ++i) {
         Vector pos = Vector{
@@ -191,9 +192,9 @@ void GameOver(bool win, int nb_tir){
             static_cast<double>(rand() % HEIGHT)
         };
         if (win){
-            slimes.push_back(Slime(role_Slime::JOUEUR, pos));
+            joueurs.push_back(Joueur(pos));
         } else {
-            slimes.push_back(Slime(role_Slime::KILLER, pos));
+            ennemis.push_back(Ennemi(pos));
         }
     }
 
@@ -202,7 +203,7 @@ void GameOver(bool win, int nb_tir){
     while (true) {
         noRefreshBegin();
         clearWindow();
-        for (Slime& s : slimes) {
+        for (Joueur& s : joueurs) {
             s.Display();
         }
         drawString(WIDTH / 2 - 100, HEIGHT/2, message_game_over, BLACK, 20);
@@ -214,7 +215,7 @@ void GameOver(bool win, int nb_tir){
 
 
 struct LevelData {
-    Slime slime;
+    Joueur joueur;
     Background background;
     std::shared_ptr<Niveau> niveau;
 
@@ -236,26 +237,26 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
     cout << "niveau_affiche" << endl;
 
     Vector pos_init = {pos_x, pos_y};
-    Slime slime = Slime(role_Slime::JOUEUR, pos_init);
+    Joueur joueur = Joueur(pos_init);
 
     Resetscreen(niveau1->elements, background);
-    slime.Display();
+    joueur.Display();
     for (auto& ennemi : niveau1->ennemis) {
         ennemi->Display();
     }
 
-    return {slime, background, niveau1};
+    return {joueur, background, niveau1};
 }
 
 
 int PlayLevel(Window& principale,const string& background_string, const string& nom_niv, double pos_x, double pos_y,bool first_level) {
     LevelData data = StartLevel(principale,background_string, nom_niv, pos_x, pos_y,first_level );
-    Slime& slime = data.slime;
+    Joueur& joueur = data.joueur;
     Background& background = data.background;
     Niveau& niveau1 = *data.niveau;
     int nb_tir = 0;
     while (true) {
-        slime.speed = slime.Launch();
+        joueur.speed = joueur.Launch();
         bool porteTouchee = false;
         nb_tir +=1;
 
@@ -269,7 +270,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
                     ennemi->Display();
                 }
 
-                slime.Display();
+                joueur.Display();
                 noRefreshEnd();
                 milliSleep(50);
             }
@@ -279,12 +280,12 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
                 Collisionable* d = dynamic_cast<Collisionable*>(elem.get());
                 if (!d) continue;
 
-                if (slime.Collision(d)) {
+                if (joueur.Collision(d)) {
                     if (dynamic_cast<Porte*>(elem.get())) {
                         porteTouchee = true;
                         break;
                     } else {
-                        slime.Shock(d);
+                        joueur.Shock(d);
                     }
                 }
                 for (auto& ennemi : niveau1.ennemis) {
@@ -299,9 +300,9 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
             // === Mouvement et détection des ennemis ===
             for (auto& ennemi : niveau1.ennemis) {
-                ennemi->Check(slime,niveau1.elements);
-                if (ennemi->role ==role_Slime::KILLER){
-                    Vector dif = slime.pos - ennemi->pos;
+                ennemi->Check(joueur,niveau1.elements);
+                if (ennemi->kill){
+                    Vector dif = joueur.pos - ennemi->pos;
                     ennemi->speed = 0.5 * (dif)/sqrt(norm2(dif));
                 }
                 ennemi->Move();
@@ -309,15 +310,15 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
             }
 
             // === Mouvement du joueur ===
-            slime.Move();
-            Vector acc = Acceleration(slime.speed);
-            slime.Accelerate(acc);
+            joueur.Move();
+            Vector acc = Acceleration(joueur.speed);
+            joueur.Accelerate(acc);
 
-            if (norm2(slime.speed) <= 0.0005) break;
+            if (norm2(joueur.speed) <= 0.0005) break;
         }
 
         for (auto& ennemi : niveau1.ennemis) {
-            if (slime.CollisionSlime(*ennemi)) {
+            if (joueur.CollisionSlime(*ennemi)) {
                 cout << "Slime attrapé ! Game Over." << endl;
                         closeWindow(principale);
                 return -1; // Code si échec de la fuite

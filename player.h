@@ -11,41 +11,67 @@ using namespace Imagine;
 #include <typeinfo>
 using namespace std;
 
-enum class role_Slime {
-    JOUEUR, SLIME_ENEMY,KILLER, PNJ
-};
-role_Slime roleFromStr(string s);
 
-class Slime : public Element{
+class Joueur;
+
+
+class Slime : public Element {
+protected:
+    Idx sprite = {0, 0};
+    int patternNumber;
+    Vector* pattern;
 
 public:
     Vector pos;
     Vector pos_initial;
-    role_Slime role;
-    Vector speed = Vector{0.,0.};
-    Idx sprite = {0,0};
-    int patternNumber;
-    Vector *pattern;
+    Vector speed = Vector{0., 0.};
     int radius = 4;
-    //void Lancer(vector<unique_ptr<Element>>& obstacles);
-    void Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles,Background background);
-    void Move();
+
+    // Méthodes générales
     void Accelerate(Vector a);
-    void Display(); // Affiche le sprite en cours
-    void Shock(Collisionable *Obstacle);
-    bool Collision(Collisionable *Obstacle);
-    bool CollisionSlime(const Slime& other);
-    void Check(Slime slime, vector<unique_ptr<Element>>& obstacles);
-    void KILL(Slime slime, vector<unique_ptr<Element>>& obstacles);
-    void Die();
-    void Win();
-    void idleMove();
-    Vector Launch();
-    Vector Launch2();
-    Slime( role_Slime givenRole, Vector givenPosition);
-    Slime(role_Slime givenRole, Vector givenPos, Vector *movePattern, int n);
+    void Shock(Collisionable* Obstacle);
+    bool Collision(Collisionable* Obstacle) const;
+
+    // Méthodes abstraites à redéfinir
+    virtual void Display() = 0;             // méthode virtuelle pure
+    virtual void Move() = 0;
+    virtual Vector Launch() const {
+
+    }
+    virtual void Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) {
+
+    }
+    virtual bool CollisionSlime(const Slime& other){
+
+    }
+
+    // Surcharge d'affichage pour Element
     void afficher() override {
         Display();
     }
+
+    virtual ~Slime() = default; // Destructeur virtuel
+};
+
+
+class Joueur : public Slime {
+public:
+    Joueur(Vector givenPosition);
+    void Display() override;
+    void Move() override;
+    Vector Launch() const;
+};
+
+
+
+class Ennemi : public Slime {
+public:
+    bool kill;
+    Ennemi(Vector givenPosition);
+    Ennemi(Vector givenPos, Vector *movePattern, int n);
+    void Display() override;
+    void Move() override;
+    void Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) override;
+    bool CollisionSlime(const Joueur &other);
 };
 
