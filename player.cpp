@@ -4,7 +4,7 @@
 #include "vector.h"
 #include "niveaux.h"
 
-Joueur::Joueur(Vector givenPos) {// constructeur
+Joueur::Joueur(Vector givenPos) {//Initialise un joueur avec une position donnée, une vitesse nulle, un rayon de 6 et un sprite par défaut.
     pos = givenPos;
     pos_initial = givenPos;
     speed = {0.0, 0.0};
@@ -12,17 +12,17 @@ Joueur::Joueur(Vector givenPos) {// constructeur
     radius = 6;
 }
 
-Ennemi::Ennemi(Vector givenPos) {// constructeur
+Ennemi::Ennemi(Vector givenPos) {//Initialise un ennemi avec une position donnée, une vitesse initiale vers la droite, un rayon de 6 et un état kill à false.
     pos = givenPos;
     pos_initial = givenPos;
-    speed = {0.5, 0.0}; // vitesse de départ vers la droite
+    speed = {0.5, 0.0};
     sprite = {0,0};
     radius = 6;
     kill = false;
 }
 
 
-Ennemi::Ennemi(Vector givenPos, Vector *movePattern, int n) {
+Ennemi::Ennemi(Vector givenPos, Vector *movePattern, int n) { // Initialise un ennemi avec un motif de déplacement (movePattern) en plus des attributs de base.
     pos = givenPos;
     pos_initial = givenPos;
     speed = {0.5, 0.0}; // vitesse de départ vers la droite
@@ -42,7 +42,7 @@ struct DirectionRange {
     int spriteJ;
 };
 
-void Joueur::Display(){
+void Joueur::Display(){ //Anime le sprite du joueur et met à jour sa direction en fonction de son angle de déplacement. Affiche le sprite correspondant.
     sprite.i = (sprite.i + 1) % 6; // Animation commune
 
     double angle = atan2(speed.y, speed.x);
@@ -71,7 +71,7 @@ void Joueur::Display(){
     putSprite(stringSrcPath(strAssets+"slimebuddy.png"), pos.x, pos.y, sprite.i, sprite.j);
 }
 
-void Ennemi::Display(){
+void Ennemi::Display(){ // Anime le sprite de l'ennemi et met à jour sa direction. Affiche différents sprites selon si l'ennemi est en train de marcher, courir ou attaquer (kill = true).
     sprite.i = (sprite.i + 1) % 6; // Animation commune
 
     double angle = atan2(speed.y, speed.x);
@@ -122,10 +122,10 @@ void Ennemi::Display(){
 }
 
 
-void Joueur::Move(){
+void Joueur::Move(){ // Déplace le joueur en fonction de sa vitesse et du temps écoulé (dt)
     pos = pos +speed * dt;}
 
-void Ennemi::Move(){
+void Ennemi::Move(){ // Déplace l'ennemi automatiquement autour de sa position initiale (va-et-vient horizontal). Si kill est vrai, l'ennemi se déplace normalement.
     if (!kill){
         // Déplacement automatique autour de la position initiale sur l'axe x
         double amplitude = 50; // Distance maximale à gauche ou à droite
@@ -140,12 +140,11 @@ void Ennemi::Move(){
         pos = pos +speed * dt;}
 }
 
-void Slime::Accelerate(Vector a){
+void Slime::Accelerate(Vector a){ // Applique une accélération a à la vitesse du slime.
     speed = speed + a * dt;
 }
 
-Vector Joueur::Launch() const{
-    cout << "Proceed to launch" << endl;
+Vector Joueur::Launch() const{ // Calcule et retourne un vecteur de lancement basé sur la position de la souris pour propulser le joueur.
     int mouse_x = 0, mouse_y = 0;
     getMouse(mouse_x, mouse_y);
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
@@ -156,7 +155,7 @@ Vector Joueur::Launch() const{
     return launch_vector;
 }
 
-void Slime::Shock(Collisionable *obstacle) {
+void Slime::Shock(Collisionable *obstacle) { // Gère la réflexion de la vitesse du slime lors d'une collision avec un obstacle en utilisant la normale à la surface.
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector d = pos - origin;
     Vector normal = d / sqrt(norm2(d)); // Vecteur normal unitaire
@@ -165,7 +164,7 @@ void Slime::Shock(Collisionable *obstacle) {
     speed = reflect(speed, normal);
 }
 
-bool Slime::Collision(Collisionable *obstacle) const {
+bool Slime::Collision(Collisionable *obstacle) const { // Vérifie si le slime entre en collision avec un obstacle en projetant sa position sur le segment de l'obstacle.
     Vector AB = obstacle->Point2 - obstacle->Point1;
     Vector AP = pos - obstacle->Point1;
     double t = ps(AP, AB) / norm2(AB); // t ∈ R
@@ -193,22 +192,20 @@ bool Slime::Collision(Collisionable *obstacle) const {
     return (sqrt(norm2(d)) <= radius);
 }
 
-bool Ennemi::CollisionSlime(const Joueur& other) {
+bool Joueur::CollisionSlime(const Ennemi& other) { // Vérifie si l'ennemi entre en collision avec le joueur en comparant la distance entre eux à la somme de leurs rayons.
     // Calcul de la distance entre les centres des deux slimes
-    Vector diff = pos - other.pos;
-    double distanceSquared = norm2(diff); // Utilise norm2 (distance au carré pour l'optimisation)
+    double diff = distance(pos,other.pos);
 
     // Somme des rayons au carré
-    double radiusSum = radius + other.radius;
-    double radiusSumSquared = radiusSum * radiusSum;
+    double Som_radius = radius + other.radius;
 
     // Collision si distance² <= (rayon1 + rayon2)²
-    return distanceSquared <= radiusSumSquared;
+    return diff <= Som_radius;
 }
 
 
 
-void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) {
+void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) { //Détecte si le joueur est dans le champ de vision de l'ennemi (angle et distance). Si oui, active le mode attaque (kill = true).
     DirectionRange directions[4] = {
         {350.0, 10.0, 3}, // Droite
         {80.0, 100.0, 0}, // Haut
@@ -228,7 +225,6 @@ void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) {
                 (dir.minAngle > dir.maxAngle && (angle >= dir.minAngle || angle <= dir.maxAngle));
 
             if (inAngleRange && distance < 200.0) {  // Vérification de distance commune
-                cout << "[DEBUG] Joueur détecté dans l'angle de vision, déclenchement de KILL" << endl;
                         kill = true;
             }
             break;

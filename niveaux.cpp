@@ -233,5 +233,11 @@ void Niveau::afficher() {
             cerr << "objet non construit au moment de l'affichage" << endl;
         }
     }
+}
 
+Niveau generer_niveau(std::string chemin_niveau) {
+    NiveauTextuel texte = ouvrir_niveau(chemin_niveau);
+    Niveau niveauActuel;
+    niveauActuel.remplir_niveau(texte);
+    return niveauActuel;
 }

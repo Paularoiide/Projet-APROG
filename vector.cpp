@@ -3,46 +3,48 @@
 #include <cmath>
 
 
-Vector operator+(Vector a, Vector b){
+Vector operator+(Vector a, Vector b){ // Opération +
     Vector result;
     result.x = a.x + b.x;
     result.y = a.y + b.y;
     return result;
 
 }
-Vector operator-(Vector a, Vector b){
+Vector operator-(Vector a, Vector b){ // Opération -
     Vector result;
     result.x = a.x - b.x;
     result.y = a.y - b.y;
     return result;
 }
-double norm2(Vector a){
+double norm2(Vector a){ // Norme au carré d'un vecteur
     return a.x*a.x + a.y*a.y;
 }
-Vector operator*(Vector a, double lambda){
+Vector operator*(Vector a, double lambda){ // Opération *
     Vector result;
     result.x = a.x * lambda;
     result.y = a.y * lambda;
     return result;
 }
-Vector operator*(double lambda, Vector a){
+Vector operator*(double lambda, Vector a){  // Opération * dans l'autre sens
     return a * lambda;
 }
 
-Vector operator/(Vector a, double lambda){
+Vector operator/(Vector a, double lambda){ // Opération /
     Vector result;
     result.x = a.x / lambda;
     result.y = a.y / lambda;
     return result;
 }
 
-// produit scalaire
-double ps(Vector a, Vector b) {
+Vector operator/(double lambda, Vector a){  // Opération / dans l'autre sens
+    return a / lambda;
+}
+
+double ps(Vector a, Vector b) { // produit scalaire entre 2 vecteurs
     return a.x*b.x + a.y*b.y;
 }
 
-// prend l'angle en degres
-Vector rotate(Vector a, double angle) {
+Vector rotate(Vector a, double angle) { // Tourne un vecteur d'un certain degré
     angle *= M_PI / 180;
     Vector c;
     double co = cos(angle);
@@ -52,10 +54,9 @@ Vector rotate(Vector a, double angle) {
     return c;
 }
 
-// renvoie le projete d'un point a à la droite formee en reliant
-// les points PointA et PointB
 
-Vector projection(Vector a, Vector PointA, Vector PointB) {
+
+Vector projection(Vector a, Vector PointA, Vector PointB) {// Renvoie le projeté d'un point a à la droite formee en reliant les points PointA et PointB
     Vector e = PointB - PointA;       // vecteur directeur de la droite
     Vector ap = a - PointA;           // vecteur de PointA à a
     double t = ps(ap, e) / norm2(e);  // projection scalaire
@@ -64,73 +65,25 @@ Vector projection(Vector a, Vector PointA, Vector PointB) {
 
 
 
-// idem au projete pour la distance
-double distance(Vector a, Vector PointA, Vector PointB) {
-    // la projection minimisant la distance étant orthogonale en dimension finie
+double distance(Vector a, Vector PointA, Vector PointB) {// Renvoie le projeté d'un point a à la droite formee en reliant les points PointA et PointB
     return norm2(a-projection(a,PointA,PointB));
 }
-double distance(Vector a, Vector b) {
-    return norm2(a-b);
+double distance(Vector a, Vector b) {//Renvoie la distance entre deux points
+    return sqrt(norm2(a-b));
 }
 
 double angle_entre(Vector a, Vector b){ // Angle entre a et b dans le sens horaire en degres
     return -asin(a.x*b.y-a.y*b.x)/(norm2(a)*norm2(b))*180/M_PI;
 }
-double angle_horiz(Vector a) {
-    Vector horiz = {1.,0.};
-    return angle_entre(horiz,a);
-}
 
-double rad(double deg) {
+
+double rad(double deg) { // Converti de degré en radiant
     return(M_PI/180.*deg);
 }
-double deg(double rad) {
+double deg(double rad) { // Converti de radiant en degré
     return(180.*rad/M_PI);
 }
 
-// renvoie l'intersection d'une demi-droite avec un des bords
-// le point est supposé dans l'écran
-// angle : en degres, mesure principale [0;360[
-
-Vector intersection_bords(Vector point, double angle) {
-    if(angle==0.) {
-    Vector v={static_cast<double>(WIDTH),point.y};
-    return(v);
-    } else if(angle==90.) {
-    Vector v={point.x,0.};
-    return(v);
-    } else if(angle==180.) {
-    Vector v={0.,point.y};
-    return(v);
-    } else if(angle==270.) {
-    Vector v={point.x,static_cast<double>(HEIGHT)};
-    return(v);}
-
-    double dmin;//distance minimale
-    // y = (x-point.x)*tan(angle)+point.y
-    double a = rad(angle);
-    Vector cibleDroite = {static_cast<double>(WIDTH),(static_cast<double>(WIDTH)-point.x)*tan(a)+point.y};
-    Vector cibleGauche = {0.,-1.*point.x*tan(a)+point.y};
-    Vector cibleHaute = {point.x-point.y/tan(a),0.};
-    Vector cibleBasse = {point.x+(static_cast<double>(HEIGHT)-point.y)/tan(a),static_cast<double>(HEIGHT)};
-    Vector candidats[2];
-    if(0.<angle && angle < 90.) {
-        candidats[0] = cibleHaute;
-        candidats[1] = cibleDroite;
-    } else if(90.<angle && angle<180.) {
-        candidats[0] = cibleHaute;
-        candidats[1] = cibleGauche;
-    } else if(180.<angle && angle<270.) {
-        candidats[0] = cibleBasse;
-        candidats[1] = cibleGauche;
-    } else {
-        candidats[0] = cibleBasse;
-        candidats[1] = cibleDroite;
-    }
-    if(distance(point,candidats[0])<distance(point,candidats[1])){return(candidats[0]);}
-    else{return(candidats[1]);}
-}
-
-Vector reflect(Vector v, Vector normal) {
+Vector reflect(Vector v, Vector normal) { // Donne la reflection d'un vecteur par rapport à une normale
     return v - 2 * ps(v, normal) * normal;
 }

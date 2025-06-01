@@ -1,7 +1,7 @@
 #include "physics.h"
 
 
-Vector Acceleration(Vector v, double friction_coeff, double friction_coeff2){
+Vector Acceleration(Vector v, double friction_coeff, double friction_coeff2){ // Calcul l'acceleration d'un corps à vitesse v en prenant en compte des frottements
     Vector acc = {0.,0.};
 
     // ajout de la friction

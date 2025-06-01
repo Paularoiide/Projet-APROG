@@ -70,6 +70,7 @@ public:
     void afficher();
 };
 
+Niveau generer_niveau(std::string chemin_niveau);
 
 template<typename Base, typename T>
 inline bool instanceof(const T *ptr);
