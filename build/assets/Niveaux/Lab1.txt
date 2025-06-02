@@ -1,4 +1,4 @@
-Mur,"Point1.x":30,Point1.y":100,"Point2.x":160,"Point2.y":100,"epaisseur":3
+Lab1
 Mur,"Point1.x":30,Point1.y":100,"Point2.x":160,"Point2.y":100,"epaisseur":3
 Mur,"Point1.x":160,Point1.y":100,"Point2.x":160,"Point2.y":200,"epaisseur":3
 Mur,"Point1.x":160,Point1.y":200,"Point2.x":350,"Point2.y":200,"epaisseur":3
@@ -40,4 +40,4 @@ Mur,"Point1.x":152,"Point1.y":501,"Point2.x":156,"Point2.y":501,"epaisseur":3
 Mur,"Point1.x":156,"Point1.y":501,"Point2.x":156,"Point2.y":516,"epaisseur":3
 Mur,"Point1.x":156,"Point1.y":516,"Point2.x":64,"Point2.y":516,"epaisseur":3
 
-Slime,"Role":Killer,"Pos.x":200,"Pos.y":300
+Slime,"Role":Killer,"Pos.x":450,"Pos.y":418

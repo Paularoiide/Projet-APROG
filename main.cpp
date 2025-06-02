@@ -117,7 +117,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
                 ennemi->Check(joueur,niveau1.elements);
                 if (ennemi->kill){
                     Vector dif = joueur.pos - ennemi->pos;
-                    ennemi->speed = 0.5 * (dif)/sqrt(norm2(dif));
+                    ennemi->speed =(dif)/sqrt(norm2(dif));
                 }
                 ennemi->Move();
 
@@ -161,10 +161,12 @@ int main() {
     srand(time(0)); // Initialisation de l'aléatoire
     string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
     string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
+    string path2 = stringSrcPath(strAssets + "Niveaux/lab2.png");
 
     int nb_tir = 0;
     int score_niveau;
     Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+
     score_niveau = PlayLevel(principale, path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
 
     if (score_niveau == -1){ // Dans ce cas c'est Game Over
@@ -182,6 +184,18 @@ int main() {
         return 0;
     }
     nb_tir += score_niveau;
+
+    principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+
+    score_niveau = PlayLevel(principale, path2, "Lab2.txt", 196 + decalage_x, 600 + decalage_y, false);
+
+    if (score_niveau == -1){ // Dans ce cas c'est Game Over
+        GameOver(false,0);
+        return 0;
+    }
+    nb_tir += score_niveau;
+
+
 
     GameOver(true,nb_tir);
     endGraphics();
