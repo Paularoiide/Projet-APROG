@@ -13,14 +13,16 @@ using namespace std;
 #include "player.h"
 #include "element.h"
 
+// élément de base : un mur invisible sur lequel rebondissent les slimes
 class Mur : public Collisionable {
 public:
     int epaisseur;
     Mur(Vector PointA, Vector PointB, int epais);
     void afficher() override;
-    bool is_in(Vector v) override;
+    bool is_in(Vector v) override; //
 };
 
+// élément linéaire marquant la fin d'un niveau
 class Porte : public Collisionable {
 public:
     int epaisseur;
@@ -29,9 +31,7 @@ public:
     bool is_in(Vector v) override;
 };
 
-
-
-
+// objet qui extrait d'un fichier texte (.txt) une liste de strings (ce sont les lignes du fichier texte)
 class NiveauTextuel {
 public:
     int numero = 0;
@@ -44,6 +44,8 @@ public:
 };
 NiveauTextuel ouvrir_niveau(string nom_fichier);
 
+// objet contenant tous les propriétés d'un niveau :
+// ses éléments physiques et ennemis, son numéro, le nombre d'objets présents
 class Niveau {
 public:
     std::vector<std::unique_ptr<Element>> elements;
@@ -69,7 +71,9 @@ public:
     void afficher();
 };
 
+// fonction créant un NiveauTextuel puis un Niveau à partir du premier
 Niveau generer_niveau(std::string chemin_niveau);
 
+// utile pour les tests et la description d'un niveau pour déboggage.
 template<typename Base, typename T>
 inline bool instanceof(const T *ptr);

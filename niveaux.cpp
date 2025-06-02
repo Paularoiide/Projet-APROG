@@ -9,9 +9,15 @@ Mur::Mur(Vector PointA, Vector PointB, int epais) {
     Point2 = PointB;
     epaisseur = epais;
 }
+
+// la fonction d'affichage ne sert pas dans le jeu final :
+// elle sert pour le déboggage/ l'analyse de niveaux
+// (par exemple, vérifier qu'il n'y a pas de mur manquant)
 void Mur::afficher() {
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
+
+// vérifie si une trajectoire rentre dans un mur (afin de déclencher le rebond)
 bool Mur::is_in(Vector v) {
     Vector proj = projection(v, Point1, Point2);
     return norm2(v - proj) < epaisseur;
@@ -29,18 +35,22 @@ bool Porte::is_in(Vector v) {
 }
 
 void Porte::afficher() {
+    drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLUE,epaisseur);
     cout << " Porte" << endl;
-
 }
 
 
 
 
 NiveauTextuel::NiveauTextuel(int nbElem1) {
-    lignes.resize(nbElem1);  // plus besoin de gestion manuelle de mémoire
+    lignes.resize(nbElem1);
 }
+
 NiveauTextuel::NiveauTextuel() =default;
-NiveauTextuel::~NiveauTextuel() =default;
+NiveauTextuel::~NiveauTextuel() =default; // destructeur par défaut
+
+// "lit" un fichier texte (.txt) en stockant chaque ligne dans un tableau de string
+// saute les lignes vide ou commentées à l'aide d'un # ou //
 NiveauTextuel ouvrir_niveau(string nom_fichier) {
     cout << "ouverture du fichier niveau : "<< nom_fichier << endl;
     ifstream f(nom_fichier);
@@ -67,9 +77,8 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
 
         nbLignesNonVides++;
     }
-    // convention locale : on ne met pas de ligne vide à la fin
-    cout << "nombre de lignes :"<<nbLignes<<endl;
-    cout << "nombre de lignes non vides:"<<nbLignesNonVides<<endl;
+    //cout << "nombre de lignes :"<<nbLignes<<endl;
+    //cout << "nombre de lignes non vides:"<<nbLignesNonVides<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
     f.seekg(0);
@@ -84,26 +93,28 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
         // Ignore ligne vide ou ligne de commentaire
         if (ligneActu.empty() || ligneActu[0] == '#' || (ligneActu.size() >= 2 && ligneActu[0] == '/' && ligneActu[1] == '/')|| (ligneActu.size() >= 2 && ligneActu[0] == '\\' && ligneActu[1] == 'n'))
         {
-            cout << "ligne n°"<< i << " vide." << endl;
-                continue;
+            continue;
         } else {
             niveauActuel.lignes[j] = ligneActu;
             j++;}
     }
 
-    cout << "Niveau chargé" << endl;
-                                   f.close();
+    //cout << "Niveau chargé" << endl;
+    f.close();
     return niveauActuel;
 }
-void NiveauTextuel::detruire() {
-    lignes.clear();
-}
 
 
-
+// ajoute un objet de type élémeent à la liste elements d'un Niveau
 void Niveau::ajouterElement(unique_ptr<Element> obj) {
     elements.push_back(move(obj));
 }
+
+// crée une liste d'objets de type Mur, Slime, Porte... (descendant l'Element) à partir d'un
+// NiveauTextuel. Pour cela, il lit avec Regex les attributs suivant les ':', qui sont ordonnés
+// (Dans la syntaxe "clé":valeur, "clé" est à titre indicatif pour l'écriture du fichier .txt
+// dont est issu le NiveauTextuel, et n'est donc jamais lue)
+// c'est le premier mot qui définit le type d'objet associé à chaque ligne
 void Niveau::remplir_niveau(NiveauTextuel texte) {
     for (size_t i = 1; i < texte.lignes.size(); i++) {
         string ligne = texte.lignes[i];
@@ -189,11 +200,11 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         }
         //cout << "element lu." << endl;
     }
-    cout << "fin de construction du niveau" << endl;
-    cout << "analyse du niveau :" << endl;
+    //cout << "fin de construction du niveau" << endl;
+    /*cout << "analyse du niveau :" << endl;
     for (int i = 0; i < elements.size(); i++) {
         cout << "Type de l'objet : " << typeid(*elements[i]).name() << endl;
-    }
+    }*/
 }
 
 template<typename Base, typename T>
@@ -203,28 +214,15 @@ inline bool instanceof(const T *ptr) {
 
 void Niveau::afficher() {
     for (auto& obj : elements) { // Utilisez une référence pour éviter de copier le unique_ptr
-        /*cout << "affichage d'un élément" << endl;
-                cout << "Test avec typeid(*obj).name(). Type de l'objet : " << typeid(*obj).name() << endl;
-*/
-        // Obtenez le pointeur brut pour utiliser dynamic_cast
+
+        // Obtention d'un pointeur brut pour utiliser dynamic_cast (notament dans les tests)
         Element* rawPtr = obj.get();
 
+        /*cout << "affichage d'un élément" << endl;
+                cout << "Test avec typeid(*obj).name(). Type de l'objet : " << typeid(*obj).name() << endl;
+        */
         /*if (dynamic_cast<Mur*>(rawPtr)) {
-            cout << "2e test. C'est un Mur" << endl;
-        } else {
-            cout << "deuxième test. Pas un Mur" << endl;
-        }
-
-        if (dynamic_cast<Bordure*>(rawPtr)) {
-            cout << "2e test. C'est une Bordure" << endl;
-        } else {
-            cout << "deuxième test. Pas une Bordure" << endl;
-        }
-
-        if (dynamic_cast<Collisionable*>(rawPtr)) {
-            cout << "element est de type Collisionable" << endl;
-        } else {
-            cout << "element n'est pas de type Collisionable" << endl;
+            cout << "C'est un Mur" << endl;
         }*/
 
         if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
