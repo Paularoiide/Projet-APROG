@@ -10,7 +10,6 @@
 using namespace std;
 
 #include "vector.h"
-#include "globals.h"
 #include "player.h"
 #include "element.h"
 

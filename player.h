@@ -58,7 +58,7 @@ public:
     Joueur(Vector givenPosition); // Constructeur avec position initiale
     void Display() override;      // Affiche le joueur avec animations
     void Move() override;         // Gère le déplacement du joueur
-    Vector Launch() const;        // Calcule le vecteur de lancement (basé sur la souris)
+    Vector Launch() const override;        // Calcule le vecteur de lancement (basé sur la souris)
     bool CollisionSlime(const Ennemi &other); // Détecte les collisions avec le joueur
 
 };

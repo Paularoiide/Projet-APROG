@@ -28,12 +28,6 @@ string strAssets = "build/assets/";
 bool modeFrein = true;
 int sleepTime = 50;//ms
 
-bool fichierExiste(const std::string& cheminComplet) {
-    std::ifstream fichier(cheminComplet.c_str());
-    return fichier.good();
-}
-
-
 
 struct LevelData {
     Joueur joueur;
@@ -54,8 +48,7 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
     clearWindow();
 
     std::shared_ptr<Niveau> niveau1 = std::make_shared<Niveau>(generer_niveau(repert_nivs + nom_niv));
-    cout << "niveau_genere" << endl;
-    cout << "niveau_affiche" << endl;
+
 
     Vector pos_init = {pos_x, pos_y};
     Joueur joueur = Joueur(pos_init);
@@ -132,10 +125,8 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
             // === Mouvement du joueur ===
             int key = keyboard();
-            //cout <<"touche : "<<key<<endl;
             if(key=='w') {
                 joueur.frein=1000/sleepTime;
-                //cout << "frein active"<<endl;
             } else {
                 if(joueur.frein>0) {
                     joueur.frein--;
@@ -151,19 +142,15 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
         for (auto& ennemi : niveau1.ennemis) {
             if (joueur.CollisionSlime(*ennemi)) {
-                cout << "Slime attrapé ! Game Over." << endl;
                         closeWindow(principale);
                 return -1; // Code si échec de la fuite
             }
         }
 
         if (porteTouchee) {
-            cout << "Porte touchee ! Fin du niveau." << endl;
             closeWindow(principale);
             return nb_tir;
         }
-
-        cout << "Waiting for a new pulse" << endl;
     }
     flushEvents();
     return nb_tir;

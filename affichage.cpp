@@ -1,8 +1,6 @@
-#include "physics.h"
 #include "vector.h"
 #include "affichage.h"
 #include "player.h"
-#include "niveaux.h"
 #include "globals.h"
 
 
@@ -138,7 +136,6 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
             if (x >= x_button_admin && x <= x_button_admin + BUTTON_WIDTH &&
                 y >= y_button_admin && y <= y_button_admin + BUTTON_HEIGHT) {
                 if(entrer_code(width, height, BUTTON_WIDTH,BUTTON_HEIGHT)==511) {
-                    cout << "code_entre" << endl;
                     int select = fen_niveaux(width,height,BUTTON_WIDTH,BUTTON_HEIGHT,repertoire);
                     cout << "niveau selectionne : " << select << endl;
                 }
