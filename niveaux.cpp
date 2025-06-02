@@ -17,11 +17,6 @@ void Mur::afficher() {
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLACK,epaisseur);
 }
 
-// vérifie si une trajectoire rentre dans un mur (afin de déclencher le rebond)
-bool Mur::is_in(Vector v) {
-    Vector proj = projection(v, Point1, Point2);
-    return norm2(v - proj) < epaisseur;
-}
 
 Porte::Porte(Vector PointA, Vector PointB, int epais) {
     Point1 = PointA;
@@ -29,10 +24,6 @@ Porte::Porte(Vector PointA, Vector PointB, int epais) {
     epaisseur = epais;
 }
 
-bool Porte::is_in(Vector v) {
-    Vector proj = projection(v, Point1, Point2);
-    return norm2(v - proj) < epaisseur;
-}
 
 void Porte::afficher() {
     drawLine(Point1.x,Point1.y,Point2.x,Point2.y,BLUE,epaisseur);

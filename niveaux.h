@@ -19,7 +19,6 @@ public:
     int epaisseur;
     Mur(Vector PointA, Vector PointB, int epais);
     void afficher() override;
-    bool is_in(Vector v) override; //
 };
 
 // élément linéaire marquant la fin d'un niveau
@@ -28,7 +27,6 @@ public:
     int epaisseur;
     Porte(Vector PointA, Vector PointB, int epais);
     void afficher() override;
-    bool is_in(Vector v) override;
 };
 
 // objet qui extrait d'un fichier texte (.txt) une liste de strings (ce sont les lignes du fichier texte)
