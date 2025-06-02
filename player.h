@@ -63,7 +63,7 @@ public:
 
 // Classe représentant le joueur (hérite de Slime)
 class Joueur : public Slime {
-    int frein;                   // indique pour combiend e temps le frein est activé
+    int frein;                   // indique pour combien de temps le frein est activé
 
 public:
     Joueur(Vector givenPosition); // Constructeur avec position initiale

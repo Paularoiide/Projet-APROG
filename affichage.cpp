@@ -17,16 +17,6 @@ void drawButton(int x, int y, int width, int height, Color rectColor, const stri
     drawString(x + width/10, y + height*3/5, label, BLACK, width/10);
 }
 
-// Effectue un fondu au noir progressif de l'écran
-void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas) {
-    for(int i=0;i<nb_pas;i++) {
-        int niv = 255*i/nb_pas;
-        RGBA gris(255,255,255,niv);
-        fillRect(0,0,WIDTH,HEIGHT,gris);
-        milliSleep(duree/nb_pas);
-
-    }
-}
 
 // Charge et extrait une sous-image (sprite) depuis une image source
 AlphaColor* getSprite(const std::string& path, int i, int j, int w1, int h1) {

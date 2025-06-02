@@ -77,8 +77,6 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
 
         nbLignesNonVides++;
     }
-    //cout << "nombre de lignes :"<<nbLignes<<endl;
-    //cout << "nombre de lignes non vides:"<<nbLignesNonVides<<endl;
     // Remettre le curseur au début du fichier
     f.clear();
     f.seekg(0);
@@ -98,8 +96,6 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
             niveauActuel.lignes[j] = ligneActu;
             j++;}
     }
-
-    //cout << "Niveau chargé" << endl;
     f.close();
     return niveauActuel;
 }
@@ -145,18 +141,15 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         for (string mot : row) {
             row_explicite = row_explicite + "|" + mot;
         }
-        //cout << "row : " << row_explicite << endl;
 
         if (row[0] == "Mur") {
             if (row.size() < 6) {
                 cerr << "erreur de lecture : pas assez d'arguments pour le mur à la ligne " << ligne << ", n° : " << i << endl;
                     continue;
             }
-            //cout << "lecture d'un mur. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
             Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
             Vector Point2 = {static_cast<double>(stoi(row[3])) + decalage_x, static_cast<double>(stoi(row[4])) + decalage_y};
             int epaiss = stoi(row[5]);
-            //cout << "epaisseur du mur : " << epaiss << endl;
             auto mur = std::make_unique<Mur>(Point1, Point2, epaiss);
             elements.push_back(std::move(mur));
         } else if (row[0] == "Porte") {
@@ -164,11 +157,9 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
                 cerr << "erreur de lecture : pas assez d'arguments pour la porte à la ligne " << ligne << ", n° : " << i << endl;
                     continue;
             }
-            //cout << "lecture d'une porte. Arguments : " << row[1] << ", " << row[2] << "," << row[3] << ", " << row[4] << ", " << row[5] << endl;
             Vector Point1 = {static_cast<double>(stoi(row[1]))+ decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
             Vector Point2 = {static_cast<double>(stoi(row[3])) + decalage_x, static_cast<double>(stoi(row[4])) + decalage_y};
             int epaiss = stoi(row[5]);
-            //cout << "epaisseur de la porte : " << epaiss << endl;
             auto porte = std::make_unique<Porte>(Point1, Point2, epaiss);
             elements.push_back(std::move(porte));
         } else if (row[0]=="Slime") {
@@ -187,13 +178,7 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
         }else {
             cerr << "erreur de lecture : impossible d'identifier l'élément de type '" << row[0] << "' à la ligne " << ligne << ", n° : " << i << endl;
         }
-        //cout << "element lu." << endl;
     }
-    //cout << "fin de construction du niveau" << endl;
-    /*cout << "analyse du niveau :" << endl;
-    for (int i = 0; i < elements.size(); i++) {
-        cout << "Type de l'objet : " << typeid(*elements[i]).name() << endl;
-    }*/
 }
 
 template<typename Base, typename T>
@@ -206,14 +191,6 @@ void Niveau::afficher() {
 
         // Obtention d'un pointeur brut pour utiliser dynamic_cast (notament dans les tests)
         Element* rawPtr = obj.get();
-
-        /*cout << "affichage d'un élément" << endl;
-                cout << "Test avec typeid(*obj).name(). Type de l'objet : " << typeid(*obj).name() << endl;
-        */
-        /*if (dynamic_cast<Mur*>(rawPtr)) {
-            cout << "C'est un Mur" << endl;
-        }*/
-
         if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
             rawPtr->afficher();
         } else {

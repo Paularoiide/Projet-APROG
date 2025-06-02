@@ -22,8 +22,6 @@ const int freqDisplay = 10 * (1/dt);
 // Dessine un bouton avec texte centré
 void drawButton(int x, int y, int width, int height, Color rectColor, const string& label);
 
-// Effectue un fondu au noir progressif
-void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas);
 
 // Charge et extrait un sprite depuis une image
 AlphaColor* getSprite(const std::string& path, int i, int j, int w1 = 32, int h1 = 32);
