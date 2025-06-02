@@ -128,8 +128,12 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
         if (getMouse(x, y)) {
             if (x >= x_button_begin && x <= x_button_begin + BUTTON_WIDTH &&
                 y >= y_button_begin && y <= y_button_begin + BUTTON_HEIGHT) {
-                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,GREEN, "Cliqué !");
-                    //showMessage("Bouton cliqué !");
+                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "3");
+                milliSleep(500);
+                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "2");
+                milliSleep(500);
+                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "1");
+                milliSleep(500);
                     return 0;
                 break; // Quitter après clic
             }
