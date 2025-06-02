@@ -1,5 +1,4 @@
 #pragma once
-#include "globals.h"
 
 // Structure représentant un vecteur 2D
 struct Vector {
