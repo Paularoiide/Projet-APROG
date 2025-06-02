@@ -173,19 +173,19 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 int main() {
     srand(time(0)); // Initialisation de l'aléatoire
 
-    string nomsPngs[2] = {"Lab0.txt","Lab1.txt"};
+    string nomstxts[2] = {"Lab0.txt","Lab1.txt","Lab2.txt"};
     string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
     string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
     string path2 = stringSrcPath(strAssets + "Niveaux/lab2.png");
 
     int nb_tir = 0;// nombre total de tirs
     int score_niveau;// nombre de tirs pour le niveau actuel
-    string paths[2] = {path0,path1};
+    string paths[3] = {path0,path1,path2};
 
     //parcourt des niveaux
     for(int i=0;i<2;i++) {
         Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-        score_niveau = PlayLevel(principale, paths[i], nomsPngs[i], 591 + decalage_x, 180 + decalage_y, (i==0));
+        score_niveau = PlayLevel(principale, paths[i], nomstxts[i], 591 + decalage_x, 180 + decalage_y, (i==0));
 
         if (score_niveau == -1){ // Dans ce cas c'est Game Over
             GameOver(false,0);
