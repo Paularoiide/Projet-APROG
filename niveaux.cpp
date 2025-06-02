@@ -55,7 +55,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier) {
     cout << "ouverture du fichier niveau : "<< nom_fichier << endl;
     ifstream f(nom_fichier);
     if (!f.is_open()) {
-        cerr << "Erreur à l'ouverture du fichier !" << endl;
+        throw std::runtime_error("Erreur à l'ouverture du fichier !");
             return NiveauTextuel(0); // On retourne un objet vide
     }
 
