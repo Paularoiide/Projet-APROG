@@ -173,7 +173,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 int main() {
     srand(time(0)); // Initialisation de l'aléatoire
 
-    string nomstxts[2] = {"Lab0.txt","Lab1.txt","Lab2.txt"};
+    string nomstxts[3] = {"Lab0.txt","Lab1.txt","Lab2.txt"};
     string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
     string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
     string path2 = stringSrcPath(strAssets + "Niveaux/lab2.png");
