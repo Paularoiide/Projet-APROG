@@ -30,9 +30,12 @@ void fonduNoir(const int WIDTH, const int HEIGHT, int duree, int nb_pas) {
 
 // Charge et extrait une sous-image (sprite) depuis une image source
 AlphaColor* getSprite(const std::string& path, int i, int j, int w1, int h1) {
-    AlphaColor* C; // Image complète
-    int w, h;      // Largeur et hauteur de l'image
+    AlphaColor* C;
+    int w, h;
     loadAlphaColorImage(path, C, w, h);
+    if (w == 0 || h == 0 || C == nullptr) {
+        throw std::runtime_error("Erreur de chargement de l'image : " + path);
+    }
 
     AlphaColor* D = new AlphaColor[w1 * h1]; // Allocation pour le sprite extrait
 
@@ -56,10 +59,9 @@ void putSprite(const std::string& path, double x, double y, int i, int j, int w1
 // Réinitialise l'écran avec le fond et les obstacles
 void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background){
     clearWindow();
-    for (auto& obj : obstacles) { // Utilisez une référence pour éviter de copier le unique_ptr
+    for (auto& obj : obstacles) {
         Element* rawPtr = obj.get();
         if (rawPtr) { // Vérifiez que le pointeur n'est pas nul
-            //rawPtr->afficher();
         } else {
             cerr << "objet non construit au moment de l'affichage" << endl;
         }
@@ -107,6 +109,44 @@ void GameOver(bool win, int nb_tir) {
     }
 }
 
+// Ouvre une fenêtre expliquant comment jouer
+void afficherTexteInfo(int width, int height) {
+    Window fenInfo = openWindow(width, height,"À propos du jeu");
+        setActiveWindow(fenInfo);
+
+    string texte =
+        "Bienvenue dans SlimeEscape !\n\n"
+        "Vous incarnez un slime (une petite boule verte) dont le but est de s’échapper du laboratoire.\n"
+        "Cliquez dans la fenêtre blanche pour propulser le slime :\n"
+        "- La direction dépend de la souris\n"
+        "- La vitesse dépend de la distance jusqu'à la souris\n\n"
+        "Objectif : passer les 3 niveaux via les portes (en bas à droite pour les 2 premiers, en haut pour le dernier).\n"
+        "Mais attention aux gardes ! Ne vous laissez pas attraper...\n\n"
+        "Cliquez n'importe où pour revenir.";
+
+        // Découper le texte en lignes
+        std::istringstream stream(texte);
+    string ligne;
+    int x = width / 12;
+    int y = height / 6;
+    int lineHeight = 25;
+
+    while (getline(stream, ligne)) {
+        drawString(x, y, ligne, BLACK, 18);
+        y += lineHeight;
+    }
+
+    // Attente clic pour quitter
+    int clic_x, clic_y;
+    while (!getMouse(clic_x, clic_y)) {
+        milliSleep(20);
+    }
+
+    closeWindow(fenInfo);
+}
+
+
+
 // Affiche le menu principal avec boutons de démarrage et admin
 int menu(Window fenMenu, const int width,const int height, const string repertoire) {
     Color *C;
@@ -114,6 +154,10 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
     int h;
     string Image_menu = stringSrcPath(strAssets + "Slimescape.png");
     loadColorImage(Image_menu, C, w, h);
+    if (w == 0 || h == 0 || C == nullptr) {
+        throw std::runtime_error("Erreur de chargement de l'image : " + Image_menu);
+    }
+
     putColorImage(0,0,C,w,h,false,1.);
     const int BUTTON_WIDTH = 100;
     const int BUTTON_HEIGHT = 50;
@@ -122,117 +166,22 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
     int x_button_admin = width-3/2*BUTTON_WIDTH;
     int y_button_admin = height-3/2*BUTTON_HEIGHT;
     drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "Commencer");
-    drawButton(x_button_admin,y_button_admin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "?");
-    while (true) {
+    drawButton(x_button_admin,y_button_admin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "Règles");
+        while (true) {
         int x, y;
         if (getMouse(x, y)) {
             if (x >= x_button_begin && x <= x_button_begin + BUTTON_WIDTH &&
                 y >= y_button_begin && y <= y_button_begin + BUTTON_HEIGHT) {
-                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "3");
-                milliSleep(500);
-                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "2");
-                milliSleep(500);
-                drawButton(x_button_begin,y_button_begin,BUTTON_WIDTH,BUTTON_HEIGHT,WHITE, "1");
-                milliSleep(500);
-                    return 0;
+                milliSleep(200);
+                return 0;
                 break; // Quitter après clic
             }
             if (x >= x_button_admin && x <= x_button_admin + BUTTON_WIDTH &&
                 y >= y_button_admin && y <= y_button_admin + BUTTON_HEIGHT) {
-                if(entrer_code(width, height, BUTTON_WIDTH,BUTTON_HEIGHT)==511) {
-                    int select = fen_niveaux(width,height,BUTTON_WIDTH,BUTTON_HEIGHT,repertoire);
-                    cout << "niveau selectionne : " << select << endl;
-                }
+                afficherTexteInfo(width, height);
                 setActiveWindow(fenMenu);
-                return(-1);
             }
         }
         milliSleep(20);
     }
-}
-
-// Affiche la sélection de niveaux sous forme de boutons
-int fen_niveaux(const int width, const int height,const int BUTTON_WIDTH, const int BUTTON_HEIGHT, string repertoire) {
-    Window fenNiv = openWindow(300,200,"code");
-    showWindow(fenNiv);
-    setActiveWindow(fenNiv);
-    setBackGround(Color(145,30,170));
-    std::vector<std::string> fichiers = {"Intro.txt"};
-    int x_button = width/2-BUTTON_WIDTH/2;
-    int i=1;
-    while (fichierExiste(repertoire +"Niveau" + std::to_string(i) + ".txt")) {
-        drawButton(x_button,BUTTON_HEIGHT*(1.5*i+1/2),BUTTON_WIDTH,BUTTON_HEIGHT,WHITE,"Niveau "+to_string(i));
-    }
-    while(true) {
-        int x, y;
-        if (getMouse(x, y)) {
-            for(int j=0;j<i;j++) {
-                if (x >= x_button && x <= x_button + BUTTON_WIDTH &&
-                    y >= BUTTON_HEIGHT*(1.5*i+1/2) && y <= BUTTON_HEIGHT*(1.5*i+3/2)) {
-                    closeWindow(fenNiv);
-                    return j;
-                }
-            }
-        }
-    }
-}
-
-// Demande à l'utilisateur de saisir un code numérique
-int entrer_code(const int width, const int height, const int BUTTON_WIDTH, const int BUTTON_HEIGHT) {
-
-    Window fenCode = openWindow(300,200,"code");
-    showWindow(fenCode);
-    setActiveWindow(fenCode);
-    setBackGround(Color(145,30,170));
-
-    string instruction = "entrez le code :";
-    string code = "";
-    int font=10;
-    // Boucle principale
-    bool fin = false;
-    while (!fin) {
-        // Effacer la fenêtre
-        clearWindow();
-
-        // Afficher l'instruction
-        drawString(BUTTON_WIDTH/2, BUTTON_WIDTH/2, instruction.c_str(), BLACK, font);
-
-        // Afficher le code en cours de saisie
-        drawString(BUTTON_WIDTH/2, BUTTON_WIDTH, code.c_str(), BLACK, 20);
-
-        // Rectangle autour de la zone de texte
-        drawRect(BUTTON_WIDTH/2-5, BUTTON_WIDTH/2-20, 2*BUTTON_WIDTH, BUTTON_WIDTH/2, BLACK);
-
-        // Gérer les événements
-        Event ev;
-        getEvent(0, ev);
-
-        switch (ev.type) {
-        case EVT_KEY_ON:
-            if (ev.key == KEY_BACK && !code.empty()) {
-                // Supprimer le dernier caractère
-                code.pop_back();
-            } else if (ev.key == KEY_RETURN) {
-                // Valider avec Entrée
-                fin = true;
-                closeWindow(fenCode);
-                cout << "Entree. code selectionne : " << code << endl;
-                return stoi(code);
-            } else if (isdigit(ev.key)) {
-                // Ajouter un chiffre
-                code += char(ev.key);
-            }
-            break;
-        case EVT_BUT_ON:
-            // Valider avec un clic
-            closeWindow(fenCode);
-            cout << "code selectionne : " << code << endl;
-            return stoi(code);
-        default:
-            break;
-        }
-        milliSleep(20);
-    }
-    return -1;
-    cout << "erreur" << endl;
 }

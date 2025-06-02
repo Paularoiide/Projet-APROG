@@ -40,6 +40,9 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
     int width, height;
     Color *C;
     loadColorImage(background_string, C, width, height);
+    if (width == 0 || height == 0 || C == nullptr) {
+        throw std::runtime_error("Erreur de chargement de l'image : " + background_string);
+    }
     Background background = {C, width, height};
     string repert_nivs = "../Projet-APROG/build/assets/Niveaux/";
     if (first_level){ //Si c'est le premier niveau on affiche le menu
