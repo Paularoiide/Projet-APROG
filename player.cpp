@@ -22,20 +22,6 @@ Ennemi::Ennemi(Vector givenPos) {//Initialise un ennemi avec une position donné
 }
 
 
-Ennemi::Ennemi(Vector givenPos, Vector *movePattern, int n) { // Initialise un ennemi avec un motif de déplacement (movePattern) en plus des attributs de base.
-    pos = givenPos;
-    pos_initial = givenPos;
-    speed = {0.5, 0.0}; // vitesse de départ vers la droite
-    sprite = {0,0};
-    radius = 15;
-    kill = false;
-    pattern = new Vector[n];
-    for(int i=0;i<n;i++) {
-        pattern[i] = movePattern[i];
-    }
-}
-
-
 struct DirectionRange {
     double minAngle;
     double maxAngle;
@@ -123,7 +109,8 @@ void Ennemi::Display(){ // Anime le sprite de l'ennemi et met à jour sa directi
 
 
 void Joueur::Move(){ // Déplace le joueur en fonction de sa vitesse et du temps écoulé (dt)
-    pos = pos +speed * dt;}
+    pos = pos +speed * dt;
+}
 
 void Ennemi::Move(){ // Déplace l'ennemi automatiquement autour de sa position initiale (va-et-vient horizontal). Si kill est vrai, l'ennemi se déplace normalement.
     if (!kill){
@@ -149,6 +136,7 @@ Vector Joueur::Launch() const{ // Calcule et retourne un vecteur de lancement ba
     getMouse(mouse_x, mouse_y);
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
     Vector delta = mouse - pos;
+    if (norm2(delta) == 0) return Vector{0., 0.};
     Vector dir = delta / sqrt(norm2(delta));
     double pulse = sqrt(norm2(delta)) * 6 / (static_cast<double>(WIDTH)); // Arbitrary formula
     Vector launch_vector = pulse * dir;
@@ -194,10 +182,10 @@ bool Slime::Collision(Collisionable *obstacle) const { // Vérifie si le slime e
 
 bool Joueur::CollisionSlime(const Ennemi& other) { // Vérifie si l'ennemi entre en collision avec le joueur en comparant la distance entre eux à la somme de leurs rayons.
     // Calcul de la distance entre les centres des deux slimes
-    double diff = distance(pos,other.pos);
+    double diff = distance(pos,other.getPosition());
 
     // Somme des rayons au carré
-    double Som_radius = radius + other.radius;
+    double Som_radius = radius + other.getRadius();
 
     // Collision si distance² <= (rayon1 + rayon2)²
     return diff <= Som_radius;
@@ -215,7 +203,7 @@ void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) { //D
 
     for (const auto& dir : directions) {
         if (sprite.j == dir.spriteJ) {
-            Vector dif = joueur.pos - pos;
+            Vector dif = joueur.getPosition() - pos;
             double distance = sqrt(norm2(dif));
             double angle = atan2(dif.y, dif.x) * 180.0 / M_PI;
             if (angle < 0) angle += 360;
@@ -225,7 +213,7 @@ void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) { //D
                 (dir.minAngle > dir.maxAngle && (angle >= dir.minAngle || angle <= dir.maxAngle));
 
             if (inAngleRange && distance < 200.0) {
-                        kill = true;
+                kill = true;
             }
             break;
         }

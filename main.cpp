@@ -46,7 +46,7 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
     Background background = {C, width, height};
     string repert_nivs = "../Projet-APROG/build/assets/Niveaux/";
     if (first_level){ //Si c'est le premier niveau on affiche le menu
-        menu(principale, WIDTH, HEIGHT, repert_nivs);
+        menu(principale, WIDTH, HEIGHT);
     }
     clearWindow();
 
@@ -73,7 +73,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
     Niveau& niveau1 = *data.niveau;
     int nb_tir = 0;
     while (true) {
-        joueur.speed = joueur.Launch();
+        joueur.setSpeed(joueur.Launch());
         bool porteTouchee = false;
         nb_tir +=1;
 
@@ -118,9 +118,9 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
             // === Mouvement et détection des ennemis ===
             for (auto& ennemi : niveau1.ennemis) {
                 ennemi->Check(joueur,niveau1.elements);
-                if (ennemi->kill){
-                    Vector dif = joueur.pos - ennemi->pos;
-                    ennemi->speed =(dif)/sqrt(norm2(dif));
+                if (ennemi->getKill()){
+                    Vector dif = joueur.getPosition() - ennemi->getPosition();
+                    ennemi->getSpeed() =(dif)/sqrt(norm2(dif));
                 }
                 ennemi->Move();
 
@@ -129,18 +129,18 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
             // === Mouvement du joueur ===
             int key = keyboard();
             if(key=='w') {
-                joueur.frein=1000/sleepTime;
+                joueur.setFrein(1000/sleepTime);
             } else {
-                if(joueur.frein>0) {
-                    joueur.frein--;
+                if(joueur.getFrein()>0) {
+                    joueur.setFrein(joueur.getFrein()-1);
                 }
             }
 
             joueur.Move();
-            Vector acc = Acceleration(joueur.speed,(joueur.frein>0));
+            Vector acc = Acceleration(joueur.getSpeed(),(joueur.getFrein()>0));
             joueur.Accelerate(acc);
 
-            if (norm2(joueur.speed) <= 0.0005) break;
+            if (norm2(joueur.getSpeed()) <= 0.0005) break;
         }
 
         for (auto& ennemi : niveau1.ennemis) {

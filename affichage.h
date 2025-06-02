@@ -41,5 +41,5 @@ void GameOver(bool win, int nb_tir);
 void afficherTexteInfo(int width, int height);
 
 // Affiche le menu principal et gère les interactions
-int menu(Window fenMenu, const int width, const int height, const string repertoire);
+int menu(Window fenMenu, const int width, const int height);
 
