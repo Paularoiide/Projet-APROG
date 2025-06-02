@@ -54,6 +54,7 @@ public:
 // Classe représentant le joueur (hérite de Slime)
 class Joueur : public Slime {
 public:
+    int frein;                   // indique pour combiend e temps le frein est activé
     Joueur(Vector givenPosition); // Constructeur avec position initiale
     void Display() override;      // Affiche le joueur avec animations
     void Move() override;         // Gère le déplacement du joueur

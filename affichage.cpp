@@ -70,7 +70,7 @@ void Resetscreen(vector<unique_ptr<Element>>& obstacles,Background background){
 }
 
 // Affiche l'écran de fin de jeu avec message et animations
-void GameOver(bool win, int nb_tir){
+void GameOver(bool win, int nb_tir) {
     // Fenêtre finale pour afficher le score
     openWindow(WIDTH, HEIGHT, "Fin du jeu");
     string message_game_over;
@@ -80,36 +80,32 @@ void GameOver(bool win, int nb_tir){
         message_game_over = "Tu as été attrapé, Game Over";
     }
 
-
-    // Affichage du texte
-    // Création de 5 Slimes à des positions aléatoires
-    std::vector<Joueur> joueurs;
-    std::vector<Ennemi> ennemis;
-
-    for (int i = 0; i < 70; ++i) {
+    const int NB_SLIMES = 70; // Constante pour le nombre de slimes
+    // Tableau fixe de pointeurs uniques vers des Slimes (pour ne pas avoir à gérer de deletes) :
+    std::array<std::unique_ptr<Slime>, NB_SLIMES> slimes;
+    for (int i = 0; i < NB_SLIMES; ++i) { // Création des slimes aux positions aléatoires
         Vector pos = Vector{
             static_cast<double>(rand() % WIDTH),
             static_cast<double>(rand() % HEIGHT)
         };
-        if (win){
-            joueurs.push_back(Joueur(pos));
+
+        if (win) {
+            slimes[i] = std::make_unique<Joueur>(pos);
         } else {
-            ennemis.push_back(Ennemi(pos));
+            slimes[i] = std::make_unique<Ennemi>(pos);
         }
     }
-
-
-    // Affichage continu des Slimes jusqu'au clic
     while (true) {
         noRefreshBegin();
         clearWindow();
-        for (Joueur& s : joueurs) {
-            s.Display();
+
+        for (const auto& slime : slimes) {
+            slime->Display();
         }
+
         drawString(WIDTH / 2 - 100, HEIGHT/2, message_game_over, BLACK, 20);
         noRefreshEnd();
         milliSleep(80);
-
     }
 }
 
