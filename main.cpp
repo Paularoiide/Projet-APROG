@@ -11,7 +11,6 @@ using namespace std;
 using namespace Imagine;
 
 
-
 #include "physics.h"
 #include "vector.h"
 #include "affichage.h"
@@ -27,6 +26,8 @@ int WIDTH = 1472;
 int HEIGHT = 832;
 double dt=1;
 string strAssets = "build/assets/";
+bool modeFrein = true;
+int sleepTime = 50;//ms
 
 bool fichierExiste(const std::string& cheminComplet) {
     std::ifstream fichier(cheminComplet.c_str());
@@ -85,7 +86,8 @@ int entrer_code(const int width, const int height, const int BUTTON_WIDTH, const
                 fin = true;
                 closeWindow(fenCode);
                 cout << "Entree. code selectionne : " << code << endl;
-                return stoi(code);
+                if(code.size()>0) {
+                    return stoi(code);} else {return(-1);}
             } else if (isdigit(ev.key)) {
                 // Ajouter un chiffre
                 code += char(ev.key);
@@ -106,23 +108,31 @@ int entrer_code(const int width, const int height, const int BUTTON_WIDTH, const
 }
 
 int fen_niveaux(const int width, const int height,const int BUTTON_WIDTH, const int BUTTON_HEIGHT, string repertoire) {
-    Window fenNiv = openWindow(300,200,"code");
+    Window fenNiv = openWindow(width,height,"selection niveau");
     showWindow(fenNiv);
     setActiveWindow(fenNiv);
     setBackGround(Color(145,30,170));
     std::vector<std::string> fichiers = {"Intro.txt"};
     int x_button = width/2-BUTTON_WIDTH/2;
-    int i=1;
-    while (fichierExiste(repertoire +"Niveau" + std::to_string(i) + ".txt")) {
-        drawButton(x_button,BUTTON_HEIGHT*(1.5*i+1/2),BUTTON_WIDTH,BUTTON_HEIGHT,WHITE,"Niveau "+to_string(i));
+    int i=0;
+    cout << "BUt Height " << BUTTON_HEIGHT<<endl;
+    while (fichierExiste(repertoire +"Lab" + std::to_string(i) + ".txt")) {
+        cout << "bouton pour le niveau" << i << endl;
+        drawButton(x_button,BUTTON_HEIGHT*(1.5*static_cast<double>(i)+0.5),BUTTON_WIDTH,BUTTON_HEIGHT,WHITE,"Niveau "+to_string(i));
+        i++;
+        cout << "x:" << x_button <<" | y:"<<BUTTON_HEIGHT*(1.5*i+0.5)<<endl;
+        cout << "xmin:" << x_button<<" | ymin:"<<BUTTON_HEIGHT*(1.5*static_cast<double>(i)-0.5)<<endl;
+        cout << "xmax:" << x_button + BUTTON_WIDTH <<" | ymax:"<<BUTTON_HEIGHT*(1.5*static_cast<double>(i)+0.5)<<endl;
     }
     while(true) {
         int x, y;
         if (getMouse(x, y)) {
+            cout << "clic en "<<x<<"|"<<y<<endl;
             for(int j=0;j<i;j++) {
                 if (x >= x_button && x <= x_button + BUTTON_WIDTH &&
-                    y >= BUTTON_HEIGHT*(1.5*i+1/2) && y <= BUTTON_HEIGHT*(1.5*i+3/2)) {
+                    y >= BUTTON_HEIGHT*(1.5*static_cast<double>(i)-0.5) && y <= BUTTON_HEIGHT*(1.5*static_cast<double>(i)+0.5)) {
                     closeWindow(fenNiv);
+                    cout << "niv " << j << " selectionne." << endl;
                     return j;
                 }
             }
@@ -159,7 +169,7 @@ int menu(Window fenMenu, const int width,const int height, const string repertoi
                 y >= y_button_admin && y <= y_button_admin + BUTTON_HEIGHT) {
                 if(entrer_code(width, height, BUTTON_WIDTH,BUTTON_HEIGHT)==511) {
                     cout << "code_entre" << endl;
-                    int select = fen_niveaux(width,height,BUTTON_WIDTH,BUTTON_HEIGHT,repertoire);
+                    int select = fen_niveaux(500,400,BUTTON_WIDTH,BUTTON_HEIGHT,repertoire);
                     cout << "niveau selectionne : " << select << endl;
                 }
                 setActiveWindow(fenMenu);
@@ -271,7 +281,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
                 slime.Display();
                 noRefreshEnd();
-                milliSleep(50);
+                milliSleep(sleepTime);
             }
 
             // === Collisions avec les éléments du niveau ===
@@ -309,8 +319,19 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
             }
 
             // === Mouvement du joueur ===
+            int key = keyboard();
+            //cout <<"touche : "<<key<<endl;
+            if(key=='w') {
+                slime.frein=1000/sleepTime;
+                //cout << "frein active"<<endl;
+            } else {
+                if(slime.frein>0) {
+                    slime.frein--;
+                }
+            }
+
             slime.Move();
-            Vector acc = Acceleration(slime.speed);
+            Vector acc = Acceleration(slime.speed,(slime.frein>0));
             slime.Accelerate(acc);
 
             if (norm2(slime.speed) <= 0.0005) break;
@@ -332,6 +353,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
         cout << "Waiting for a new pulse" << endl;
     }
+    flushEvents();
     return nb_tir;
 }
 

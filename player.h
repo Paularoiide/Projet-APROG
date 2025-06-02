@@ -27,6 +27,7 @@ public:
     int patternNumber;
     Vector *pattern;
     int radius = 4;
+    int frein=0;
     //void Lancer(vector<unique_ptr<Element>>& obstacles);
     void Lancer(Vector pulse, vector<unique_ptr<Element>>& obstacles,Background background);
     void Move();
@@ -35,7 +36,7 @@ public:
     void Shock(Collisionable *Obstacle);
     bool Collision(Collisionable *Obstacle);
     bool CollisionSlime(const Slime& other);
-    void Check(Slime slime, vector<unique_ptr<Element>>& obstacles);
+    void Check(Slime& slime, vector<unique_ptr<Element>>& obstacles);
     void KILL(Slime slime, vector<unique_ptr<Element>>& obstacles);
     void Die();
     void Win();
