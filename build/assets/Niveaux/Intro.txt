@@ -1,3 +1,0 @@
-# width: 512, height:512
-Bordure,"Point1.x":0,"Point1.y":10,"Point2.x":512,"Point2.y":10
-Mur,"Point1.x":10,Point1.y":20,"Point2.x":20,"Point2.y":502,"epaisseur":3
