@@ -27,7 +27,7 @@ int WIDTH = 1472;
 int HEIGHT = 832;
 double dt=0.1;
 string strAssets = "build/assets/";
-bool modeFrein = true;
+bool modeFrein = false; // Mécanique de frein qui ralenti le slime lorsqu'on appuie sur w. Ici désactivée de base
 int sleepTime = 50;//ms
 
 // structure regroupant tout ce qui caractérise un niveau : l'ensebmel de ses éléments (Niveau),
@@ -137,12 +137,14 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
             }
 
             // === Mouvement du joueur ===
-            int key = keyboard();
-            if(key=='w') {
-                joueur.setFrein(1000/sleepTime);
-            } else {
-                if(joueur.getFrein()>0) {
-                    joueur.setFrein(joueur.getFrein()-1);
+            if (modeFrein){
+                int key = keyboard();
+                if(key=='w') {
+                    joueur.setFrein(1000/sleepTime);
+                } else {
+                    if(joueur.getFrein()>0) {
+                        joueur.setFrein(joueur.getFrein()-1);
+                    }
                 }
             }
 
@@ -155,7 +157,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
         for (auto& ennemi : niveau1.ennemis) {
             if (joueur.CollisionSlime(*ennemi)) {
-                        closeWindow(principale);
+                closeWindow(principale);
                 return -1; // Code si échec de la fuite
             }
         }
