@@ -113,28 +113,15 @@ void GameOver(bool win, int nb_tir) {
 void afficherTexteInfo(int width, int height) {
     Window fenInfo = openWindow(width, height,"À propos du jeu");
         setActiveWindow(fenInfo);
-
-    string texte =
-        "Bienvenue dans SlimeEscape !\n\n"
-        "Vous incarnez un slime (une petite boule verte) dont le but est de s’échapper du laboratoire.\n"
-        "Cliquez dans la fenêtre blanche pour propulser le slime :\n"
-        "- La direction dépend de la souris\n"
-        "- La vitesse dépend de la distance jusqu'à la souris\n\n"
-        "Objectif : passer les 3 niveaux via les portes (en bas à droite pour les 2 premiers, en haut pour le dernier).\n"
-        "Mais attention aux gardes ! Ne vous laissez pas attraper...\n\n"
-        "Cliquez n'importe où pour revenir.";
-
-        // Découper le texte en lignes
-        std::istringstream stream(texte);
-    string ligne;
-    int x = width / 12;
-    int y = height / 6;
-    int lineHeight = 25;
-
-    while (getline(stream, ligne)) {
-        drawString(x, y, ligne, BLACK, 18);
-        y += lineHeight;
+    Color *C;
+    int w;
+    int h;
+    string Image_aide = stringSrcPath(strAssets + "aide.png");
+    loadColorImage(Image_aide, C, w, h);
+    if (w == 0 || h == 0 || C == nullptr) {
+        throw std::runtime_error("Erreur de chargement de l'image : " + Image_aide);
     }
+    putColorImage(0,0,C,w,h,false,1.);
 
     // Attente clic pour quitter
     int clic_x, clic_y;
@@ -147,8 +134,8 @@ void afficherTexteInfo(int width, int height) {
 
 
 
-// Affiche le menu principal avec boutons de démarrage et admin
-int menu(Window fenMenu, const int width,const int height, const string repertoire) {
+// Affiche le menu principal avec boutons de démarrage et aide
+int menu(Window fenMenu, const int width, const int height) {
     Color *C;
     int w;
     int h;

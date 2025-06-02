@@ -178,18 +178,7 @@ void Niveau::remplir_niveau(NiveauTextuel texte) {
 
                 auto ennemi = std::make_unique<Ennemi>(pos);
                 ennemis.push_back(std::move(ennemi));
-            } else if(row.size()>4) {
-                Vector pos = {static_cast<double>(stoi(row[2])), static_cast<double>(stoi(row[3]))};
-
-                int nbOfPatterns = (row.size()-4)/2;
-                Vector *pattern = new Vector[nbOfPatterns];
-                for(int j=0;j<nbOfPatterns;j++) {
-                    pattern[j].x = static_cast<double>(stoi(row[4+2*j]));
-                    pattern[j].y = static_cast<double>(stoi(row[5+2*j]));
-                }
-                auto ennemi = std::make_unique<Ennemi>(pos,pattern,nbOfPatterns);
-                ennemis.push_back(std::move(ennemi));
-            } else if(row.size()==3) {
+            }else if(row.size()==3) {
                 Vector pos = {static_cast<double>(stoi(row[1])) + decalage_x, static_cast<double>(stoi(row[2])) + decalage_y};
                 auto ennemi = std::make_unique<Ennemi>(pos);
                 ennemis.push_back(std::move(ennemi));
