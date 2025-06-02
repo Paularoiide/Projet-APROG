@@ -17,7 +17,7 @@ Ennemi::Ennemi(Vector givenPos) {//Initialise un ennemi avec une position donné
     pos_initial = givenPos;
     speed = {0.5, 0.0};
     sprite = {0,0};
-    radius = 6;
+    radius = 15;
     kill = false;
 }
 
@@ -27,7 +27,7 @@ Ennemi::Ennemi(Vector givenPos, Vector *movePattern, int n) { // Initialise un e
     pos_initial = givenPos;
     speed = {0.5, 0.0}; // vitesse de départ vers la droite
     sprite = {0,0};
-    radius = 6;
+    radius = 15;
     kill = false;
     pattern = new Vector[n];
     for(int i=0;i<n;i++) {
@@ -128,7 +128,7 @@ void Joueur::Move(){ // Déplace le joueur en fonction de sa vitesse et du temps
 void Ennemi::Move(){ // Déplace l'ennemi automatiquement autour de sa position initiale (va-et-vient horizontal). Si kill est vrai, l'ennemi se déplace normalement.
     if (!kill){
         // Déplacement automatique autour de la position initiale sur l'axe x
-        double amplitude = 50; // Distance maximale à gauche ou à droite
+        double amplitude = 100; // Distance maximale à gauche ou à droite
         double delta_x = pos.x - pos_initial.x;
         // Inverser la vitesse si on dépasse l'amplitude
         if (abs(delta_x) > amplitude) {
@@ -224,7 +224,7 @@ void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) { //D
                 (dir.minAngle < dir.maxAngle && angle >= dir.minAngle && angle <= dir.maxAngle) ||
                 (dir.minAngle > dir.maxAngle && (angle >= dir.minAngle || angle <= dir.maxAngle));
 
-            if (inAngleRange && distance < 200.0) {  // Vérification de distance commune
+            if (inAngleRange && distance < 200.0) {
                         kill = true;
             }
             break;

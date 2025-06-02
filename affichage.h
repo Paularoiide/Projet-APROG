@@ -37,11 +37,9 @@ void Resetscreen(vector<unique_ptr<Element>>& obstacles, Background background);
 // Affiche l'écran de fin de partie
 void GameOver(bool win, int nb_tir);
 
+// Ouvre une fenêtre expliquant comment jouer
+void afficherTexteInfo(int width, int height);
+
 // Affiche le menu principal et gère les interactions
 int menu(Window fenMenu, const int width, const int height, const string repertoire);
 
-// Affiche la sélection de niveaux
-int fen_niveaux(const int width, const int height, const int BUTTON_WIDTH, const int BUTTON_HEIGHT, string repertoire);
-
-// Demande la saisie d'un code numérique
-int entrer_code(const int width, const int height, const int BUTTON_WIDTH, const int BUTTON_HEIGHT);
