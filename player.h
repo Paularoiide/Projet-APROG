@@ -38,6 +38,7 @@ public:
     virtual void Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) {} // Vérifie les interactions
     virtual bool CollisionSlime(const Slime& other) {return false;} // Détecte les collisions entre Slimes
 
+    // Getters et setters
     Vector getPosition() const {
         return pos;
     }
@@ -83,11 +84,11 @@ public:
 class Ennemi : public Slime {
     bool kill; // Si true, l'ennemi est en mode attaque
 public:
-
     Ennemi(Vector givenPosition); // Constructeur simple
     void Display() override;      // Affiche l'ennemi avec animations différenciées (marche/course/attaque)
     void Move() override;         // Gère le déplacement automatique (va-et-vient)
     void Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) override; // Détecte le joueur et déclenche l'attaque
+    // Getters et setters
     bool getKill() const{
         return kill;
     }

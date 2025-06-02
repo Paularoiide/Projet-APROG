@@ -19,6 +19,8 @@ using namespace Imagine;
 
 Imagine::Image<Color> getSlimeSprite(const Imagine::Image<Color>& spriteSheet, int x, int y, int width, int height);
 
+// pour la définition de ces variables globales : voir globals.h
+
 int decalage_x = 250; // Décalage pour avoir de la place en haut et à gauche du niveau
 int decalage_y = 12;
 int WIDTH = 1472;
@@ -28,7 +30,9 @@ string strAssets = "build/assets/";
 bool modeFrein = true;
 int sleepTime = 50;//ms
 
-
+// structure regroupant tout ce qui caractérise un niveau : l'ensebmel de ses éléments (Niveau),
+// le joueur (permet de fixer sa position initiale),
+// le fond d'écran.
 struct LevelData {
     Joueur joueur;
     Background background;
@@ -36,6 +40,9 @@ struct LevelData {
 
 };
 
+// génère un StartLevel à partir de toutes les informations nécessaires :
+// la fenêtre principale, le chemin du fond d'écran, le nom du niveau,
+// les coordonnées de départ du joueur pos_x et pos_y ainsi que si c'st le premier niveau ou non
 LevelData StartLevel(Window& principale,string background_string, string nom_niv, double pos_x, double pos_y, bool first_level) {
     int width, height;
     Color *C;
@@ -56,6 +63,7 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
     Vector pos_init = {pos_x, pos_y};
     Joueur joueur = Joueur(pos_init);
 
+    // affichage de tous les éléments :
     Resetscreen(niveau1->elements, background);
     joueur.Display();
     for (auto& ennemi : niveau1->ennemis) {
@@ -65,7 +73,9 @@ LevelData StartLevel(Window& principale,string background_string, string nom_niv
     return {joueur, background, niveau1};
 }
 
-
+// après avoir lancé la boucle principale pour un niveau
+// cette fonction renvoie le nombre de tirs utilisés par le joueur
+// ou -1 si le joueur perd
 int PlayLevel(Window& principale,const string& background_string, const string& nom_niv, double pos_x, double pos_y,bool first_level) {
     LevelData data = StartLevel(principale,background_string, nom_niv, pos_x, pos_y,first_level );
     Joueur& joueur = data.joueur;
@@ -120,7 +130,7 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
                 ennemi->Check(joueur,niveau1.elements);
                 if (ennemi->getKill()){
                     Vector dif = joueur.getPosition() - ennemi->getPosition();
-                    ennemi->getSpeed() =(dif)/sqrt(norm2(dif));
+                    ennemi->setSpeed((dif)/sqrt(norm2(dif)));
                 }
                 ennemi->Move();
 
@@ -162,43 +172,30 @@ int PlayLevel(Window& principale,const string& background_string, const string& 
 
 int main() {
     srand(time(0)); // Initialisation de l'aléatoire
+
+    string nomstxts[3] = {"Lab0.txt","Lab1.txt","Lab2.txt"};
     string path0 = stringSrcPath(strAssets + "Niveaux/lab0.png");
     string path1 = stringSrcPath(strAssets + "Niveaux/lab1.png");
     string path2 = stringSrcPath(strAssets + "Niveaux/lab2.png");
+    int posXinit[3] = {591 + decalage_x, 50 + decalage_x, 196+decalage_x};
+    int posYinit[3] = {180 + decalage_y,180 + decalage_y,600+ decalage_y};
+    //196 + decalage_x, 600 + decalage_y
 
-    int nb_tir = 0;
-    int score_niveau;
-    Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+    int nb_tir = 0;// nombre total de tirs
+    int score_niveau;// nombre de tirs pour le niveau actuel
+    string paths[3] = {path0,path1,path2};
 
-    score_niveau = PlayLevel(principale, path0, "Lab0.txt", 591 + decalage_x, 180 + decalage_y, true);
+    //parcourt des niveaux
+    for(int i=0;i<3;i++) {
+        Window principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
+        score_niveau = PlayLevel(principale, paths[i], nomstxts[i], posXinit[i], posYinit[i], (i==0));
 
-    if (score_niveau == -1){ // Dans ce cas c'est Game Over
-        GameOver(false,0);
-        return 0;
+        if (score_niveau == -1){ // Dans ce cas c'est Game Over
+            GameOver(false,0);
+            return 0;
+        }
+        nb_tir += score_niveau;
     }
-    nb_tir += score_niveau;
-
-    principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-
-    score_niveau = PlayLevel(principale, path1, "Lab1.txt", 50 + decalage_x, 180 + decalage_y, false);
-
-    if (score_niveau == -1){ // Dans ce cas c'est Game Over
-        GameOver(false,0);
-        return 0;
-    }
-    nb_tir += score_niveau;
-
-    principale = openWindow(WIDTH, HEIGHT, "Jeu APROJ - Slime");
-
-    score_niveau = PlayLevel(principale, path2, "Lab2.txt", 196 + decalage_x, 600 + decalage_y, false);
-
-    if (score_niveau == -1){ // Dans ce cas c'est Game Over
-        GameOver(false,0);
-        return 0;
-    }
-    nb_tir += score_niveau;
-
-
 
     GameOver(true,nb_tir);
     endGraphics();
