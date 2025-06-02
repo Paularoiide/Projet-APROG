@@ -21,6 +21,7 @@ public:
     void afficher() override;
     bool is_in(Vector v) override;
 };
+
 class Porte : public Collisionable {
 public:
     int epaisseur;
@@ -28,32 +29,7 @@ public:
     void afficher() override;
     bool is_in(Vector v) override;
 };
-class Bordure : public Collisionable {
-public:
-    Bordure(Vector PointA, Vector PointB);
-    void afficher() override;
-    bool is_in(Vector v) override;
-};
-class Boite : public Element {
-public:
-    Vector Point1;
-    Vector Point2;
-    void afficher() override {
-        cout << "Boite" << endl;
-    }
-};
-class Pique : public Element {
-public:
-    Vector Base;
-    Vector Sommet;
-    int largeur;
-    Vector Sommets[3];
-    Pique(Vector Base1, Vector Sommet1, int largeur1);
-    void afficher() override {
-        cout << "Pique" << endl;
-    }
-    bool Collision(Slime *slime);
-};
+
 
 
 
@@ -72,7 +48,7 @@ NiveauTextuel ouvrir_niveau(string nom_fichier);
 class Niveau {
 public:
     std::vector<std::unique_ptr<Element>> elements;
-    std::vector<std::unique_ptr<Slime>> ennemis;
+    std::vector<std::unique_ptr<Ennemi>> ennemis;
     std::vector<std::unique_ptr<Collisionable>> collisionables;
     int nbElem;
 
@@ -94,6 +70,7 @@ public:
     void afficher();
 };
 
+Niveau generer_niveau(std::string chemin_niveau);
 
 template<typename Base, typename T>
 inline bool instanceof(const T *ptr);

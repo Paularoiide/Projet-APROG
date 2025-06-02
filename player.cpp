@@ -4,33 +4,37 @@
 #include "vector.h"
 #include "niveaux.h"
 
-role_Slime roleFromStr(string s){
-    if(s=="Joueur") {return role_Slime::JOUEUR;}
-    if(s=="Ennemi") {return role_Slime::SLIME_ENEMY;}
-    if(s=="PNJ") {return role_Slime::PNJ;}
-    if(s=="Killer") {return role_Slime::KILLER;}
-}
-
-Slime::Slime(role_Slime givenRole, Vector givenPos) {// constructeur
+Joueur::Joueur(Vector givenPos) {//Initialise un joueur avec une position donnée, une vitesse nulle, un rayon de 6 et un sprite par défaut.
     pos = givenPos;
     pos_initial = givenPos;
-    role = givenRole;
-    if (role == role_Slime::SLIME_ENEMY) {
-        speed = {0.5, 0.0}; // vitesse de départ vers la droite
-    } if (role == role_Slime::JOUEUR) {
-        speed = {0.0, 0.0};
-    }
+    speed = {0.0, 0.0};
     sprite = {0,0};
     radius = 6;
 }
-Slime::Slime(role_Slime givenRole, Vector givenPos, Vector *movePattern, int n) {
+
+Ennemi::Ennemi(Vector givenPos) {//Initialise un ennemi avec une position donnée, une vitesse initiale vers la droite, un rayon de 6 et un état kill à false.
     pos = givenPos;
-    role = givenRole;
+    pos_initial = givenPos;
+    speed = {0.5, 0.0};
+    sprite = {0,0};
+    radius = 6;
+    kill = false;
+}
+
+
+Ennemi::Ennemi(Vector givenPos, Vector *movePattern, int n) { // Initialise un ennemi avec un motif de déplacement (movePattern) en plus des attributs de base.
+    pos = givenPos;
+    pos_initial = givenPos;
+    speed = {0.5, 0.0}; // vitesse de départ vers la droite
+    sprite = {0,0};
+    radius = 6;
+    kill = false;
     pattern = new Vector[n];
     for(int i=0;i<n;i++) {
-        pattern[i] = movePattern[n];
+        pattern[i] = movePattern[i];
     }
 }
+
 
 struct DirectionRange {
     double minAngle;
@@ -38,8 +42,7 @@ struct DirectionRange {
     int spriteJ;
 };
 
-
-void Slime::Display() {
+void Joueur::Display(){ //Anime le sprite du joueur et met à jour sa direction en fonction de son angle de déplacement. Affiche le sprite correspondant.
     sprite.i = (sprite.i + 1) % 6; // Animation commune
 
     double angle = atan2(speed.y, speed.x);
@@ -47,30 +50,35 @@ void Slime::Display() {
     if (deg < 0)
         deg += 360;
 
-    if (role == role_Slime::JOUEUR) {
-
-        DirectionRange directions[9] = {
-            {337.5, 360.0, 2},
-            {0.0,   22.5,  2},
-            {22.5,  67.5,  8},
-            {67.5,  112.5, 4},
-            {112.5, 157.5, 7},
-            {157.5, 202.5, 1},
-            {202.5, 247.5, 5},
-            {247.5, 292.5, 3},
-            {292.5, 337.5, 6}
-        };
-        // Mise à jour sprite.j selon direction exacte (8 directions)
-        for (const auto& dir : directions) {
-            if (deg >= dir.minAngle && deg < dir.maxAngle) {
-                sprite.j = dir.spriteJ;
-                break;
-            }
+    DirectionRange directions[9] = {
+        {337.5, 360.0, 2},
+        {0.0,   22.5,  2},
+        {22.5,  67.5,  8},
+        {67.5,  112.5, 4},
+        {112.5, 157.5, 7},
+        {157.5, 202.5, 1},
+        {202.5, 247.5, 5},
+        {247.5, 292.5, 3},
+        {292.5, 337.5, 6}
+    };
+    // Mise à jour sprite.j selon direction exacte (8 directions)
+    for (const auto& dir : directions) {
+        if (deg >= dir.minAngle && deg < dir.maxAngle) {
+            sprite.j = dir.spriteJ;
+            break;
         }
-        putSprite(stringSrcPath(strAssets+"slimebuddy.png"), pos.x, pos.y, sprite.i, sprite.j);
     }
+    putSprite(stringSrcPath(strAssets+"slimebuddy.png"), pos.x, pos.y, sprite.i, sprite.j);
+}
 
-    else if (role == role_Slime::SLIME_ENEMY) {
+void Ennemi::Display(){ // Anime le sprite de l'ennemi et met à jour sa direction. Affiche différents sprites selon si l'ennemi est en train de marcher, courir ou attaquer (kill = true).
+    sprite.i = (sprite.i + 1) % 6; // Animation commune
+
+    double angle = atan2(speed.y, speed.x);
+    double deg = angle * 180.0 / M_PI;
+    if (deg < 0)
+        deg += 360;
+    if (!kill) {
         // Droite, Haut, Gauche, Bas
         DirectionRange directions[5] = {
             {315.0, 360.0, 3}, // Droite
@@ -93,7 +101,7 @@ void Slime::Display() {
             putSprite(stringSrcPath(strAssets+"Slime2_Walk_full.png"), pos.x, pos.y, sprite.i, sprite.j, 64, 64);
         }
     }
-    else if (role == role_Slime::KILLER) {
+    else {
         // Droite, Haut, Gauche, Bas
         DirectionRange directions[5] = {
             {315.0, 360.0, 3}, // Droite
@@ -113,10 +121,12 @@ void Slime::Display() {
     }
 }
 
-void Slime::Move(){
-    if (role == role_Slime::JOUEUR){
-        pos = pos +speed * dt;}
-    if (role == role_Slime::SLIME_ENEMY){
+
+void Joueur::Move(){ // Déplace le joueur en fonction de sa vitesse et du temps écoulé (dt)
+    pos = pos +speed * dt;}
+
+void Ennemi::Move(){ // Déplace l'ennemi automatiquement autour de sa position initiale (va-et-vient horizontal). Si kill est vrai, l'ennemi se déplace normalement.
+    if (!kill){
         // Déplacement automatique autour de la position initiale sur l'axe x
         double amplitude = 50; // Distance maximale à gauche ou à droite
         double delta_x = pos.x - pos_initial.x;
@@ -126,16 +136,15 @@ void Slime::Move(){
         }
         pos.x += speed.x * dt;
     }
-    if (role == role_Slime::KILLER){
+    else {
         pos = pos +speed * dt;}
 }
 
-void Slime::Accelerate(Vector a){
+void Slime::Accelerate(Vector a){ // Applique une accélération a à la vitesse du slime.
     speed = speed + a * dt;
 }
 
-Vector Slime::Launch(){
-    cout << "Proceed to launch" << endl;
+Vector Joueur::Launch() const{ // Calcule et retourne un vecteur de lancement basé sur la position de la souris pour propulser le joueur.
     int mouse_x = 0, mouse_y = 0;
     getMouse(mouse_x, mouse_y);
     Vector mouse = {static_cast<double>(mouse_x), static_cast<double>(mouse_y)};
@@ -146,7 +155,7 @@ Vector Slime::Launch(){
     return launch_vector;
 }
 
-void Slime::Shock(Collisionable *obstacle) {
+void Slime::Shock(Collisionable *obstacle) { // Gère la réflexion de la vitesse du slime lors d'une collision avec un obstacle en utilisant la normale à la surface.
     Vector origin = projection(pos, obstacle->Point1, obstacle->Point2);
     Vector d = pos - origin;
     Vector normal = d / sqrt(norm2(d)); // Vecteur normal unitaire
@@ -155,7 +164,7 @@ void Slime::Shock(Collisionable *obstacle) {
     speed = reflect(speed, normal);
 }
 
-bool Slime::Collision(Collisionable *obstacle) {
+bool Slime::Collision(Collisionable *obstacle) const { // Vérifie si le slime entre en collision avec un obstacle en projetant sa position sur le segment de l'obstacle.
     Vector AB = obstacle->Point2 - obstacle->Point1;
     Vector AP = pos - obstacle->Point1;
     double t = ps(AP, AB) / norm2(AB); // t ∈ R
@@ -183,49 +192,45 @@ bool Slime::Collision(Collisionable *obstacle) {
     return (sqrt(norm2(d)) <= radius);
 }
 
-bool Slime::CollisionSlime(const Slime& other) {
+bool Joueur::CollisionSlime(const Ennemi& other) { // Vérifie si l'ennemi entre en collision avec le joueur en comparant la distance entre eux à la somme de leurs rayons.
     // Calcul de la distance entre les centres des deux slimes
-    Vector diff = pos - other.pos;
-    double distanceSquared = norm2(diff); // Utilise norm2 (distance au carré pour l'optimisation)
+    double diff = distance(pos,other.pos);
 
     // Somme des rayons au carré
-    double radiusSum = radius + other.radius;
-    double radiusSumSquared = radiusSum * radiusSum;
+    double Som_radius = radius + other.radius;
 
     // Collision si distance² <= (rayon1 + rayon2)²
-    return distanceSquared <= radiusSumSquared;
+    return diff <= Som_radius;
 }
 
 
 
-void Slime::Check(Slime& slime, vector<unique_ptr<Element>>& obstacles) {
-    if (role == role_Slime::SLIME_ENEMY) {
-        DirectionRange directions[4] = {
-            {350.0, 10.0, 3}, // Droite
-            {80.0, 100.0, 0}, // Haut
-            {170.0, 190.0, 2}, // Gauche
-            {260.0, 280.0, 1}  // Bas
-        };
+void Ennemi::Check(Joueur& joueur, vector<unique_ptr<Element>>& obstacles) { //Détecte si le joueur est dans le champ de vision de l'ennemi (angle et distance). Si oui, active le mode attaque (kill = true).
+    DirectionRange directions[4] = {
+        {350.0, 10.0, 3}, // Droite
+        {80.0, 100.0, 0}, // Haut
+        {170.0, 190.0, 2}, // Gauche
+        {260.0, 280.0, 1}  // Bas
+    };
 
-        for (const auto& dir : directions) {
-            if (sprite.j == dir.spriteJ) {
-                Vector dif = slime.pos - pos;
-                double distance = sqrt(norm2(dif));
-                double angle = atan2(dif.y, dif.x) * 180.0 / M_PI;
-                if (angle < 0) angle += 360;
+    for (const auto& dir : directions) {
+        if (sprite.j == dir.spriteJ) {
+            Vector dif = joueur.pos - pos;
+            double distance = sqrt(norm2(dif));
+            double angle = atan2(dif.y, dif.x) * 180.0 / M_PI;
+            if (angle < 0) angle += 360;
 
-                bool inAngleRange =
-                    (dir.minAngle < dir.maxAngle && angle >= dir.minAngle && angle <= dir.maxAngle) ||
-                    (dir.minAngle > dir.maxAngle && (angle >= dir.minAngle || angle <= dir.maxAngle));
+            bool inAngleRange =
+                (dir.minAngle < dir.maxAngle && angle >= dir.minAngle && angle <= dir.maxAngle) ||
+                (dir.minAngle > dir.maxAngle && (angle >= dir.minAngle || angle <= dir.maxAngle));
 
-                if (inAngleRange && distance < 200.0) {  // Vérification de distance commune
-                    cout << "[DEBUG] Joueur détecté dans l'angle de vision, déclenchement de KILL" << endl;
-                            role = role_Slime::KILLER;
-                }
-                break;
+            if (inAngleRange && distance < 200.0) {  // Vérification de distance commune
+                        kill = true;
             }
+            break;
         }
     }
+
 }
 
 
